@@ -1,0 +1,14 @@
+{
+  // Static site served by a Cloudflare Worker (Workers Static Assets).
+  // Cloudflare's Git integration runs `npx wrangler deploy`, which reads this
+  // file and serves everything in ./public as static assets — no server code.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "praxilogue-com",
+  "compatibility_date": "2025-09-23",
+  "assets": {
+    "directory": "./public"
+  },
+  // Serve this site at the apex. custom_domain creates the domain + the
+  // proxied DNS record.
+  "routes": [{ "pattern": "praxilogue.com", "custom_domain": true }]
+}

@@ -1,0 +1,537 @@
+/* ===================================================================
+   Praxilogue — design tokens
+   Dual type system: Fraunces (serif, human) carries prose and headlines;
+   IBM Plex Mono (machine) carries structural chrome — the ∴ mark, indices,
+   the rail. The pairing is the argument in miniature.
+
+   The page is a sequence of full-viewport scenes, not a scroll. Each scene
+   carries its own color valence (a hue) that the whole page's accent shifts
+   toward as you arrive — a quiet nod to the studio's own Valence piece.
+=================================================================== */
+
+@property --hue {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 200;
+}
+
+:root {
+  --hue: 200;
+  --bg: #0e0d0b;
+  --bg-raised: #17150f;
+  --text: #ede7da;
+  --text-dim: #a89f8c;
+  --text-faint: #6b6455;
+  --accent: hsl(var(--hue) 78% 68%);
+  --accent-dim: hsl(var(--hue) 50% 48%);
+  --rule: rgba(237, 231, 218, 0.13);
+  --rule-strong: rgba(237, 231, 218, 0.22);
+
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --measure: 38rem;
+  --measure-wide: 56rem;
+  --edge-pad: clamp(1.5rem, 6vw, 3.25rem);
+  --rail-width: 84px;
+  color-scheme: dark;
+  transition: --hue 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f6f1e6;
+    --bg-raised: #ece3d0;
+    --text: #211f19;
+    --text-dim: #55503f;
+    --text-faint: #8b8570;
+    --accent: hsl(var(--hue) 74% 35%);
+    --accent-dim: hsl(var(--hue) 50% 46%);
+    --rule: rgba(33, 31, 25, 0.14);
+    --rule-strong: rgba(33, 31, 25, 0.24);
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ---------------------------------------------------------------
+   Grain + ambient glow — the glow's hue tracks the active scene
+--------------------------------------------------------------- */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.glow {
+  position: fixed;
+  top: -25%;
+  left: 5%;
+  width: 65vw;
+  height: 65vw;
+  max-width: 950px;
+  max-height: 950px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
+  opacity: 0.12;
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* ---------------------------------------------------------------
+   Rail — persistent left chrome: mark, scene navigator, foot mark.
+   Collapses to a top bar on narrow viewports.
+--------------------------------------------------------------- */
+
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--rail-width);
+  height: 100vh;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.75rem 0 1.5rem;
+  border-right: 1px solid var(--rule);
+}
+
+.mark {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  opacity: 0.9;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.6s ease;
+}
+.mark:hover { opacity: 1; transform: scale(1.1); }
+.mark svg circle { fill: currentColor; }
+
+.scene-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.35rem;
+  margin: auto 0;
+}
+
+.scene-nav-item {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0.15rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color 0.4s ease, transform 0.3s ease;
+}
+.scene-nav-item:hover { color: var(--text-dim); }
+.scene-nav-item[aria-current="true"] {
+  color: var(--accent);
+  transform: scale(1.25);
+}
+.scene-nav-item:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.rail-foot {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  opacity: 0.5;
+}
+
+@media (max-width: 720px) {
+  :root { --rail-width: 0px; }
+  .rail {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 48px;
+    top: 0; left: 0;
+    padding: 0 1.1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .scene-nav {
+    flex-direction: row;
+    margin: 0;
+    gap: 1.1rem;
+  }
+  .rail-foot { display: none; }
+  main { padding-top: 48px; }
+}
+
+/* ---------------------------------------------------------------
+   Scenes — full-viewport beats, not a scroll. Each carries a hue
+   consumed by JS on arrival (see script.js) to shift --hue globally.
+--------------------------------------------------------------- */
+
+main {
+  position: relative;
+  z-index: 2;
+  margin-left: var(--rail-width);
+}
+
+.scene {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding: clamp(2rem, 6vh, 4rem) 0;
+}
+
+.scene--hero,
+.scene--augmentation,
+.scene--governance {
+  justify-content: safe center;
+}
+
+.scene--methodologies,
+.scene--projects {
+  justify-content: flex-start;
+  padding-top: clamp(5.5rem, 14vh, 8rem);
+}
+
+.scene-inner {
+  width: 100%;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 var(--edge-pad);
+}
+
+.scene-inner--wide { max-width: var(--measure-wide); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  transition: color 0.6s ease;
+}
+
+.eyebrow-index { display: inline-block; font-variant-numeric: tabular-nums; }
+
+h1, h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  margin: 0 0 1.75rem;
+  color: var(--text);
+}
+
+h1.hero-head {
+  font-size: clamp(2.5rem, 7vw, 4.2rem);
+  font-weight: 400;
+}
+
+h2 {
+  font-size: clamp(1.65rem, 3.8vw, 2.3rem);
+  font-style: italic;
+  font-weight: 400;
+}
+
+p { margin: 0 0 1.25rem; }
+p:last-child { margin-bottom: 0; }
+
+.lede {
+  color: var(--text-dim);
+  font-size: 1.13rem;
+  max-width: 34rem;
+}
+
+.split-body p {
+  color: var(--text-dim);
+  max-width: 32rem;
+}
+
+/* ---------------------------------------------------------------
+   Hero mask-reveal — headline lines slide up out of a clipped
+   wrapper on load. Pure CSS, not scroll-gated.
+--------------------------------------------------------------- */
+
+.line-mask { display: block; overflow: hidden; }
+.line-inner {
+  display: block;
+  transform: translateY(105%);
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.line-mask:nth-child(1) .line-inner { animation-delay: 0.05s; }
+.line-mask:nth-child(2) .line-inner { animation-delay: 0.18s; }
+
+@keyframes rise { to { transform: translateY(0); } }
+
+.scroll-cue {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 3.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  transition: color 0.3s ease, gap 0.3s ease;
+}
+.scroll-cue:hover { color: var(--accent); gap: 1rem; }
+.scroll-cue-num { font-variant-numeric: tabular-nums; }
+.scroll-cue-line {
+  width: 34px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--text-faint), var(--accent));
+  position: relative;
+  overflow: hidden;
+}
+.scroll-cue-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-100%);
+  animation: sweep 2.2s ease-in-out infinite;
+}
+@keyframes sweep {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+/* ---------------------------------------------------------------
+   Scene-mark — the recurring ∴, framed as a logical step between
+   numbered scenes: 01 ∴ 02. Sits at the base of a scene.
+--------------------------------------------------------------- */
+
+.scene-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+}
+.d-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.d-mark {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent-dim);
+  transition: color 0.6s ease;
+}
+
+.closing-mark {
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  opacity: 0.5;
+  font-size: 1.8rem;
+  margin: clamp(2rem, 5vh, 3rem) 0 1.5rem;
+  transition: color 0.6s ease;
+}
+
+/* ---------------------------------------------------------------
+   Methodologies — a triptych, not a bulleted list
+--------------------------------------------------------------- */
+
+.triptych {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 2.75rem;
+}
+
+.entry { padding: 0; }
+.entry + .entry { border-left: 1px solid var(--rule); padding-left: 2.75rem; margin-left: -2.75rem; }
+
+.entry-name {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 0 0 0.75rem;
+}
+
+.entry-body { color: var(--text-dim); }
+
+@media (max-width: 860px) {
+  .triptych { grid-template-columns: 1fr; gap: 2rem 0; }
+  .entry + .entry { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid var(--rule); padding-top: 1.75rem; }
+}
+
+/* ---------------------------------------------------------------
+   Split layout — headline | prose, used by Augmentation & Governance
+--------------------------------------------------------------- */
+
+.split {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 3rem;
+  align-items: start;
+}
+.split h2 { margin-bottom: 0; }
+
+@media (max-width: 780px) {
+  .split { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+/* ---------------------------------------------------------------
+   Projects — an indexed editorial list with a hover sweep
+--------------------------------------------------------------- */
+
+.project-list { list-style: none; margin: 2.5rem 0 0; padding: 0; }
+
+.project {
+  position: relative;
+  display: flex;
+  gap: 1.4rem;
+  padding: 1.35rem 1.2rem;
+  margin: 0 -1.2rem;
+  border-top: 1px solid var(--rule);
+  border-radius: 4px;
+  transition: background-color 0.35s ease;
+}
+.project:last-child { border-bottom: 1px solid var(--rule); }
+.project:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+.project-idx {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  padding-top: 0.2rem;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-body { flex: 1; min-width: 0; }
+
+.project-name, .project-name--static {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+  margin: 0 0 0.45rem;
+}
+
+a.project-name {
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.project:hover a.project-name { color: var(--accent); background-size: 100% 1px; }
+
+.project-arrow { font-size: 0.8em; opacity: 0.6; transition: transform 0.3s ease, opacity 0.3s ease; }
+.project:hover .project-arrow { transform: translate(3px, -3px); opacity: 1; }
+
+.project-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--text-faint);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0.15em 0.5em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.project-desc { color: var(--text-dim); max-width: 30rem; margin: 0; font-size: 0.98rem; }
+
+/* ---------------------------------------------------------------
+   Colophon
+--------------------------------------------------------------- */
+
+.colophon {
+  margin-top: clamp(2rem, 6vh, 3.5rem);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+.mark-inline { color: var(--accent-dim); display: inline-flex; transition: color 0.6s ease; }
+.mark-inline svg circle { fill: currentColor; }
+
+/* ---------------------------------------------------------------
+   Reveal-on-scroll, staggered
+--------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px) scale(0.99);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.in-view { opacity: 1; transform: translateY(0) scale(1); }
+
+.triptych .entry:nth-child(1) { transition-delay: 0ms; }
+.triptych .entry:nth-child(2) { transition-delay: 90ms; }
+.triptych .entry:nth-child(3) { transition-delay: 180ms; }
+
+.project-list .project:nth-child(1) { transition-delay: 0ms; }
+.project-list .project:nth-child(2) { transition-delay: 60ms; }
+.project-list .project:nth-child(3) { transition-delay: 120ms; }
+.project-list .project:nth-child(4) { transition-delay: 180ms; }
+.project-list .project:nth-child(5) { transition-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .line-inner { opacity: 1; transform: none; transition: none; animation: none; }
+  .scroll-cue-line::after { animation: none; }
+  html { scroll-behavior: auto; scroll-snap-type: none; }
+  :root { transition: none; }
+}

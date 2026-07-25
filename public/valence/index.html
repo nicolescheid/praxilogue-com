@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valence — Praxilogue</title>
+    <meta name="description" content="Valence: an interactive poem, worn like a watch. A day/night complication where the poem's color shifts with the light.">
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes cloudDrift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100px); }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0a1a;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        .back {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 30;
+            color: #d4af37;
+            opacity: 0.75;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .back:hover { opacity: 1; transform: scale(1.08); }
+        .back svg circle { fill: currentColor; }
+
+        .watch-container {
+            position: relative;
+            width: 500px;
+            height: 600px;
+        }
+
+        .chain {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 80px;
+            background: repeating-linear-gradient(0deg, #c9b037, #c9b037 8px, #a08020 8px, #a08020 12px);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(201, 176, 55, 0.3);
+            z-index: 20;
+        }
+
+        .chain::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #d4af37, #a08020);
+            border-radius: 50%;
+            border: 2px solid #8b6914;
+            box-shadow: 0 0 15px rgba(201, 176, 55, 0.5);
+        }
+
+        .watch-case {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle at 30% 30%, #3a3a5e, #1a1a2e);
+            border-radius: 50%;
+            box-shadow:
+                0 0 60px rgba(100, 100, 200, 0.4),
+                0 0 30px rgba(0, 0, 0, 0.8),
+                inset 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 3px solid #4a4a6e;
+            animation: pulse 4s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .watch-face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sky layers that transition */
+        .sky-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: opacity 3s ease-in-out;
+        }
+
+        .sky-night {
+            background: radial-gradient(circle at 40% 40%,
+                #0a0a2a 0%,
+                #050515 50%,
+                #000005 100%);
+        }
+
+        .sky-dawn {
+            background: radial-gradient(circle at 40% 60%,
+                #ff9a56 0%,
+                #ff7eb3 30%,
+                #6a5acd 70%,
+                #2f1b3c 100%);
+        }
+
+        .sky-day {
+            background: radial-gradient(circle at 40% 40%,
+                #87ceeb 0%,
+                #b0d4f1 50%,
+                #98c1d9 100%);
+        }
+
+        .sky-dusk {
+            background: radial-gradient(circle at 40% 60%,
+                #ff6b6b 0%,
+                #ee5a6f 30%,
+                #4a5568 70%,
+                #1a1a2e 100%);
+        }
+
+        /* Celestial elements */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+
+        .sun {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ffd700, #ffed4e);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            transition: all 3s ease-in-out;
+        }
+
+        .moon {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #f0f0f0, #c0c0c0);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(240, 240, 240, 0.4);
+            transition: all 3s ease-in-out;
+        }
+
+        .clouds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            transition: opacity 3s ease-in-out;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 80px;
+            height: 25px;
+            top: 20%;
+            left: 10%;
+            animation: cloudDrift 40s linear infinite;
+        }
+
+        .cloud1::before {
+            width: 40px;
+            height: 30px;
+            top: -15px;
+            left: 15px;
+        }
+
+        .cloud2 {
+            width: 60px;
+            height: 20px;
+            top: 60%;
+            left: 60%;
+            animation: cloudDrift 50s linear infinite;
+        }
+
+        .cloud2::before {
+            width: 30px;
+            height: 25px;
+            top: -12px;
+            left: 12px;
+        }
+
+        /* Poem lines that change color with time of day */
+        .poem-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        .poem-line {
+            position: absolute;
+            font-size: 13px;
+            font-style: italic;
+            white-space: nowrap;
+            transition: color 3s ease-in-out, text-shadow 3s ease-in-out;
+            font-weight: 300;
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle, #d4af37, #a08020);
+            border-radius: 50%;
+            box-shadow:
+                0 0 10px rgba(212, 175, 55, 0.8),
+                0 0 20px rgba(100, 100, 200, 0.4);
+            z-index: 15;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 50% 50% 0 0;
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+            z-index: 12;
+        }
+
+        .hour-hand {
+            width: 7px;
+            height: 90px;
+            background: linear-gradient(to top, #2a2a3e, #3a3a5e, #4a4a6e);
+            margin-left: -3.5px;
+        }
+
+        .minute-hand {
+            width: 5px;
+            height: 120px;
+            background: linear-gradient(to top, #3a3a4e, #4a4a6e, #5a5a7e);
+            margin-left: -2.5px;
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 135px;
+            background: linear-gradient(to top, #d4af37, #e4bf47, #f4cf57);
+            margin-left: -1px;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+        }
+
+        .markers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 11;
+        }
+
+        .marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1px;
+            height: 8px;
+            background: rgba(74, 74, 110, 0.5);
+            transform-origin: center;
+            margin-left: -0.5px;
+            margin-top: -172px;
+        }
+
+        .marker.major {
+            height: 14px;
+            width: 2px;
+            margin-left: -1px;
+            background: rgba(201, 176, 55, 0.7);
+        }
+
+        .title {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #d4af37;
+            font-size: 16px;
+            letter-spacing: 5px;
+            text-shadow:
+                0 0 10px rgba(201, 176, 55, 0.5),
+                0 0 20px rgba(100, 100, 200, 0.3);
+            z-index: 20;
+        }
+
+        .subtitle {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(212, 175, 55, 0.6);
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-style: italic;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <a class="back" href="/" aria-label="Back to Praxilogue">
+      <svg viewBox="0 0 32 32" width="18" height="18">
+        <circle cx="11" cy="12" r="2.6"/><circle cx="21" cy="12" r="2.6"/><circle cx="16" cy="21" r="2.6"/>
+      </svg>
+    </a>
+    <div class="watch-container">
+        <div class="title">VALENCE</div>
+        <div class="subtitle">day/night complication</div>
+        <div class="chain"></div>
+
+        <div class="watch-case">
+            <div class="watch-face">
+                <!-- Sky layers -->
+                <div class="sky-layer sky-night" id="skyNight"></div>
+                <div class="sky-layer sky-dawn" id="skyDawn" style="opacity: 0;"></div>
+                <div class="sky-layer sky-day" id="skyDay" style="opacity: 0;"></div>
+                <div class="sky-layer sky-dusk" id="skyDusk" style="opacity: 0;"></div>
+
+                <!-- Celestial bodies -->
+                <div class="stars" id="stars"></div>
+                <div class="sun" id="sun"></div>
+                <div class="moon" id="moon"></div>
+                <div class="clouds" id="clouds">
+                    <div class="cloud cloud1"></div>
+                    <div class="cloud cloud2"></div>
+                </div>
+
+                <!-- Poem -->
+                <div class="poem-layer">
+                    <div class="poem-line" id="line1" style="top: 12%; left: 52%;">I   wish</div>
+                    <div class="poem-line" id="line2" style="top: 17%; left: 52%;">I  had a</div>
+                    <div class="poem-line" id="line3" style="top: 22%; left: 54%;">cosmic</div>
+                    <div class="poem-line" id="line4" style="top: 27%; left: 60%;">watch.</div>
+                    <div class="poem-line" id="line5" style="top: 35%; left: 64%;">That I</div>
+                    <div class="poem-line" id="line6" style="top: 40%; left: 48%;">could stare at</div>
+                    <div class="poem-line" id="line7" style="top: 45%; left: 60%;">the hands</div>
+                    <div class="poem-line" id="line8" style="top: 50%; left: 68%;">as the</div>
+                    <div class="poem-line" id="line9" style="top: 55%; left: 48%;">second wand</div>
+                    <div class="poem-line" id="line10" style="top: 60%; left: 62%;">circles</div>
+                    <div class="poem-line" id="line11" style="top: 65%; left: 58%;">around</div>
+                    <div class="poem-line" id="line12" style="top: 70%; left: 48%;">your heart…</div>
+                    <div class="poem-line" id="line13" style="top: 75%; left: 40%;">So I should</div>
+                    <div class="poem-line" id="line14" style="top: 80%; left: 52%;">know</div>
+                    <div class="poem-line" id="line15" style="top: 85%; left: 45%;">when to</div>
+                    <div class="poem-line" id="line16" style="top: 90%; left: 47%;">jump to</div>
+                    <div class="poem-line" id="line17" style="top: 95%; left: 40%; font-style: normal;">your orbit.</div>
+                </div>
+
+                <div class="markers" id="markers"></div>
+
+                <div class="hand hour-hand" id="hourHand"></div>
+                <div class="hand minute-hand" id="minuteHand"></div>
+                <div class="hand second-hand" id="secondHand"></div>
+
+                <div class="center-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Create markers
+        const markersContainer = document.getElementById('markers');
+        for (let i = 0; i < 60; i++) {
+            const marker = document.createElement('div');
+            marker.className = i % 5 === 0 ? 'marker major' : 'marker';
+            marker.style.transform = `rotate(${i * 6}deg)`;
+            markersContainer.appendChild(marker);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours();
+            const hours12 = hours % 12;
+
+            const secondDegrees = seconds * 6;
+            const minuteDegrees = minutes * 6 + seconds * 0.1;
+            const hourDegrees = hours12 * 30 + minutes * 0.5;
+
+            document.getElementById('secondHand').style.transform = `rotate(${secondDegrees}deg)`;
+            document.getElementById('minuteHand').style.transform = `rotate(${minuteDegrees}deg)`;
+            document.getElementById('hourHand').style.transform = `rotate(${hourDegrees}deg)`;
+
+            // Determine time of day phase (sped up: 1 hour = 1 phase for demo)
+            // In real life, you'd use actual hours: 6-9 = dawn, 9-17 = day, 17-20 = dusk, 20-6 = night
+            const phaseMinute = minutes;
+            let phase;
+
+            if (phaseMinute >= 0 && phaseMinute < 15) {
+                phase = 'night';
+            } else if (phaseMinute >= 15 && phaseMinute < 30) {
+                phase = 'dawn';
+            } else if (phaseMinute >= 30 && phaseMinute < 45) {
+                phase = 'day';
+            } else {
+                phase = 'dusk';
+            }
+
+            updatePhase(phase);
+        }
+
+        function updatePhase(phase) {
+            const skyNight = document.getElementById('skyNight');
+            const skyDawn = document.getElementById('skyDawn');
+            const skyDay = document.getElementById('skyDay');
+            const skyDusk = document.getElementById('skyDusk');
+            const sun = document.getElementById('sun');
+            const moon = document.getElementById('moon');
+            const stars = document.getElementById('stars');
+            const clouds = document.getElementById('clouds');
+
+            // Reset all
+            skyNight.style.opacity = '0';
+            skyDawn.style.opacity = '0';
+            skyDay.style.opacity = '0';
+            skyDusk.style.opacity = '0';
+
+            const poemLines = document.querySelectorAll('.poem-line');
+
+            if (phase === 'night') {
+                skyNight.style.opacity = '1';
+                stars.style.opacity = '1';
+                moon.style.opacity = '1';
+                moon.style.top = '20%';
+                moon.style.left = '70%';
+                sun.style.opacity = '0';
+                clouds.style.opacity = '0';
+
+                poemLines.forEach(line => {
+                    line.style.color = 'rgba(255, 255, 255, 0.85)';
+                    line.style.textShadow = '0 0 10px rgba(212, 175, 55, 0.6), 0 0 20px rgba(212, 175, 55, 0.3)';
+                });
+
+            } else if (phase === 'dawn') {
+                skyDawn.style.opacity = '1';
+                stars.style.opacity = '0.3';
+                moon.style.opacity = '0.4';
+                moon.style.top = '15%';
+                moon.style.left = '15%';
+                sun.style.opacity = '0.6';
+                sun.style.top = '75%';
+                sun.style.left = '80%';
+                clouds.style.opacity = '0.5';
+
+                poemLines.forEach(line => {
+                    line.style.color = 'rgba(255, 255, 255, 0.95)';
+                    line.style.textShadow = '0 0 12px rgba(255, 154, 86, 0.7), 0 0 25px rgba(255, 126, 179, 0.4)';
+                });
+
+            } else if (phase === 'day') {
+                skyDay.style.opacity = '1';
+                stars.style.opacity = '0';
+                moon.style.opacity = '0';
+                sun.style.opacity = '1';
+                sun.style.top = '15%';
+                sun.style.left = '70%';
+                clouds.style.opacity = '1';
+
+                poemLines.forEach(line => {
+                    line.style.color = 'rgba(50, 50, 80, 0.9)';
+                    line.style.textShadow = '0 0 8px rgba(255, 255, 255, 0.5), 0 0 15px rgba(135, 206, 235, 0.3)';
+                });
+
+            } else if (phase === 'dusk') {
+                skyDusk.style.opacity = '1';
+                stars.style.opacity = '0.6';
+                moon.style.opacity = '0.3';
+                moon.style.top = '20%';
+                moon.style.left = '20%';
+                sun.style.opacity = '0.7';
+                sun.style.top = '70%';
+                sun.style.left = '15%';
+                clouds.style.opacity = '0.7';
+
+                poemLines.forEach(line => {
+                    line.style.color = 'rgba(255, 255, 255, 0.9)';
+                    line.style.textShadow = '0 0 12px rgba(255, 107, 107, 0.6), 0 0 20px rgba(238, 90, 111, 0.4)';
+                });
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
