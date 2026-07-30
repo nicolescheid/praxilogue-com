@@ -6,64 +6,64 @@
     "bytes": 24703
   },
   "ask-where-when": {
-    "hash": "4869cb376c2ff451",
+    "hash": "9e8fadbe83a1105f",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
     "bytes": 40586
   },
   "friday-options": {
-    "hash": "808108bd1a9d575f",
+    "hash": "2d52f6a641247f4a",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 31391
+    "bytes": 64827
   },
   "flight-0730": {
-    "hash": "d58c64db97850d3e",
+    "hash": "79866917cd267193",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 81128
+    "bytes": 86561
   },
   "flight-1115": {
-    "hash": "caf66b16b68492af",
+    "hash": "d923cdd1ac10e4c2",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 82799
+    "bytes": 90323
   },
   "car-question": {
-    "hash": "ed554b6365dec5ea",
+    "hash": "1e0b0bf17e819327",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 194395
+    "bytes": 193559
   },
   "car-standard": {
-    "hash": "28e150ceaf83646f",
+    "hash": "f471f3d291c55aae",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 108713
+    "bytes": 107877
   },
   "car-fullsize": {
-    "hash": "8233f9e1742ea472",
+    "hash": "158fb4feb7fe4f19",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 112475
+    "bytes": 111639
   },
   "car-suv": {
-    "hash": "ebe815c3c5965d41",
+    "hash": "f3455f628b7510a0",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 122088
+    "bytes": 101190
   },
   "hotel": {
-    "hash": "d600800e92f4ca43",
+    "hash": "df43c92593311af7",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
     "bytes": 107877
   },
   "all-set": {
-    "hash": "edf7bd566951d4e9",
+    "hash": "b09a0c63d0ce058b",
     "model": "eleven_multilingual_v2",
     "voice": "IwFADcBfc7Yo8KGhxTR5",
-    "bytes": 91159
+    "bytes": 96174
   },
   "checkin-offer": {
     "hash": "aaf64cdcda369e90",

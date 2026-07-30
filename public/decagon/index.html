@@ -14,6 +14,7 @@
     --ink:#141C31; --dim:#5E6E88; --faint:#95A1B6;
     --accent:#3A49E8; --accent-2:#5865F2; --accent-soft:#EBEDFE;
     --gold:#B98A34; --gold-soft:#F7EFDE;
+    --purple:#7C3AED; --purple-deep:#6D28D9; --purple-glow:rgba(124,58,237,.55);
     --green:#12A66B; --green-soft:#E1F6EE;
     --disp:"Sora",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"IBM Plex Mono",monospace;
   }
@@ -206,12 +207,17 @@
   .notif .nbody b{color:var(--accent);}
   .notif .nmeta{font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:4px;}
 
-  .replay{position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:8; font-family:var(--mono); font-size:11.5px; background:#fff; border:1px solid var(--line); color:var(--dim); border-radius:999px; padding:8px 15px; cursor:pointer; opacity:0; pointer-events:none; transition:.3s; box-shadow:0 8px 20px -12px rgba(30,45,80,.4);}
+  /* Centred in the device and filled violet: it floats over the coda as the
+     closing call to action, so it has to carry against a busy thread. */
+  .replay{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:8; font-family:var(--mono); font-size:12px; background:var(--purple); border:1px solid var(--purple); color:#fff; border-radius:999px; padding:10px 18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .3s, background .15s, border-color .15s; box-shadow:0 14px 34px -10px var(--purple-glow);}
   .replay.show{opacity:1; pointer-events:auto;}
-  .replay:hover{border-color:var(--accent); color:var(--accent);}
+  .replay:hover{background:var(--purple-deep); border-color:var(--purple-deep);}
+  .replay:focus-visible{outline:2px solid var(--ink); outline-offset:3px;}
 
-  footer{font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:14px; align-items:center;}
-  footer .th{color:var(--gold);}
+  footer{font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center; text-align:center; max-width:560px;}
+  footer a{color:var(--dim); text-decoration:none; border-bottom:1px solid var(--line); transition:.15s;}
+  footer a:hover{color:var(--accent); border-bottom-color:var(--accent);}
+  footer a:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
   @keyframes rise{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
   @keyframes blink{0%,80%,100%{opacity:.25} 40%{opacity:1}}
@@ -270,7 +276,8 @@
 
   <footer>
     <span>simulation — scripted customer journey</span>
-    <span>built by Nic Scheid · Praxilogue <span class="th">∴</span></span>
+    <span>built by Nic Scheid</span>
+    <a href="https://nicolescheid.com/#contact" target="_blank" rel="noopener">get in touch →</a>
   </footer>
 
 <script type="module">
@@ -298,14 +305,27 @@ let voiceGen=0;                 // bumped on stop; queued clips from older gens 
 let voiceTail=Promise.resolve();
 let playing=null;               // { audio, settle } for the clip on air
 
-/* Built inside a user gesture so iOS lets these elements play later. */
+/* Built inside a user gesture so iOS lets these elements play later.
+   The opening line starts speaking about a third of a second after this runs,
+   so only the first few clips are fetched eagerly — priming all 28 at once
+   makes the greeting queue behind 27 other downloads and stall audibly. The
+   rest are pulled in once the conversation is under way. */
+const EAGER_CLIPS=3, LAZY_AFTER_MS=3000;
 function primeVoice(){
   if(clips.size) return;
-  for(const key of Object.keys(VOICE_TEXT)){
-    const a=new Audio(AUDIO_DIR+encodeURIComponent(key)+".mp3");
-    a.preload="auto";
+  Object.keys(VOICE_TEXT).forEach((key,i)=>{
+    const a=new Audio();
+    a.preload = i<EAGER_CLIPS ? "auto" : "none";   // must be set before src
+    a.src=AUDIO_DIR+encodeURIComponent(key)+".mp3";
     clips.set(key,a);
-  }
+  });
+  setTimeout(()=>{
+    for(const a of clips.values()){
+      if(a.preload==="auto") continue;
+      if(playing&&playing.audio===a) continue;     // never reload mid-sentence
+      a.preload="auto"; a.load();
+    }
+  }, LAZY_AFTER_MS);
 }
 function estimateMs(key){ const t=VOICE_TEXT[key]||""; return Math.min(11000, 900+t.length*55); }
 
@@ -511,23 +531,23 @@ async function chapter1(){
   await say("greeting","Morning, Alex 👋 Where are we headed?");
   await choices([{label:"Book a flight →",said:"I need to book a flight"}]);
   await say("ask-where-when","On it — where to, and when?");
-  await sleep(480); user("Sydney to Adelaide, this Friday, back Sunday");
-  await say("friday-options","Here's what's open Friday morning —");
+  await choices([{label:"Sydney → Adelaide, Fri–Sun",said:"Sydney to Adelaide, this Friday, back Sunday"}]);
+  await say("friday-options","Here's what's open Friday morning. Select your preferred option.");
   const f=await flightCard([{dep:"07:30",arr:"09:05",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 214",voice:"flight-0730"},{dep:"11:15",arr:"12:50",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 189",voice:"flight-1115"}]);
-  await say(f.voice,`Nice — ${f.dep} held and booked, seat 14C. ✓`);
+  await say(f.voice,`Nice — ${f.dep} held and booked, seat 14C. ✈️✓`);
 
   await say("car-question","You land 9:05am. Your usual airport taxi's already set — and I know Avis is your preferred car brand, so which vehicle type would you like for this trip?");
   const car=await selectionCard();
   await sleep(250); user(`The ${car.nm} works`);
-  await say(car.voice,`Done — Corporate Cabs for Friday morning, and your ${car.nm} waiting on arrival in Adelaide. ✓`);
-  await say("hotel","And I've booked your preferred Adelaide accommodation — a Garden Room at the Hilton, King bed. ✓");
+  await say(car.voice,`Done — Corporate Cabs for Friday morning, and your ${car.nm} waiting on arrival in Adelaide. 🚕🚗✓`);
+  await say("hotel","And I've booked your preferred Adelaide accommodation — a Garden Room at the Hilton. King bed. 🏨✓");
   hotelCard();
   await say("all-set","That's flight, ride, car, and a room — all set. I'll check you in before you fly.");
 
   await sleep(560); divider("Thursday evening"); clockEl.textContent="9:31";
   await say("checkin-offer","Check-in just opened for tomorrow. Want me to check you in and hold 14C?");
   await choices([{label:"Check me in",said:"Yes, check me in"}]);
-  await say("checked-in","Checked in ✓ Boarding pass is on your phone, ready to go.");
+  await say("checked-in","Checked in 🎫✓ Boarding pass is on your phone, ready to go.");
 
   await sleep(560); divider("Friday — travel day"); clockEl.textContent="6:40";
   await sleep(500); showNotif();
@@ -542,16 +562,16 @@ async function chapter2(fresh){
   else { await say("ch2-continue","Enjoying Adelaide? Two days in — anything you need?"); }
 
   await sleep(300);
-  user("Actually, I want to stay through the weekend and do some shopping");
+  await choices([{label:"Stay the weekend",said:"Actually, I want to stay through the weekend and do some shopping"}]);
   await say("rebook-offer","Love that. Want me to move your Sunday flight to Monday evening so you get the full weekend?");
   await choices([{label:"Yes, rebook it",said:"Yes please"}]);
   await say("rebooked","Rebooked — here's the change:");
   rebookCard();
-  await say("extended","I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra nights. ✓");
+  await say("extended","I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra nights. 🚗🏨✓");
 
   await say("bag-offer","One thought — if you're shopping all weekend, want me to add an extra bag for the trip home, so you're not caught out at the gate?");
   await choices([{label:"Yes — great idea",said:"Yes, that's a brilliant idea"}]);
-  await say("bag-added","Added ✓ Extra bag on VY603 Monday. Go enjoy the weekend.");
+  await say("bag-added","Added 🧳✓ Extra bag on VY603 Monday. Go enjoy the weekend.");
   infoCard({icClass:"green",ic:"🧳",tt:"Extra bag — added",ts:"VY603 · Mon 18:05 to Sydney",rows:[["Allowance","+23 kg checked"],["Fee","AUD 45 · prepaid","g"]]});
 
   await sleep(620); divider("Monday — flying home"); clockEl.textContent="3:15";

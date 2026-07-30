@@ -30,7 +30,7 @@ export const VOICE_LINES = [
   },
   {
     key: "friday-options",
-    text: "Here's what's open Friday morning."
+    text: "Here's what's open Friday morning. Select your preferred option."
   },
 
   // Branch: whichever flight the viewer taps.
@@ -73,7 +73,8 @@ export const VOICE_LINES = [
 
   {
     key: "hotel",
-    text: "And I've booked your preferred Adelaide accommodation — a Garden Room at the Hilton, King bed.",
+    // Full stop, not a comma: "King bed" wants a beat in front of it.
+    text: "And I've booked your preferred Adelaide accommodation — a Garden Room at the Hilton. King bed.",
     prev: "car-question"
   },
   {

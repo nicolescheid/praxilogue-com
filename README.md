@@ -11,8 +11,16 @@ monorepo, deployed under nicolescheid.com.
 ## Edit & deploy
 
 The site is `public/index.html`, `public/styles.css`, `public/script.js` — no
-build step. Edit and `git push`; Cloudflare runs `npx wrangler deploy` (per
-`wrangler.jsonc`) and serves everything in `public/`.
+build step. Edit, then deploy by hand:
+
+```
+npx wrangler deploy
+```
+
+There is **no git integration and no CI**: pushing to GitHub stores the change
+but publishes nothing. `wrangler deploy` reads `wrangler.jsonc` and uploads
+everything in `public/`. Push for history, deploy to publish — they are two
+separate steps.
 
 ## Local preview
 
