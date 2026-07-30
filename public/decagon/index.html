@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voyage — the journey, felt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#EDF1F7; --paper:#FFFFFF; --paper-2:#F4F7FB; --paper-3:#EAEFF6;
+    --line:#DEE5EF; --line-soft:#E9EEF5;
+    --ink:#141C31; --dim:#5E6E88; --faint:#95A1B6;
+    --accent:#3A49E8; --accent-2:#5865F2; --accent-soft:#EBEDFE;
+    --gold:#B98A34; --gold-soft:#F7EFDE;
+    --green:#12A66B; --green-soft:#E1F6EE;
+    --disp:"Sora",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh; color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(900px 620px at 82% -12%, rgba(58,73,232,.07), transparent 60%),
+      radial-gradient(760px 560px at 8% 112%, rgba(185,138,52,.06), transparent 55%),
+      var(--canvas);
+    display:flex; flex-direction:column; align-items:center; gap:18px; padding:30px 16px 46px;
+  }
+  .pitch{max-width:404px; text-align:center;}
+  .pitch .eye{font-family:var(--mono); font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--accent);}
+  .pitch h1{font-family:var(--disp); font-weight:600; font-size:21px; margin:9px 0 6px; letter-spacing:-.015em;}
+  .pitch p{color:var(--dim); font-size:13px; line-height:1.55; margin:0;}
+
+  /* device */
+  .device{
+    width:404px; height:min(838px, calc(100vh - 152px)); min-height:620px;
+    background:var(--paper); border-radius:48px; position:relative; overflow:hidden;
+    border:1px solid #CFD8E6;
+    box-shadow:0 1px 0 #fff inset, 0 44px 90px -34px rgba(30,45,80,.42), 0 0 0 10px #FFFFFF, 0 0 0 12px #DCE3EE, 0 0 0 13px #C7D1E0;
+  }
+  .statusbar{position:absolute; top:0; left:0; right:0; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:6; font-family:var(--mono); font-size:13px; color:var(--ink); pointer-events:none;}
+  .statusbar .right{display:flex; align-items:center; gap:7px; font-size:12px;}
+  .island{position:absolute; top:13px; left:50%; transform:translateX(-50%); width:112px; height:30px; background:#0b1220; border-radius:16px; z-index:7;}
+
+  .app{position:absolute; inset:0; padding-top:52px; display:flex; flex-direction:column; height:100%; background:var(--paper);}
+  .apphead{padding:9px 20px 11px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line-soft);}
+  .logo{display:flex; align-items:center; gap:9px; font-family:var(--disp); font-weight:600; font-size:17px; letter-spacing:-.01em;}
+  .logo .dia{color:var(--accent); font-size:15px;}
+  .presence{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px; color:var(--dim);}
+  .presence .live{width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px var(--green-soft);}
+  .voicebtn{border:1px solid var(--line); background:var(--paper-2); color:var(--dim); width:30px; height:30px; border-radius:9px; cursor:pointer; font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center; transition:.15s; padding:0;}
+  .voicebtn[aria-pressed="false"]{opacity:.45;}
+  .voicebtn:hover{border-color:var(--accent);}
+  .voicebtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* chapter bar */
+  .chapbar{display:flex; align-items:center; justify-content:space-between; padding:9px 18px; background:var(--paper-2); border-bottom:1px solid var(--line-soft);}
+  .chaptitle{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);}
+  .chaptitle b{color:var(--accent);}
+  .chapnav{display:flex; gap:5px;}
+  .chapnav button{font-family:var(--mono); font-size:10px; letter-spacing:.05em; border:1px solid var(--line); background:var(--paper); color:var(--faint); border-radius:7px; padding:4px 9px; cursor:pointer; transition:.15s;}
+  .chapnav button.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+  .chapnav button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .thread{flex:1; min-height:0; overflow-y:auto; padding:15px 16px 8px; display:flex; flex-direction:column; gap:11px;}
+  .thread > *{flex-shrink:0;}
+  .thread::-webkit-scrollbar{width:0}
+  .m{max-width:83%; animation:rise .34s ease both;}
+  .m.a{align-self:flex-start;} .m.u{align-self:flex-end;}
+  .m .b{padding:10px 13px; font-size:14px; line-height:1.5; border-radius:16px;}
+  .m.a .b{background:var(--paper-3); border:1px solid var(--line-soft); border-top-left-radius:5px; color:var(--ink);}
+  .m.u .b{background:var(--accent); color:#fff; border-top-right-radius:5px; font-weight:500;}
+  .divider{align-self:center; display:flex; align-items:center; gap:9px; margin:6px 0; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint);}
+  .divider::before,.divider::after{content:""; height:1px; width:32px; background:var(--line);}
+  .chapmark{align-self:center; text-align:center; margin:8px 0 2px;}
+  .chapmark .n{font-family:var(--mono); font-size:9.5px; letter-spacing:.28em; color:var(--gold);}
+  .chapmark .t{font-family:var(--disp); font-weight:600; font-size:15px; margin-top:3px;}
+
+  .typing{align-self:flex-start; padding:12px 14px; background:var(--paper-3); border:1px solid var(--line-soft); border-radius:16px; border-top-left-radius:5px; display:inline-flex; gap:4px;}
+  .typing span{width:6px; height:6px; border-radius:50%; background:var(--faint); animation:blink 1.2s infinite both;}
+  .typing span:nth-child(2){animation-delay:.2s} .typing span:nth-child(3){animation-delay:.4s}
+
+  /* cards */
+  .card{align-self:stretch; background:var(--paper); border:1px solid var(--line); border-radius:15px; overflow:hidden; box-shadow:0 8px 24px -18px rgba(30,45,80,.3); animation:rise .4s ease both;}
+  .cardhd{display:flex; align-items:center; gap:11px; padding:12px 14px; border-bottom:1px solid var(--line-soft);}
+  .cardhd .ic{width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:19px; flex:none;}
+  .ic.blue{background:var(--accent-soft);} .ic.gold{background:var(--gold-soft);} .ic.green{background:var(--green-soft);}
+  .cardhd .tt{font-family:var(--disp); font-weight:600; font-size:14.5px;}
+  .cardhd .ts{font-size:12px; color:var(--dim);}
+  .kvs{padding:11px 14px; display:flex; flex-direction:column; gap:8px;}
+  .kv{display:flex; justify-content:space-between; font-size:12.5px;}
+  .kv .k{color:var(--faint);} .kv .v{font-family:var(--mono); color:var(--ink);} .kv .v.g{color:var(--green);}
+  .tag{font-family:var(--mono); font-size:8px; letter-spacing:.08em; padding:2px 5px; border-radius:5px;}
+  .tag.net{color:var(--accent); border:1px solid #C5CBFB;} .tag.free{color:var(--green); border:1px solid #B7E7D2;}
+
+  /* selection card (checkboxes) */
+  .selcard{align-self:stretch; background:var(--paper); border:1px solid var(--line); border-radius:15px; overflow:hidden; box-shadow:0 8px 24px -18px rgba(30,45,80,.3); animation:rise .4s ease both;}
+  .selsec{padding:12px 14px;}
+  .selsec + .selsec{border-top:1px solid var(--line-soft);}
+  .selhd{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); margin-bottom:9px;}
+  .optrow{display:flex; align-items:center; gap:11px; padding:9px 10px; border:1px solid var(--line); border-radius:11px; cursor:pointer; transition:.14s; margin-bottom:7px;}
+  .optrow:last-child{margin-bottom:0;}
+  .optrow:hover{border-color:var(--accent);}
+  .optrow.sel{border-color:var(--accent); background:var(--accent-soft);}
+  .optrow.locked{cursor:default;}
+  .optrow.locked:hover{border-color:var(--line);}
+  .optrow:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .cbox{width:20px; height:20px; border-radius:6px; border:2px solid var(--line); flex:none; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; transition:.14s;}
+  .optrow.sel .cbox, .optrow.on .cbox{background:var(--accent); border-color:var(--accent);}
+  .optbody{flex:1;}
+  .optbody .on1{font-size:13.5px; font-weight:500;}
+  .optbody .on2{font-size:11px; color:var(--dim); font-family:var(--mono); margin-top:1px;}
+  .optprice{font-family:var(--mono); font-size:13px; color:var(--ink); white-space:nowrap;}
+  .savedtag{font-family:var(--mono); font-size:8px; letter-spacing:.06em; color:var(--gold); background:var(--gold-soft); border:1px solid #EAD9B4; padding:2px 6px; border-radius:5px; display:inline-block;}
+  .morelink{font-size:12px; color:var(--accent); cursor:pointer; padding:5px 2px; display:inline-block;}
+  .morelink:hover{text-decoration:underline;}
+  .morenote{font-size:11.5px; color:var(--faint); font-style:italic; padding:3px 2px 0;}
+  .selconfirm{width:100%; font-family:var(--disp); font-weight:600; font-size:14px; background:var(--accent); color:#fff; border:none; border-radius:11px; padding:12px; cursor:pointer; transition:.15s;}
+  .selconfirm:disabled{background:var(--paper-3); color:var(--faint); cursor:not-allowed;}
+  .selconfirm:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .kv .v.pref{color:var(--gold);}
+  .optbody .on3{font-size:10.5px; color:var(--faint); margin-top:2px;}
+  .optprice{text-align:right;}
+  .optprice .perday{display:block; font-size:9px; color:var(--faint); letter-spacing:.03em;}
+  .selhd .savedtag{margin-left:6px; vertical-align:middle;}
+
+  .flight{padding:6px;}
+  .frow{display:flex; align-items:center; justify-content:space-between; padding:11px 12px; border-radius:11px; cursor:pointer; transition:.15s;}
+  .frow:hover{background:var(--paper-2);}
+  .frow:focus-visible{outline:2px solid var(--accent); outline-offset:-2px;}
+  .frow + .frow{border-top:1px solid var(--line-soft);}
+  .froute{display:flex; align-items:center; gap:10px;}
+  .ftime{font-family:var(--disp); font-weight:600; font-size:15px;}
+  .fmid{display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--faint);}
+  .fmid .ln{width:34px; height:1px; background:var(--line); position:relative;}
+  .fmid .ln::after{content:"✈"; position:absolute; right:-2px; top:-7px; font-size:9px; color:var(--accent);}
+  .fmid small{font-family:var(--mono); font-size:8.5px;}
+  .fprice .p{font-family:var(--mono); font-size:14px; color:var(--ink); font-weight:500; text-align:right;}
+  .fprice .tag{display:inline-block; margin-top:2px;}
+
+  .rebook{padding:13px 14px;}
+  .rebook .swap{display:flex; align-items:center; gap:12px;}
+  .rebook .leg{flex:1; text-align:center;}
+  .rebook .leg .d{font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint);}
+  .rebook .leg .day{font-family:var(--disp); font-weight:600; font-size:15px; margin-top:2px;}
+  .rebook .leg.old .day{color:var(--faint); text-decoration:line-through;}
+  .rebook .leg.new .day{color:var(--accent);}
+  .rebook .arr{color:var(--faint); font-size:18px;}
+  .rebook .note{text-align:center; font-size:11.5px; color:var(--dim); margin-top:9px;}
+
+  .pass{background:linear-gradient(145deg,#F6F8FF,var(--paper));}
+  .pass .ph{display:flex; align-items:center; justify-content:space-between; padding:13px 15px; border-bottom:1px dashed var(--line);}
+  .pass .brand{font-family:var(--disp); font-weight:600; letter-spacing:.03em; font-size:13px; color:var(--accent);}
+  .pass .cls{font-family:var(--mono); font-size:10px; color:var(--dim);}
+  .pass .pbody{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 8px; padding:14px 15px;}
+  .pass .cell .l{font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin-bottom:3px;}
+  .pass .cell .val{font-family:var(--disp); font-weight:600; font-size:16px;}
+  .pass .cell .val.sm{font-size:13px;}
+  .pass .bars{display:flex; gap:2px; padding:0 15px 15px; align-items:flex-end; height:42px;}
+  .pass .bars i{flex:1; background:var(--ink); border-radius:1px;}
+
+  /* map mode */
+  .mapcard{align-self:stretch; border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:0 10px 30px -18px rgba(30,45,80,.4); animation:rise .4s ease both;}
+  .mapview{position:relative; height:196px; background:linear-gradient(160deg,#EEF2F9,#E4EAF4);}
+  .mapview svg{position:absolute; inset:0; width:100%; height:100%;}
+  .route{fill:none; stroke:var(--accent); stroke-width:3.4; stroke-linecap:round; stroke-dasharray:340; stroke-dashoffset:340; transition:stroke-dashoffset 2.6s ease;}
+  .route.draw{stroke-dashoffset:0;}
+  .pin{opacity:0; transition:opacity .4s, transform .4s; transform-origin:center; transform-box:fill-box;}
+  .pin.show{opacity:1;}
+  .pin.cur circle.pindot{stroke:var(--accent); stroke-width:2.4; fill:#fff;}
+  .pin.cur circle.o{fill:var(--accent);}
+  .pindot{fill:#fff; stroke:var(--faint); stroke-width:2;}
+  .pinlab{font-family:var(--mono); font-size:8px; fill:var(--dim); letter-spacing:.02em;}
+  .mapguide{background:var(--paper); padding:12px 14px; display:flex; align-items:center; gap:12px; min-height:64px; border-top:1px solid var(--line-soft);}
+  .mapguide .step-ic{width:34px; height:34px; border-radius:9px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:17px; flex:none;}
+  .mapguide .gtxt .gt{font-family:var(--disp); font-weight:600; font-size:13.5px;}
+  .mapguide .gtxt .gs{font-size:11.5px; color:var(--dim); margin-top:1px;}
+  .mapguide .gdist{margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--faint); white-space:nowrap;}
+
+  .coda{align-self:stretch; text-align:center; padding:17px 18px; border:1px solid var(--line); border-radius:15px; background:linear-gradient(180deg,var(--accent-soft),#fff);}
+  .coda .big{font-family:var(--disp); font-weight:600; font-size:15px; line-height:1.35; margin-bottom:7px;}
+  .coda .small{font-size:12.5px; color:var(--dim); line-height:1.55;}
+
+  .choices{align-self:flex-end; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-top:1px; animation:rise .3s ease both;}
+  .choices button{font-family:var(--body); font-size:13.5px; font-weight:500; background:#fff; color:var(--accent); border:1px solid #C5CBFB; border-radius:999px; padding:9px 15px; cursor:pointer; transition:.15s;}
+  .choices button:hover{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .choices button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .empty{position:absolute; inset:52px 0 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; text-align:center; padding:0 40px; z-index:5; background:var(--paper); transition:.5s;}
+  .empty.hide{opacity:0; pointer-events:none; transform:scale(1.04);}
+  .empty .mk{font-size:42px; color:var(--accent);}
+  .empty .nm{font-family:var(--disp); font-weight:600; font-size:25px; letter-spacing:-.01em;}
+  .empty .tl{color:var(--dim); font-size:13px; line-height:1.55;}
+  .startbtn{margin-top:6px; font-family:var(--disp); font-weight:600; font-size:14px; background:var(--accent); color:#fff; border:none; border-radius:999px; padding:13px 28px; cursor:pointer; box-shadow:0 12px 26px -12px var(--accent);}
+  .startbtn:focus-visible{outline:2px solid var(--ink); outline-offset:3px;}
+
+  .notif{position:absolute; top:12px; left:12px; right:12px; z-index:9; background:rgba(255,255,255,.82); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--line); border-radius:19px; padding:12px 13px; display:flex; gap:11px; align-items:flex-start; transform:translateY(-170%); transition:transform .6s cubic-bezier(.2,.9,.3,1.2); box-shadow:0 22px 50px -20px rgba(30,45,80,.5); cursor:pointer;}
+  .notif.show{transform:translateY(0);}
+  .notif .nic{width:38px; height:38px; border-radius:10px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; flex:none;}
+  .notif .ntxt{flex:1;}
+  .notif .ntop{display:flex; justify-content:space-between; align-items:baseline;}
+  .notif .napp{font-family:var(--disp); font-weight:600; font-size:12px; letter-spacing:.03em;}
+  .notif .nago{font-family:var(--mono); font-size:10px; color:var(--faint);}
+  .notif .nbody{font-size:13px; line-height:1.4; margin-top:2px; color:var(--ink);}
+  .notif .nbody b{color:var(--accent);}
+  .notif .nmeta{font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:4px;}
+
+  .replay{position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:8; font-family:var(--mono); font-size:11.5px; background:#fff; border:1px solid var(--line); color:var(--dim); border-radius:999px; padding:8px 15px; cursor:pointer; opacity:0; pointer-events:none; transition:.3s; box-shadow:0 8px 20px -12px rgba(30,45,80,.4);}
+  .replay.show{opacity:1; pointer-events:auto;}
+  .replay:hover{border-color:var(--accent); color:var(--accent);}
+
+  footer{font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:14px; align-items:center;}
+  footer .th{color:var(--gold);}
+
+  @keyframes rise{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+  @keyframes blink{0%,80%,100%{opacity:.25} 40%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important} .route{transition:none!important; stroke-dashoffset:0}}
+  @media (max-width:456px){.device{width:100%; height:min(838px, calc(100vh - 128px)); border-radius:40px;}}
+</style>
+</head>
+<body>
+
+  <div class="pitch">
+    <div class="eye">Prototype · the journey, felt from the customer's side</div>
+    <h1>One conversation, door to destination — and back</h1>
+    <p>Book a flight, and the taxi, rental car, check-in, extra bag, and a map to the lounge all ride along in the same thread. Two chapters. Tap through it.</p>
+  </div>
+
+  <div class="device">
+    <div class="island"></div>
+    <div class="statusbar"><span id="clock">8:12</span><span class="right"><span>5G</span><span>􀛨</span><span>84%</span></span></div>
+
+    <div class="app">
+      <div class="apphead">
+        <div class="logo"><span class="dia">◇</span> Voyage</div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <div class="presence"><span class="live"></span> concierge · online</div>
+          <button id="voiceToggle" class="voicebtn" aria-pressed="true" title="Voice on / off">🔊</button>
+        </div>
+      </div>
+      <div class="chapbar">
+        <div class="chaptitle" id="chaptitle"><b>Ch. 1</b> · Booking &amp; departure</div>
+        <div class="chapnav">
+          <button id="navc1" class="on">Ch 1</button>
+          <button id="navc2">Ch 2</button>
+        </div>
+      </div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+    </div>
+
+    <div class="empty" id="empty">
+      <div class="mk">◇</div>
+      <div class="nm">Voyage</div>
+      <div class="tl">Your travel concierge.<br>Everything for the trip, in one thread.</div>
+      <button class="startbtn" id="start">Open the app</button>
+    </div>
+
+    <div class="notif" id="notif">
+      <div class="nic">🚕</div>
+      <div class="ntxt">
+        <div class="ntop"><span class="napp">◇ VOYAGE</span><span class="nago">now</span></div>
+        <div class="nbody">Your taxi is on its way — <b>arriving at your door in ~20 minutes</b>.</div>
+        <div class="nmeta">Sam · silver Camry · WMX-402 · tracking live</div>
+      </div>
+    </div>
+
+    <button class="replay" id="replay">↺ replay</button>
+  </div>
+
+  <footer>
+    <span>simulation — scripted customer journey</span>
+    <span>built by Nic Scheid · Praxilogue <span class="th">∴</span></span>
+  </footer>
+
+<script type="module">
+/* Root-absolute, not relative: this page is served at both /decagon and
+   /decagon/, and a relative specifier resolves against the wrong directory on
+   the no-trailing-slash form. */
+import { VOICE_TEXT } from "/decagon/voice-lines.js";
+
+const thread=document.getElementById("thread"), clockEl=document.getElementById("clock");
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=t=>(""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const scroll=()=>{thread.scrollTop=thread.scrollHeight;};
+
+/* ---- voice: pre-generated ElevenLabs clips, played by key ----
+   Every concierge line is scripted, so each one is rendered ahead of time to
+   audio/<key>.mp3 (see tools/generate-voice.mjs) and the script just asks for
+   it by key. Clips play one at a time, in request order — the same queueing
+   the Web Speech API gave us — so a fire-and-forget line never talks over the
+   next one. If a clip is missing or won't play, we hold for an estimated
+   beat instead, so the demo keeps its rhythm rather than stalling. */
+const AUDIO_DIR="/decagon/audio/";
+let voiceOn=true;
+const clips=new Map();          // key -> HTMLAudioElement
+let voiceGen=0;                 // bumped on stop; queued clips from older gens are dropped
+let voiceTail=Promise.resolve();
+let playing=null;               // { audio, settle } for the clip on air
+
+/* Built inside a user gesture so iOS lets these elements play later. */
+function primeVoice(){
+  if(clips.size) return;
+  for(const key of Object.keys(VOICE_TEXT)){
+    const a=new Audio(AUDIO_DIR+encodeURIComponent(key)+".mp3");
+    a.preload="auto";
+    clips.set(key,a);
+  }
+}
+function estimateMs(key){ const t=VOICE_TEXT[key]||""; return Math.min(11000, 900+t.length*55); }
+
+function startClip(key,gen){
+  return new Promise(resolve=>{
+    if(!voiceOn||gen!==voiceGen){ resolve(); return; }
+    const a=clips.get(key);
+    let done=false, held=false, timer=0;
+    const settle=()=>{
+      if(done) return; done=true;
+      clearTimeout(timer);
+      if(a){ a.onended=null; a.onerror=null; }
+      if(playing&&playing.audio===a) playing=null;
+      resolve();
+    };
+    /* A failed clip can report twice — the element's error event and the
+       play() rejection. Hold the beat once, or the gap doubles. */
+    const holdThenSettle=()=>{
+      if(done||held) return; held=true;
+      clearTimeout(timer); timer=setTimeout(settle, estimateMs(key));
+    };
+    if(!a){ console.warn("[voice] no clip registered for key:",key); holdThenSettle(); return; }
+    playing={audio:a,settle};
+    timer=setTimeout(settle, estimateMs(key)+10000);   // ceiling: never block the script
+    a.onended=settle;
+    a.onerror=holdThenSettle;                          // missing file / decode error
+    try{ a.currentTime=0; }catch(e){}
+    const p=a.play();
+    if(p&&typeof p.catch==="function") p.catch(holdThenSettle);
+  });
+}
+function playClip(key){
+  const gen=voiceGen;
+  const run=()=>startClip(key,gen);
+  const p=voiceTail.then(run,run);
+  voiceTail=p.catch(()=>{});
+  return p;
+}
+function speak(key){ if(voiceOn) playClip(key); }
+function speakAndWait(key){ return voiceOn?playClip(key):Promise.resolve(); }
+function stopVoice(){
+  voiceGen++;
+  voiceTail=Promise.resolve();
+  if(playing){
+    const cur=playing; playing=null;
+    try{ cur.audio.pause(); cur.audio.currentTime=0; }catch(e){}
+    cur.settle();
+  }
+}
+
+function agent(html){const m=document.createElement("div");m.className="m a";m.innerHTML=`<div class="b">${html}</div>`;thread.appendChild(m);scroll();return m;}
+function user(html){const m=document.createElement("div");m.className="m u";m.innerHTML=`<div class="b">${html}</div>`;thread.appendChild(m);scroll();return m;}
+function divider(t){const d=document.createElement("div");d.className="divider";d.textContent=t;thread.appendChild(d);scroll();}
+function chapmark(n,t){const d=document.createElement("div");d.className="chapmark";d.innerHTML=`<div class="n">${esc(n)}</div><div class="t">${esc(t)}</div>`;thread.appendChild(d);scroll();}
+/* `key` names the audio clip; `html` is what the bubble shows. */
+async function say(key,html,ms=700){const t=document.createElement("div");t.className="typing";t.innerHTML="<span></span><span></span><span></span>";thread.appendChild(t);scroll();await sleep(voiceOn?360:ms);t.remove();const m=agent(html);await speakAndWait(key);return m;}
+function choices(opts){return new Promise(res=>{const c=document.createElement("div");c.className="choices";opts.forEach(o=>{const b=document.createElement("button");b.textContent=o.label;b.onclick=()=>{c.remove();user(esc(o.said||o.label));res(o.value||o.label);};c.appendChild(b);});thread.appendChild(c);scroll();});}
+function setChap(title,which){document.getElementById("chaptitle").innerHTML=title;document.getElementById("navc1").classList.toggle("on",which===1);document.getElementById("navc2").classList.toggle("on",which===2);}
+
+/* ---- cards ---- */
+function flightCard(list){return new Promise(res=>{
+  const card=document.createElement("div");card.className="card flight";
+  list.forEach(f=>{
+    const r=document.createElement("div");r.className="frow";r.tabIndex=0;r.setAttribute("role","button");
+    r.innerHTML=`<div class="froute"><span class="ftime">${f.dep}</span><span class="fmid"><span class="ln"></span><small>${f.rt} · ${f.dur}</small></span><span class="ftime">${f.arr}</span></div><div class="fprice"><div class="p">${f.price}</div><span class="tag net">IN-NETWORK</span></div>`;
+    const pick=()=>{card.querySelectorAll(".frow").forEach(x=>{x.style.pointerEvents="none";x.style.opacity=.45;});r.style.opacity=1;user(`The ${f.dep} works`);res(f);};
+    r.onclick=pick;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}};
+    card.appendChild(r);
+  });
+  thread.appendChild(card);scroll();
+});}
+function infoCard({icClass,ic,tt,ts,rows}){
+  const c=document.createElement("div");c.className="card";
+  c.innerHTML=`<div class="cardhd"><div class="ic ${icClass}">${ic}</div><div><div class="tt">${tt}</div><div class="ts">${ts}</div></div></div>
+    <div class="kvs">${rows.map(r=>`<div class="kv"><span class="k">${r[0]}</span><span class="v ${r[2]||''}">${r[1]}</span></div>`).join("")}</div>`;
+  thread.appendChild(c);scroll();return c;
+}
+function selectionCard(){return new Promise(res=>{
+  const cars=[
+    {nm:"Standard Car",sub:"Toyota Corolla Sedan or similar",spec:"5 seats · 2 + 1 bags · Auto",price:"AUD 70.14",voice:"car-standard"},
+    {nm:"Fullsize Car",sub:"Toyota Camry or similar",spec:"5 seats · 2 + 2 bags · Auto",price:"AUD 77.13",voice:"car-fullsize"},
+    {nm:"Fullsize SUV",sub:"Toyota Kluger or similar",spec:"5 seats · 1 + 2 bags · Auto",price:"AUD 78.07",voice:"car-suv"}
+  ];
+  const carRows=cars.map((car,i)=>`<div class="optrow" data-idx="${i}" tabindex="0" role="button"><div class="cbox"></div><div class="optbody"><div class="on1">${car.nm}</div><div class="on2">${car.sub}</div><div class="on3">${car.spec}</div></div><div class="optprice">${car.price}<span class="perday">/ day</span></div></div>`).join("");
+  const c=document.createElement("div");c.className="selcard";
+  c.innerHTML=`
+    <div class="selsec">
+      <div class="selhd">Taxi to Sydney airport</div>
+      <div class="optrow locked on">
+        <div class="cbox">✓</div>
+        <div class="optbody"><div class="on1">Corporate Cabs</div><div class="on2">Fri 06:40 · your door</div></div>
+        <div style="text-align:right"><div class="optprice">AUD 79.00</div><div style="margin-top:4px"><span class="savedtag">★ saved preference</span></div></div>
+      </div>
+    </div>
+    <div class="selsec">
+      <div class="selhd">Car in Adelaide · Avis <span class="savedtag">★ saved brand</span></div>
+      <div id="caropts">${carRows}</div>
+      <div class="morelink" id="morelink">See more options →</div>
+      <div class="morenote" id="morenote" style="display:none">In the full product, the complete in-network fleet fans out here.</div>
+    </div>
+    <div class="selsec">
+      <button class="selconfirm" id="selconfirm" disabled>Choose a car to continue</button>
+    </div>`;
+  thread.appendChild(c);
+  let chosen=null;
+  c.querySelectorAll("#caropts .optrow").forEach(r=>{
+    const idx=+r.dataset.idx;
+    const pick=()=>{
+      c.querySelectorAll("#caropts .optrow").forEach(x=>{x.classList.remove("sel");x.querySelector(".cbox").textContent="";});
+      r.classList.add("sel"); r.querySelector(".cbox").textContent="✓"; chosen=cars[idx];
+      const btn=c.querySelector("#selconfirm"); btn.disabled=false; btn.textContent="Confirm"; scroll();
+    };
+    r.onclick=pick; r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}};
+  });
+  c.querySelector("#morelink").onclick=()=>{ c.querySelector("#morenote").style.display="block"; scroll(); };
+  c.querySelector("#selconfirm").onclick=()=>{
+    if(!chosen) return;
+    c.querySelectorAll(".optrow,.morelink,.selconfirm").forEach(x=>{x.style.pointerEvents="none";});
+    const btn=c.querySelector("#selconfirm"); btn.textContent="Confirmed ✓"; btn.style.background="var(--green)";
+    res(chosen);
+  };
+  scroll(); setTimeout(scroll, 80);
+});}
+function hotelCard(){
+  const c=document.createElement("div");c.className="card hotel";
+  c.innerHTML=`<div class="cardhd"><div class="ic gold">🏨</div><div><div class="tt">Hilton Adelaide — Garden Room</div><div class="ts">King bed · Fri–Sun</div></div></div>
+    <div class="kvs"><div class="kv"><span class="k">Booked from</span><span class="v pref">★ saved preference</span></div><div class="kv"><span class="k">Nights</span><span class="v">2 · Fri, Sat</span></div></div>`;
+  thread.appendChild(c);scroll();
+}
+function rebookCard(){
+  const c=document.createElement("div");c.className="card rebook";
+  c.innerHTML=`<div class="swap">
+      <div class="leg old"><div class="d">Was</div><div class="day">Sun 16:20</div></div>
+      <div class="arr">→</div>
+      <div class="leg new"><div class="d">Now</div><div class="day">Mon 18:05</div></div>
+    </div><div class="note">Return moved · fare difference AUD 40 · seat 14C kept</div>`;
+  thread.appendChild(c);scroll();
+}
+function boardingPass(){
+  const bars=Array.from({length:34},()=>`<i style="height:${16+Math.random()*24}px"></i>`).join("");
+  const c=document.createElement("div");c.className="card pass";
+  c.innerHTML=`<div class="ph"><span class="brand">◇ VOYAGE · VY603</span><span class="cls">BOARDING 17:35</span></div>
+    <div class="pbody">
+      <div class="cell"><div class="l">Passenger</div><div class="val sm">A. CHEN</div></div>
+      <div class="cell"><div class="l">Seat</div><div class="val">14C</div></div>
+      <div class="cell"><div class="l">Gate</div><div class="val">14</div></div>
+      <div class="cell"><div class="l">From</div><div class="val sm">ADL</div></div>
+      <div class="cell"><div class="l">To</div><div class="val sm">SYD</div></div>
+      <div class="cell"><div class="l">Depart</div><div class="val sm">18:05</div></div>
+    </div><div class="bars">${bars}</div>`;
+  thread.appendChild(c);scroll();
+}
+function coda(big,small){
+  const c=document.createElement("div");c.className="coda";
+  c.innerHTML=`<div class="big">${big}</div><div class="small">${small}</div>`;
+  thread.appendChild(c);scroll();
+}
+
+/* ---- map mode (Ch2 finale) ---- */
+const MAP_STEPS=[
+  {ic:"🚗", gt:"Return your rental", gs:"Follow the Avis return lane, straight ahead", dist:"400 m", pin:"p1", voice:"map-1"},
+  {ic:"🅿️", gt:"Bay A-12 — free return parking", gs:"Closest return bay to the Terminal 1 entrance", dist:"120 m", pin:"p2", voice:"map-2"},
+  {ic:"🧳", gt:"Bag drop, right inside", gs:"Terminal 1 entry — your extra bag is pre-tagged", dist:"60 m", pin:"p3", voice:"map-3"},
+  {ic:"🥂", gt:"The Lounge, level 2", gs:"Up the escalator — you're early, relax before boarding", dist:"90 m", pin:"p4", voice:"map-4"}
+];
+async function mapMode(){
+  const c=document.createElement("div");c.className="mapcard";
+  c.innerHTML=`<div class="mapview">
+    <svg viewBox="0 0 372 196" preserveAspectRatio="xMidYMid slice">
+      <rect x="0" y="0" width="372" height="196" fill="#EEF2F9"/>
+      <path d="M-10 150 Q120 150 150 120 T300 70 L390 55" stroke="#DCE3EF" stroke-width="16" fill="none"/>
+      <path d="M40 -10 L70 60 L120 120" stroke="#E3E9F2" stroke-width="11" fill="none"/>
+      <rect x="266" y="18" width="118" height="70" rx="8" fill="#E1E8F2"/>
+      <text x="325" y="58" text-anchor="middle" class="pinlab" style="font-size:9px; fill:#8492AA">TERMINAL 1</text>
+      <path class="route" id="route" d="M28 168 C110 168 120 128 156 116 S250 92 292 78"/>
+      <g class="pin" id="p1" transform="translate(28,168)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Avis return</text></g>
+      <g class="pin" id="p2" transform="translate(156,116)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Bay A-12 · free</text></g>
+      <g class="pin" id="p3" transform="translate(238,92)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Bag drop</text></g>
+      <g class="pin" id="p4" transform="translate(292,78)"><circle class="o pindot" r="7"/><text class="pinlab" x="11" y="4">Lounge</text></g>
+    </svg>
+  </div>
+  <div class="mapguide"><div class="step-ic" id="mIc">📍</div><div class="gtxt"><div class="gt" id="mGt">Starting guidance…</div><div class="gs" id="mGs">Handover from your booking to live directions</div></div><div class="gdist" id="mDist"></div></div>`;
+  thread.appendChild(c);scroll();
+  await sleep(200);
+  document.getElementById("route").classList.add("draw");
+  for(const s of MAP_STEPS){
+    await sleep(voiceOn?320:1350);
+    c.querySelectorAll(".pin").forEach(p=>p.classList.remove("cur"));
+    const pin=document.getElementById(s.pin); pin.classList.add("show","cur");
+    document.getElementById("mIc").textContent=s.ic;
+    document.getElementById("mGt").textContent=s.gt;
+    document.getElementById("mGs").textContent=s.gs;
+    document.getElementById("mDist").textContent=s.dist;
+    await speakAndWait(s.voice);
+  }
+  await sleep(1200);
+}
+
+/* ---- CHAPTER 1 ---- */
+async function chapter1(){
+  setChap('<b>Ch. 1</b> · Booking &amp; departure',1); clockEl.textContent="8:12";
+  chapmark("Chapter One","Booking & departure");
+  await say("greeting","Morning, Alex 👋 Where are we headed?");
+  await choices([{label:"Book a flight →",said:"I need to book a flight"}]);
+  await say("ask-where-when","On it — where to, and when?");
+  await sleep(480); user("Sydney to Adelaide, this Friday, back Sunday");
+  await say("friday-options","Here's what's open Friday morning —");
+  const f=await flightCard([{dep:"07:30",arr:"09:05",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 214",voice:"flight-0730"},{dep:"11:15",arr:"12:50",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 189",voice:"flight-1115"}]);
+  await say(f.voice,`Nice — ${f.dep} held and booked, seat 14C. ✓`);
+
+  await say("car-question","You land 9:05am. Your usual airport taxi's already set — and I know Avis is your preferred car brand, so which vehicle type would you like for this trip?");
+  const car=await selectionCard();
+  await sleep(250); user(`The ${car.nm} works`);
+  await say(car.voice,`Done — Corporate Cabs for Friday morning, and your ${car.nm} waiting on arrival in Adelaide. ✓`);
+  await say("hotel","And I've booked your preferred Adelaide accommodation — a Garden Room at the Hilton, King bed. ✓");
+  hotelCard();
+  await say("all-set","That's flight, ride, car, and a room — all set. I'll check you in before you fly.");
+
+  await sleep(560); divider("Thursday evening"); clockEl.textContent="9:31";
+  await say("checkin-offer","Check-in just opened for tomorrow. Want me to check you in and hold 14C?");
+  await choices([{label:"Check me in",said:"Yes, check me in"}]);
+  await say("checked-in","Checked in ✓ Boarding pass is on your phone, ready to go.");
+
+  await sleep(560); divider("Friday — travel day"); clockEl.textContent="6:40";
+  await sleep(500); showNotif();
+}
+
+/* ---- CHAPTER 2 ---- */
+async function chapter2(fresh){
+  setChap('<b>Ch. 2</b> · The extended trip',2); clockEl.textContent="10:24";
+  if(fresh){ thread.innerHTML=""; }
+  chapmark("Chapter Two","The extended trip");
+  if(fresh){ await say("ch2-welcome","Welcome to Adelaide, Alex — car's collected, you're checked in for Sunday. What's up?"); }
+  else { await say("ch2-continue","Enjoying Adelaide? Two days in — anything you need?"); }
+
+  await sleep(300);
+  user("Actually, I want to stay through the weekend and do some shopping");
+  await say("rebook-offer","Love that. Want me to move your Sunday flight to Monday evening so you get the full weekend?");
+  await choices([{label:"Yes, rebook it",said:"Yes please"}]);
+  await say("rebooked","Rebooked — here's the change:");
+  rebookCard();
+  await say("extended","I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra nights. ✓");
+
+  await say("bag-offer","One thought — if you're shopping all weekend, want me to add an extra bag for the trip home, so you're not caught out at the gate?");
+  await choices([{label:"Yes — great idea",said:"Yes, that's a brilliant idea"}]);
+  await say("bag-added","Added ✓ Extra bag on VY603 Monday. Go enjoy the weekend.");
+  infoCard({icClass:"green",ic:"🧳",tt:"Extra bag — added",ts:"VY603 · Mon 18:05 to Sydney",rows:[["Allowance","+23 kg checked"],["Fee","AUD 45 · prepaid","g"]]});
+
+  await sleep(620); divider("Monday — flying home"); clockEl.textContent="3:15";
+  await say("to-airport","Time to head to the airport. Your rental's due back, and your flight leaves 6:05pm. I'll take you door to gate — starting directions now.");
+  await mapMode();
+  await say("lounge","You're at the Lounge — checked in, bags dropped, car returned, an hour to spare. Boarding's gate 14 at 5:35. Safe flight home, Alex. 🥂");
+  boardingPass();
+  await sleep(400);
+  coda("Flight, taxi, car, an extra bag, a rebooking, and a walk to the lounge.","One conversation carried the whole trip — out and back. No apps switched, no counters, no stress. The concierge was the journey.");
+  document.getElementById("replay").classList.add("show");
+}
+
+/* ---- notification ---- */
+const notif=document.getElementById("notif");
+function showNotif(){
+  notif.classList.add("show");
+  speak("notif-taxi");
+  const go=async()=>{
+    notif.classList.remove("show"); notif.onclick=null;
+    await sleep(300);
+    await say("taxi-tracking","Your taxi's about 20 minutes out — I'll track it live. Have a great trip; I'll be here in Adelaide. ✈");
+    await sleep(500);
+    chapter2(false);
+  };
+  notif.onclick=go;
+  setTimeout(()=>{ if(notif.classList.contains("show")) go(); },3600);
+}
+
+/* ---- controls ---- */
+async function startAll(){ stopVoice(); thread.innerHTML=""; document.getElementById("replay").classList.remove("show"); notif.classList.remove("show"); await chapter1(); }
+document.getElementById("start").onclick=()=>{ primeVoice(); document.getElementById("empty").classList.add("hide"); startAll(); };
+document.getElementById("replay").onclick=()=>{ primeVoice(); document.getElementById("replay").classList.remove("show"); startAll(); };
+document.getElementById("navc1").onclick=()=>{ primeVoice(); document.getElementById("empty").classList.add("hide"); startAll(); };
+document.getElementById("navc2").onclick=()=>{ primeVoice(); stopVoice(); document.getElementById("empty").classList.add("hide"); document.getElementById("replay").classList.remove("show"); notif.classList.remove("show"); chapter2(true); };
+document.getElementById("voiceToggle").onclick=(e)=>{ primeVoice(); voiceOn=!voiceOn; const b=e.currentTarget; b.setAttribute("aria-pressed",String(voiceOn)); b.textContent=voiceOn?"🔊":"🔇"; if(!voiceOn) stopVoice(); };
+</script>
+</body>
+</html>

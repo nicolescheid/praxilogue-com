@@ -1,0 +1,170 @@
+{
+  "greeting": {
+    "hash": "91bc2a2eb8d2c54a",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 24703
+  },
+  "ask-where-when": {
+    "hash": "4869cb376c2ff451",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 40586
+  },
+  "friday-options": {
+    "hash": "808108bd1a9d575f",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 31391
+  },
+  "flight-0730": {
+    "hash": "d58c64db97850d3e",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 81128
+  },
+  "flight-1115": {
+    "hash": "caf66b16b68492af",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 82799
+  },
+  "car-question": {
+    "hash": "ed554b6365dec5ea",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 194395
+  },
+  "car-standard": {
+    "hash": "28e150ceaf83646f",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 108713
+  },
+  "car-fullsize": {
+    "hash": "8233f9e1742ea472",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 112475
+  },
+  "car-suv": {
+    "hash": "ebe815c3c5965d41",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 122088
+  },
+  "hotel": {
+    "hash": "d600800e92f4ca43",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 107877
+  },
+  "all-set": {
+    "hash": "edf7bd566951d4e9",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 91159
+  },
+  "checkin-offer": {
+    "hash": "aaf64cdcda369e90",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 79038
+  },
+  "checked-in": {
+    "hash": "0da44e0781f81165",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 61066
+  },
+  "notif-taxi": {
+    "hash": "e55ba70f17fd4d5c",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 76948
+  },
+  "taxi-tracking": {
+    "hash": "cc04e300869d18ef",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 114146
+  },
+  "ch2-welcome": {
+    "hash": "f182a7bb969a5da9",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 97010
+  },
+  "ch2-continue": {
+    "hash": "0cb1913ccf92fa91",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 66499
+  },
+  "rebook-offer": {
+    "hash": "1ca481cb68927c79",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 79874
+  },
+  "rebooked": {
+    "hash": "b3d7f5628dcd05ff",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 35988
+  },
+  "extended": {
+    "hash": "2c91d9521853ab76",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 119162
+  },
+  "bag-offer": {
+    "hash": "d447984d5f7758bc",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 129611
+  },
+  "bag-added": {
+    "hash": "34153ca19eb46664",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 91159
+  },
+  "to-airport": {
+    "hash": "f6310ac5871c9a12",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 167645
+  },
+  "map-1": {
+    "hash": "73dba711d5af5fe3",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 82799
+  },
+  "map-2": {
+    "hash": "412d9c04c20059e4",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 107877
+  },
+  "map-3": {
+    "hash": "a35a15f35f95afee",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 100772
+  },
+  "map-4": {
+    "hash": "83757b0d68bc67c9",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 97010
+  },
+  "lounge": {
+    "hash": "c0c9ba5818eda535",
+    "model": "eleven_multilingual_v2",
+    "voice": "IwFADcBfc7Yo8KGhxTR5",
+    "bytes": 170571
+  }
+}

@@ -30,4 +30,35 @@ npx serve public
 - `public/favicon.svg` — the ∴ mark
 - `public/valence/index.html` — Valence, the interactive day/night poem,
   published at `/valence`
+- `public/decagon/` — Voyage, the scripted travel-concierge journey simulator,
+  published at `/decagon` (see below)
+- `tools/generate-voice.mjs` — renders the Voyage concierge lines to audio
 - `wrangler.jsonc` — Cloudflare Worker config, apex custom domain
+
+## Voyage (`/decagon`)
+
+A scripted two-chapter travel-concierge demo. Every concierge line is fixed, so
+the voice is **pre-generated with ElevenLabs and played back by key** — no
+speech API, no runtime API calls, same voice for every visitor.
+
+- `public/decagon/index.html` — the simulator
+- `public/decagon/voice-lines.js` — the concierge script: one stable key per
+  line, plus the spoken wording. Shared by the page and the generator.
+- `public/decagon/audio/<key>.mp3` — the rendered clips, committed
+
+Re-render after editing a line (only changed lines cost credits):
+
+```bash
+ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... node tools/generate-voice.mjs
+```
+
+`--list`, `--dry-run`, `--only=key`, and `--force` are supported; voice tuning
+is via env vars documented in the script header.
+
+Two things to keep in mind when editing the page:
+
+- Paths to `voice-lines.js` and `audio/` are **root-absolute** (`/decagon/...`).
+  Cloudflare serves this page at both `/decagon` and `/decagon/`, and relative
+  paths break on the first form.
+- If a clip is missing the demo still plays — it holds an estimated beat where
+  the line would be, so pacing survives a partial render.
