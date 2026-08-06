@@ -1,0 +1,6 @@
+# The travel-concierge demo lives at /voyage. It was first published under
+# /decagon, named for the job it was built for; the name is now neutral so the
+# piece can be reused. These keep the old links alive — permanently, since the
+# move is permanent.
+/decagon    /voyage           301
+/decagon/*  /voyage/:splat    301

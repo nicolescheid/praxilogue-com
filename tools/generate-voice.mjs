@@ -4,7 +4,7 @@
  *
  *   ELEVENLABS_API_KEY=...  ELEVENLABS_VOICE_ID=...  node tools/generate-voice.mjs
  *
- * Reads public/decagon/voice-lines.js and writes public/decagon/audio/<key>.mp3.
+ * Reads public/voyage/voice-lines.js and writes public/voyage/audio/<key>.mp3.
  * A side-car manifest records a hash of everything that shapes each clip (text,
  * neighbouring lines, voice, model, format, settings), so a re-run only spends
  * credits on lines that actually changed. Nothing else is touched.
@@ -33,8 +33,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LINES_FILE = join(ROOT, "public", "decagon", "voice-lines.js");
-const AUDIO_DIR = join(ROOT, "public", "decagon", "audio");
+const LINES_FILE = join(ROOT, "public", "voyage", "voice-lines.js");
+const AUDIO_DIR = join(ROOT, "public", "voyage", "audio");
 const MANIFEST_FILE = join(AUDIO_DIR, ".manifest.json");
 
 // Overridable so the request shape can be exercised against a local stub.

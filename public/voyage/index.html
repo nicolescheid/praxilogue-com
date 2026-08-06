@@ -281,10 +281,10 @@
   </footer>
 
 <script type="module">
-/* Root-absolute, not relative: this page is served at both /decagon and
-   /decagon/, and a relative specifier resolves against the wrong directory on
+/* Root-absolute, not relative: this page is served at both /voyage and
+   /voyage/, and a relative specifier resolves against the wrong directory on
    the no-trailing-slash form. */
-import { VOICE_TEXT } from "/decagon/voice-lines.js";
+import { VOICE_TEXT } from "/voyage/voice-lines.js";
 
 const thread=document.getElementById("thread"), clockEl=document.getElementById("clock");
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -298,7 +298,7 @@ const scroll=()=>{thread.scrollTop=thread.scrollHeight;};
    the Web Speech API gave us — so a fire-and-forget line never talks over the
    next one. If a clip is missing or won't play, we hold for an estimated
    beat instead, so the demo keeps its rhythm rather than stalling. */
-const AUDIO_DIR="/decagon/audio/";
+const AUDIO_DIR="/voyage/audio/";
 let voiceOn=true;
 const clips=new Map();          // key -> HTMLAudioElement
 let voiceGen=0;                 // bumped on stop; queued clips from older gens are dropped
