@@ -35,20 +35,22 @@ export const VOICE_LINES = [
 
   // Branch: whichever flight the viewer taps.
   {
-    key: "flight-0730",
-    text: "Nice — the seven thirty is held and booked, seat 14C.",
+    key: "flight-qf731",
+    text: "Nice — QF731 is held and booked, seat 14C.",
     next: "car-question"
   },
   {
-    key: "flight-1115",
-    text: "Nice — the eleven fifteen is held and booked, seat 14C.",
+    key: "flight-qf733",
+    text: "Nice — QF733 is held and booked, seat 14C.",
     prev: "friday-options",
     next: "car-question"
   },
 
   {
+    // No landing time: the viewer picks either flight, so a specific arrival
+    // would be wrong on one of the two branches.
     key: "car-question",
-    text: "You land at 9:05am. Your usual airport taxi's already set — and I know Avis is your preferred car brand, so which vehicle type would you like for this trip?",
+    text: "Your usual airport taxi's already set for Friday morning — and I know Avis is your preferred car brand, so which vehicle type would you like waiting in Adelaide?",
     prev: "friday-options"
   },
 
@@ -100,25 +102,17 @@ export const VOICE_LINES = [
 
   /* ---- Chapter 2 · the extended trip ---- */
 
-  // Branch: chapter 2 opens cold (jumped to via the Ch 2 tab) or continues on
-  // from chapter 1.
-  {
-    key: "ch2-welcome",
-    text: "Welcome to Adelaide, Alex — car's collected, you're checked in for Sunday. What's up?",
-    prev: null,
-    next: "rebook-offer"
-  },
   {
     key: "ch2-continue",
-    text: "Enjoying Adelaide? Two days in — anything you need?",
+    text: "Enjoying Adelaide? First afternoon — anything you need?",
     prev: "taxi-tracking",
     next: "rebook-offer"
   },
 
   {
     key: "rebook-offer",
-    text: "Love that. Want me to move your Sunday flight to Monday evening so you get the full weekend?",
-    prev: "ch2-welcome"
+    text: "Love that. Want me to move your Saturday morning flight to Sunday evening so you get the whole weekend?",
+    prev: "ch2-continue"
   },
   {
     key: "rebooked",
@@ -126,7 +120,7 @@ export const VOICE_LINES = [
   },
   {
     key: "extended",
-    text: "I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra nights."
+    text: "I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra night."
   },
   {
     key: "bag-offer",
@@ -134,11 +128,11 @@ export const VOICE_LINES = [
   },
   {
     key: "bag-added",
-    text: "Added. Extra bag on VY603 Monday. Go enjoy the weekend."
+    text: "Added. Extra bag on QF746 Sunday. Go enjoy the weekend."
   },
   {
     key: "to-airport",
-    text: "Time to head to the airport. Your rental's due back, and your flight leaves at 6:05pm. I'll take you door to gate — starting directions now."
+    text: "Time to head to the airport. Your rental's due back, and your flight leaves at seven. I'll take you door to gate — starting directions now."
   },
 
   /* ---- Chapter 2 finale · turn-by-turn map guidance ---- */
@@ -156,11 +150,11 @@ export const VOICE_LINES = [
   },
   {
     key: "map-4",
-    text: "The Lounge, level 2. Up the escalator — you're early, relax before boarding."
+    text: "Domestic Business Lounge, level 2. Up the escalator — you're early, relax before boarding."
   },
   {
     key: "lounge",
-    text: "You're at the Lounge — checked in, bags dropped, car returned, an hour to spare. Boarding's gate 14 at 5:35. Safe flight home, Alex."
+    text: "You're at the Domestic Business Lounge — checked in, bags dropped, car returned, an hour to spare. Boarding's gate 14 at six thirty. Safe flight home, Alex."
   }
 ];
 

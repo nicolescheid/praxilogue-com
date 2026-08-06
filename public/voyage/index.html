@@ -12,9 +12,11 @@
     --canvas:#EDF1F7; --paper:#FFFFFF; --paper-2:#F4F7FB; --paper-3:#EAEFF6;
     --line:#DEE5EF; --line-soft:#E9EEF5;
     --ink:#141C31; --dim:#5E6E88; --faint:#95A1B6;
-    --accent:#3A49E8; --accent-2:#5865F2; --accent-soft:#EBEDFE;
+    /* Accent red carries the whole app. #E40000 clears 4.5:1 on white, so it is
+       safe as text as well as fill; -deep is the pressed/hover step. */
+    --accent:#E40000; --accent-2:#FF3B30; --accent-soft:#FDECEC;
     --gold:#B98A34; --gold-soft:#F7EFDE;
-    --purple:#7C3AED; --purple-deep:#6D28D9; --purple-glow:rgba(124,58,237,.55);
+    --accent-deep:#B00000; --accent-glow:rgba(228,0,0,.5);
     --green:#12A66B; --green-soft:#E1F6EE;
     --disp:"Sora",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"IBM Plex Mono",monospace;
   }
@@ -23,7 +25,7 @@
   body{
     min-height:100vh; color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased;
     background:
-      radial-gradient(900px 620px at 82% -12%, rgba(58,73,232,.07), transparent 60%),
+      radial-gradient(900px 620px at 82% -12%, rgba(228,0,0,.06), transparent 60%),
       radial-gradient(760px 560px at 8% 112%, rgba(185,138,52,.06), transparent 55%),
       var(--canvas);
     display:flex; flex-direction:column; align-items:center; gap:18px; padding:30px 16px 46px;
@@ -59,10 +61,6 @@
   .chapbar{display:flex; align-items:center; justify-content:space-between; padding:9px 18px; background:var(--paper-2); border-bottom:1px solid var(--line-soft);}
   .chaptitle{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);}
   .chaptitle b{color:var(--accent);}
-  .chapnav{display:flex; gap:5px;}
-  .chapnav button{font-family:var(--mono); font-size:10px; letter-spacing:.05em; border:1px solid var(--line); background:var(--paper); color:var(--faint); border-radius:7px; padding:4px 9px; cursor:pointer; transition:.15s;}
-  .chapnav button.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
-  .chapnav button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
   .thread{flex:1; min-height:0; overflow-y:auto; padding:15px 16px 8px; display:flex; flex-direction:column; gap:11px;}
   .thread > *{flex-shrink:0;}
@@ -93,7 +91,7 @@
   .kv{display:flex; justify-content:space-between; font-size:12.5px;}
   .kv .k{color:var(--faint);} .kv .v{font-family:var(--mono); color:var(--ink);} .kv .v.g{color:var(--green);}
   .tag{font-family:var(--mono); font-size:8px; letter-spacing:.08em; padding:2px 5px; border-radius:5px;}
-  .tag.net{color:var(--accent); border:1px solid #C5CBFB;} .tag.free{color:var(--green); border:1px solid #B7E7D2;}
+  .tag.net{color:var(--accent); border:1px solid #F5C2C2;} .tag.free{color:var(--green); border:1px solid #B7E7D2;}
 
   /* selection card (checkboxes) */
   .selcard{align-self:stretch; background:var(--paper); border:1px solid var(--line); border-radius:15px; overflow:hidden; box-shadow:0 8px 24px -18px rgba(30,45,80,.3); animation:rise .4s ease both;}
@@ -184,7 +182,7 @@
   .coda .small{font-size:12.5px; color:var(--dim); line-height:1.55;}
 
   .choices{align-self:flex-end; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-top:1px; animation:rise .3s ease both;}
-  .choices button{font-family:var(--body); font-size:13.5px; font-weight:500; background:#fff; color:var(--accent); border:1px solid #C5CBFB; border-radius:999px; padding:9px 15px; cursor:pointer; transition:.15s;}
+  .choices button{font-family:var(--body); font-size:13.5px; font-weight:500; background:#fff; color:var(--accent); border:1px solid #F5C2C2; border-radius:999px; padding:9px 15px; cursor:pointer; transition:.15s;}
   .choices button:hover{background:var(--accent); color:#fff; border-color:var(--accent);}
   .choices button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
@@ -209,9 +207,9 @@
 
   /* Centred in the device and filled violet: it floats over the coda as the
      closing call to action, so it has to carry against a busy thread. */
-  .replay{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:8; font-family:var(--mono); font-size:12px; background:var(--purple); border:1px solid var(--purple); color:#fff; border-radius:999px; padding:10px 18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .3s, background .15s, border-color .15s; box-shadow:0 14px 34px -10px var(--purple-glow);}
+  .replay{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:8; font-family:var(--mono); font-size:12px; background:var(--accent); border:1px solid var(--accent); color:#fff; border-radius:999px; padding:10px 18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .3s, background .15s, border-color .15s; box-shadow:0 14px 34px -10px var(--accent-glow);}
   .replay.show{opacity:1; pointer-events:auto;}
-  .replay:hover{background:var(--purple-deep); border-color:var(--purple-deep);}
+  .replay:hover{background:var(--accent-deep); border-color:var(--accent-deep);}
   .replay:focus-visible{outline:2px solid var(--ink); outline-offset:3px;}
 
   footer{font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center; text-align:center; max-width:560px;}
@@ -230,7 +228,7 @@
   <div class="pitch">
     <div class="eye">Prototype · the journey, felt from the customer's side</div>
     <h1>One conversation, door to destination — and back</h1>
-    <p>Book a flight, and the taxi, rental car, check-in, extra bag, and a map to the lounge all ride along in the same thread. Two chapters. Tap through it.</p>
+    <p>Book a flight, and the taxi, rental car, check-in, extra bag, and a map to the lounge all ride along in the same thread. Tap through it.</p>
   </div>
 
   <div class="device">
@@ -247,10 +245,6 @@
       </div>
       <div class="chapbar">
         <div class="chaptitle" id="chaptitle"><b>Ch. 1</b> · Booking &amp; departure</div>
-        <div class="chapnav">
-          <button id="navc1" class="on">Ch 1</button>
-          <button id="navc2">Ch 2</button>
-        </div>
       </div>
       <div class="thread" id="thread" aria-live="polite"></div>
     </div>
@@ -383,14 +377,14 @@ function chapmark(n,t){const d=document.createElement("div");d.className="chapma
 /* `key` names the audio clip; `html` is what the bubble shows. */
 async function say(key,html,ms=700){const t=document.createElement("div");t.className="typing";t.innerHTML="<span></span><span></span><span></span>";thread.appendChild(t);scroll();await sleep(voiceOn?360:ms);t.remove();const m=agent(html);await speakAndWait(key);return m;}
 function choices(opts){return new Promise(res=>{const c=document.createElement("div");c.className="choices";opts.forEach(o=>{const b=document.createElement("button");b.textContent=o.label;b.onclick=()=>{c.remove();user(esc(o.said||o.label));res(o.value||o.label);};c.appendChild(b);});thread.appendChild(c);scroll();});}
-function setChap(title,which){document.getElementById("chaptitle").innerHTML=title;document.getElementById("navc1").classList.toggle("on",which===1);document.getElementById("navc2").classList.toggle("on",which===2);}
+function setChap(title){document.getElementById("chaptitle").innerHTML=title;}
 
 /* ---- cards ---- */
 function flightCard(list){return new Promise(res=>{
   const card=document.createElement("div");card.className="card flight";
   list.forEach(f=>{
     const r=document.createElement("div");r.className="frow";r.tabIndex=0;r.setAttribute("role","button");
-    r.innerHTML=`<div class="froute"><span class="ftime">${f.dep}</span><span class="fmid"><span class="ln"></span><small>${f.rt} · ${f.dur}</small></span><span class="ftime">${f.arr}</span></div><div class="fprice"><div class="p">${f.price}</div><span class="tag net">IN-NETWORK</span></div>`;
+    r.innerHTML=`<div class="froute"><span class="ftime">${f.dep}</span><span class="fmid"><span class="ln"></span><small>${f.fn} · ${f.rt} · ${f.dur}</small></span><span class="ftime">${f.arr}</span></div><div class="fprice"><div class="p">${f.price}</div><span class="tag net">IN-NETWORK</span></div>`;
     const pick=()=>{card.querySelectorAll(".frow").forEach(x=>{x.style.pointerEvents="none";x.style.opacity=.45;});r.style.opacity=1;user(`The ${f.dep} works`);res(f);};
     r.onclick=pick;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}};
     card.appendChild(r);
@@ -416,7 +410,7 @@ function selectionCard(){return new Promise(res=>{
       <div class="selhd">Taxi to Sydney airport</div>
       <div class="optrow locked on">
         <div class="cbox">✓</div>
-        <div class="optbody"><div class="on1">Corporate Cabs</div><div class="on2">Fri 06:40 · your door</div></div>
+        <div class="optbody"><div class="on1">Corporate Cabs</div><div class="on2">Fri 05:15 · your door</div></div>
         <div style="text-align:right"><div class="optprice">AUD 79.00</div><div style="margin-top:4px"><span class="savedtag">★ saved preference</span></div></div>
       </div>
     </div>
@@ -451,30 +445,30 @@ function selectionCard(){return new Promise(res=>{
 });}
 function hotelCard(){
   const c=document.createElement("div");c.className="card hotel";
-  c.innerHTML=`<div class="cardhd"><div class="ic gold">🏨</div><div><div class="tt">Hilton Adelaide — Garden Room</div><div class="ts">King bed · Fri–Sun</div></div></div>
-    <div class="kvs"><div class="kv"><span class="k">Booked from</span><span class="v pref">★ saved preference</span></div><div class="kv"><span class="k">Nights</span><span class="v">2 · Fri, Sat</span></div></div>`;
+  c.innerHTML=`<div class="cardhd"><div class="ic gold">🏨</div><div><div class="tt">Hilton Adelaide — Garden Room</div><div class="ts">King bed · Fri–Sat</div></div></div>
+    <div class="kvs"><div class="kv"><span class="k">Booked from</span><span class="v pref">★ saved preference</span></div><div class="kv"><span class="k">Nights</span><span class="v">1 · Fri</span></div></div>`;
   thread.appendChild(c);scroll();
 }
 function rebookCard(){
   const c=document.createElement("div");c.className="card rebook";
   c.innerHTML=`<div class="swap">
-      <div class="leg old"><div class="d">Was</div><div class="day">Sun 16:20</div></div>
+      <div class="leg old"><div class="d">Was</div><div class="day">Sat 08:50</div></div>
       <div class="arr">→</div>
-      <div class="leg new"><div class="d">Now</div><div class="day">Mon 18:05</div></div>
+      <div class="leg new"><div class="d">Now</div><div class="day">Sun 19:00</div></div>
     </div><div class="note">Return moved · fare difference AUD 40 · seat 14C kept</div>`;
   thread.appendChild(c);scroll();
 }
 function boardingPass(){
   const bars=Array.from({length:34},()=>`<i style="height:${16+Math.random()*24}px"></i>`).join("");
   const c=document.createElement("div");c.className="card pass";
-  c.innerHTML=`<div class="ph"><span class="brand">◇ VOYAGE · VY603</span><span class="cls">BOARDING 17:35</span></div>
+  c.innerHTML=`<div class="ph"><span class="brand">◇ VOYAGE · QF746</span><span class="cls">BOARDING 18:30</span></div>
     <div class="pbody">
       <div class="cell"><div class="l">Passenger</div><div class="val sm">A. CHEN</div></div>
       <div class="cell"><div class="l">Seat</div><div class="val">14C</div></div>
       <div class="cell"><div class="l">Gate</div><div class="val">14</div></div>
       <div class="cell"><div class="l">From</div><div class="val sm">ADL</div></div>
       <div class="cell"><div class="l">To</div><div class="val sm">SYD</div></div>
-      <div class="cell"><div class="l">Depart</div><div class="val sm">18:05</div></div>
+      <div class="cell"><div class="l">Depart</div><div class="val sm">19:00</div></div>
     </div><div class="bars">${bars}</div>`;
   thread.appendChild(c);scroll();
 }
@@ -489,7 +483,7 @@ const MAP_STEPS=[
   {ic:"🚗", gt:"Return your rental", gs:"Follow the Avis return lane, straight ahead", dist:"400 m", pin:"p1", voice:"map-1"},
   {ic:"🅿️", gt:"Bay A-12 — free return parking", gs:"Closest return bay to the Terminal 1 entrance", dist:"120 m", pin:"p2", voice:"map-2"},
   {ic:"🧳", gt:"Bag drop, right inside", gs:"Terminal 1 entry — your extra bag is pre-tagged", dist:"60 m", pin:"p3", voice:"map-3"},
-  {ic:"🥂", gt:"The Lounge, level 2", gs:"Up the escalator — you're early, relax before boarding", dist:"90 m", pin:"p4", voice:"map-4"}
+  {ic:"🥂", gt:"Domestic Business Lounge, level 2", gs:"Up the escalator — you're early, relax before boarding", dist:"90 m", pin:"p4", voice:"map-4"}
 ];
 async function mapMode(){
   const c=document.createElement("div");c.className="mapcard";
@@ -504,7 +498,7 @@ async function mapMode(){
       <g class="pin" id="p1" transform="translate(28,168)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Avis return</text></g>
       <g class="pin" id="p2" transform="translate(156,116)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Bay A-12 · free</text></g>
       <g class="pin" id="p3" transform="translate(238,92)"><circle class="pindot" r="7"/><text class="pinlab" x="11" y="4">Bag drop</text></g>
-      <g class="pin" id="p4" transform="translate(292,78)"><circle class="o pindot" r="7"/><text class="pinlab" x="11" y="4">Lounge</text></g>
+      <g class="pin" id="p4" transform="translate(292,78)"><circle class="o pindot" r="7"/><text class="pinlab" x="11" y="4">Business Lounge</text></g>
     </svg>
   </div>
   <div class="mapguide"><div class="step-ic" id="mIc">📍</div><div class="gtxt"><div class="gt" id="mGt">Starting guidance…</div><div class="gs" id="mGs">Handover from your booking to live directions</div></div><div class="gdist" id="mDist"></div></div>`;
@@ -526,17 +520,17 @@ async function mapMode(){
 
 /* ---- CHAPTER 1 ---- */
 async function chapter1(){
-  setChap('<b>Ch. 1</b> · Booking &amp; departure',1); clockEl.textContent="8:12";
+  setChap('<b>Ch. 1</b> · Booking &amp; departure'); clockEl.textContent="8:12";
   chapmark("Chapter One","Booking & departure");
   await say("greeting","Morning, Alex 👋 Where are we headed?");
   await choices([{label:"Book a flight →",said:"I need to book a flight"}]);
   await say("ask-where-when","On it — where to, and when?");
-  await choices([{label:"Sydney → Adelaide, Fri–Sun",said:"Sydney to Adelaide, this Friday, back Sunday"}]);
+  await choices([{label:"Sydney → Adelaide, Fri–Sat",said:"Sydney to Adelaide, this Friday, back Saturday"}]);
   await say("friday-options","Here's what's open Friday morning. Select your preferred option.");
-  const f=await flightCard([{dep:"07:30",arr:"09:05",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 214",voice:"flight-0730"},{dep:"11:15",arr:"12:50",rt:"SYD–ADL",dur:"1h 35m",price:"AUD 189",voice:"flight-1115"}]);
-  await say(f.voice,`Nice — ${f.dep} held and booked, seat 14C. ✈️✓`);
+  const f=await flightCard([{dep:"06:40",arr:"08:15",fn:"QF731",rt:"SYD–ADL",dur:"2h 05m",price:"AUD 214",voice:"flight-qf731"},{dep:"09:20",arr:"10:55",fn:"QF733",rt:"SYD–ADL",dur:"2h 05m",price:"AUD 189",voice:"flight-qf733"}]);
+  await say(f.voice,`Nice — ${f.fn} held and booked, seat 14C. ✈️✓`);
 
-  await say("car-question","You land 9:05am. Your usual airport taxi's already set — and I know Avis is your preferred car brand, so which vehicle type would you like for this trip?");
+  await say("car-question","Your usual airport taxi's already set for Friday morning — and I know Avis is your preferred car brand, so which vehicle type would you like waiting in Adelaide?");
   const car=await selectionCard();
   await sleep(250); user(`The ${car.nm} works`);
   await say(car.voice,`Done — Corporate Cabs for Friday morning, and your ${car.nm} waiting on arrival in Adelaide. 🚕🚗✓`);
@@ -549,35 +543,33 @@ async function chapter1(){
   await choices([{label:"Check me in",said:"Yes, check me in"}]);
   await say("checked-in","Checked in 🎫✓ Boarding pass is on your phone, ready to go.");
 
-  await sleep(560); divider("Friday — travel day"); clockEl.textContent="6:40";
+  await sleep(560); divider("Friday — travel day"); clockEl.textContent="4:55";
   await sleep(500); showNotif();
 }
 
 /* ---- CHAPTER 2 ---- */
-async function chapter2(fresh){
-  setChap('<b>Ch. 2</b> · The extended trip',2); clockEl.textContent="10:24";
-  if(fresh){ thread.innerHTML=""; }
+async function chapter2(){
+  setChap('<b>Ch. 2</b> · The extended trip'); clockEl.textContent="2:48";
   chapmark("Chapter Two","The extended trip");
-  if(fresh){ await say("ch2-welcome","Welcome to Adelaide, Alex — car's collected, you're checked in for Sunday. What's up?"); }
-  else { await say("ch2-continue","Enjoying Adelaide? Two days in — anything you need?"); }
+  await say("ch2-continue","Enjoying Adelaide? First afternoon — anything you need?");
 
   await sleep(300);
   await choices([{label:"Stay the weekend",said:"Actually, I want to stay through the weekend and do some shopping"}]);
-  await say("rebook-offer","Love that. Want me to move your Sunday flight to Monday evening so you get the full weekend?");
+  await say("rebook-offer","Love that. Want me to move your Saturday morning flight to Sunday evening so you get the whole weekend?");
   await choices([{label:"Yes, rebook it",said:"Yes please"}]);
   await say("rebooked","Rebooked — here's the change:");
   rebookCard();
-  await say("extended","I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra nights. 🚗🏨✓");
+  await say("extended","I've also updated your booking with Avis and extended your hotel stay, so nothing lapses over the extra night. 🚗🏨✓");
 
   await say("bag-offer","One thought — if you're shopping all weekend, want me to add an extra bag for the trip home, so you're not caught out at the gate?");
   await choices([{label:"Yes — great idea",said:"Yes, that's a brilliant idea"}]);
-  await say("bag-added","Added 🧳✓ Extra bag on VY603 Monday. Go enjoy the weekend.");
-  infoCard({icClass:"green",ic:"🧳",tt:"Extra bag — added",ts:"VY603 · Mon 18:05 to Sydney",rows:[["Allowance","+23 kg checked"],["Fee","AUD 45 · prepaid","g"]]});
+  await say("bag-added","Added 🧳✓ Extra bag on QF746 Sunday. Go enjoy the weekend.");
+  infoCard({icClass:"green",ic:"🧳",tt:"Extra bag — added",ts:"QF746 · Sun 19:00 to Sydney",rows:[["Allowance","+23 kg checked"],["Fee","AUD 45 · prepaid","g"]]});
 
-  await sleep(620); divider("Monday — flying home"); clockEl.textContent="3:15";
-  await say("to-airport","Time to head to the airport. Your rental's due back, and your flight leaves 6:05pm. I'll take you door to gate — starting directions now.");
+  await sleep(620); divider("Sunday — flying home"); clockEl.textContent="5:05";
+  await say("to-airport","Time to head to the airport. Your rental's due back, and your flight leaves 7:00pm. I'll take you door to gate — starting directions now.");
   await mapMode();
-  await say("lounge","You're at the Lounge — checked in, bags dropped, car returned, an hour to spare. Boarding's gate 14 at 5:35. Safe flight home, Alex. 🥂");
+  await say("lounge","You're at the Domestic Business Lounge — checked in, bags dropped, car returned, an hour to spare. Boarding's gate 14 at 6:30. Safe flight home, Alex. 🥂");
   boardingPass();
   await sleep(400);
   coda("Flight, taxi, car, an extra bag, a rebooking, and a walk to the lounge.","One conversation carried the whole trip — out and back. No apps switched, no counters, no stress. The concierge was the journey.");
@@ -594,7 +586,7 @@ function showNotif(){
     await sleep(300);
     await say("taxi-tracking","Your taxi's about 20 minutes out — I'll track it live. Have a great trip; I'll be here in Adelaide. ✈");
     await sleep(500);
-    chapter2(false);
+    chapter2();
   };
   notif.onclick=go;
   setTimeout(()=>{ if(notif.classList.contains("show")) go(); },3600);
@@ -604,8 +596,6 @@ function showNotif(){
 async function startAll(){ stopVoice(); thread.innerHTML=""; document.getElementById("replay").classList.remove("show"); notif.classList.remove("show"); await chapter1(); }
 document.getElementById("start").onclick=()=>{ primeVoice(); document.getElementById("empty").classList.add("hide"); startAll(); };
 document.getElementById("replay").onclick=()=>{ primeVoice(); document.getElementById("replay").classList.remove("show"); startAll(); };
-document.getElementById("navc1").onclick=()=>{ primeVoice(); document.getElementById("empty").classList.add("hide"); startAll(); };
-document.getElementById("navc2").onclick=()=>{ primeVoice(); stopVoice(); document.getElementById("empty").classList.add("hide"); document.getElementById("replay").classList.remove("show"); notif.classList.remove("show"); chapter2(true); };
 document.getElementById("voiceToggle").onclick=(e)=>{ primeVoice(); voiceOn=!voiceOn; const b=e.currentTarget; b.setAttribute("aria-pressed",String(voiceOn)); b.textContent=voiceOn?"🔊":"🔇"; if(!voiceOn) stopVoice(); };
 </script>
 </body>
