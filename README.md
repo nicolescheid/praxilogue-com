@@ -40,6 +40,8 @@ npx serve public
   published at `/valence`
 - `public/voyage/` — Voyage, the scripted travel-concierge journey simulator,
   published at `/voyage` (see below)
+- `public/critical/index.html` — Thinking is Critical, Module 2 (Addressing
+  Biases), published at `/critical` (see below)
 - `tools/generate-voice.mjs` — renders the Voyage concierge lines to audio
 - `public/_redirects` — static-asset redirects; currently just the old
   `/decagon` path pointing at `/voyage`
@@ -76,3 +78,22 @@ Two things to keep in mind when editing the page:
   paths break on the first form.
 - If a clip is missing the demo still plays — it holds an estimated beat where
   the line would be, so pacing survives a partial render.
+
+## Thinking is Critical (`/critical`)
+
+Module 2 of a short course on the human half of working with AI. A single
+self-contained page: prose with an interactive "lab" set into each section
+(a question-phrasing highlighter, a mark-your-reading exercise that feeds a
+scepticism bar chart, prompt builders, a load-bearing-claim picker, a
+read-without-rebutting counter, and a closing card built from the reader's
+own inputs).
+
+- **V1 is entirely client-side.** No API calls; the labs are heuristics and
+  scripted samples, and the page says so. Inputs persist in `localStorage`
+  under `tic-m2-v1` so the closing card survives a reload. A later version
+  puts a model behind each lab.
+- Its own design (Newsreader / IBM Plex, light paper with a dark set via
+  `prefers-color-scheme`), deliberately separate from the home page's scene
+  deck. Only the favicon and the ∴ mark are shared.
+- Favicon path is root-absolute (`/favicon.svg`) for the same `/critical`
+  vs `/critical/` reason as Voyage.

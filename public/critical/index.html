@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addressing Biases — Thinking is Critical</title>
+<meta name="description" content="Module 2 of Thinking is Critical: the human half of working with AI. Confirmation bias, selective adherence, why the model agrees with you, expertise bias, and how to test a position before you announce it. With exercises you do on the page.">
+<meta name="theme-color" content="#f7f3ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://praxilogue.com/critical">
+
+<meta property="og:title" content="Thinking is Critical — Module 2: Addressing Biases">
+<meta property="og:description" content="Most advice about working with AI concerns the machine. This module is about the person at the keyboard, and the filter they bring.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://praxilogue.com/critical">
+<meta name="twitter:card" content="summary">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ===================================================================
+   Thinking is Critical — Module 2
+   A reading page with labs set into it. The prose is set in a text
+   serif; the labs wear a cooler chrome (mono labels, sans inputs) so
+   the reader can always tell "this is the module talking" from
+   "this is where you do something". The pen colour marks what the
+   reader marks. Light paper by default; a dark set follows the OS.
+
+   V1 is entirely client-side. Nothing typed here leaves the page;
+   inputs persist in localStorage so the closing card can be built
+   from the reader's own words.
+=================================================================== */
+
+:root {
+  --paper: #f7f3ea;
+  --paper-2: #efe9dc;
+  --paper-3: #e5ddcb;
+  --ink: #1d1a15;
+  --ink-2: #524c42;
+  --ink-3: #8a8371;
+  --line: rgba(29, 26, 21, 0.13);
+  --line-2: rgba(29, 26, 21, 0.28);
+  --pen: #b5412a;
+  --pen-soft: rgba(181, 65, 42, 0.13);
+  --lab: #1f5f6b;
+  --lab-soft: rgba(31, 95, 107, 0.10);
+  --ok: #2f7a4f;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --measure: 40rem;
+  --col: 46rem;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15130f;
+    --paper-2: #1d1a15;
+    --paper-3: #27231b;
+    --ink: #ece6d8;
+    --ink-2: #b4ac9a;
+    --ink-3: #7f786c;
+    --line: rgba(236, 230, 216, 0.13);
+    --line-2: rgba(236, 230, 216, 0.28);
+    --pen: #e3735c;
+    --pen-soft: rgba(227, 115, 92, 0.16);
+    --lab: #74bcc8;
+    --lab-soft: rgba(116, 188, 200, 0.12);
+    --ok: #74c592;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { background: var(--paper); scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: var(--pen); color: var(--paper); }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--lab);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------
+   Top bar + reading progress
+--------------------------------------------------------------- */
+
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 40;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+.topbar .course { color: var(--ink); font-weight: 500; text-decoration: none; }
+.topbar .course span { color: var(--ink-3); font-weight: 400; }
+.topbar .where { display: none; }
+.topbar .home {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  color: var(--ink-3); text-decoration: none;
+  transition: color 0.2s ease;
+}
+.topbar .home:hover { color: var(--pen); }
+.topbar .home svg circle { fill: currentColor; }
+.progress {
+  position: absolute; left: 0; bottom: -1px;
+  height: 2px; width: 0%;
+  background: var(--pen);
+  transition: width 0.15s linear;
+}
+@media (min-width: 720px) { .topbar .where { display: block; } }
+
+/* ---------------------------------------------------------------
+   Layout: side navigation + article
+--------------------------------------------------------------- */
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 92px clamp(1.1rem, 4vw, 2.5rem) 5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 3.5rem;
+}
+@media (min-width: 1080px) {
+  .wrap { grid-template-columns: 220px minmax(0, var(--col)); justify-content: center; }
+}
+
+.sidenav {
+  display: none;
+  position: sticky;
+  top: 92px;
+  align-self: start;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+@media (min-width: 1080px) { .sidenav { display: block; } }
+.sidenav ol { list-style: none; margin: 0; padding: 0; }
+.sidenav li { margin: 0 0 0.75rem; }
+.sidenav a {
+  display: flex; gap: 0.7em;
+  color: var(--ink-3); text-decoration: none;
+  border-left: 2px solid transparent;
+  padding-left: 0.8rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.sidenav a:hover { color: var(--ink); }
+.sidenav a[aria-current="true"] { color: var(--pen); border-color: var(--pen); }
+.sidenav .n { font-variant-numeric: tabular-nums; min-width: 2.2em; color: inherit; opacity: 0.7; }
+.sidenav .done {
+  margin-top: 1.5rem; padding: 1rem 0 0 0.8rem; border-top: 1px solid var(--line);
+  color: var(--ink-3); line-height: 1.6;
+}
+.sidenav .done b { color: var(--ink); font-weight: 500; }
+
+article { max-width: var(--col); min-width: 0; }
+
+/* ---------------------------------------------------------------
+   Prose
+--------------------------------------------------------------- */
+
+.prose { max-width: var(--measure); }
+.prose p { margin: 0 0 1.2rem; }
+.prose p.dim { color: var(--ink-2); }
+.prose ul { padding-left: 1.2rem; margin: 0 0 1.2rem; }
+.prose li { margin-bottom: 0.4rem; }
+.prose strong { font-weight: 600; }
+.prose em { font-style: italic; }
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pen);
+  margin: 0 0 1rem;
+}
+h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5rem;
+}
+h1 em { font-style: italic; font-weight: 400; }
+.lede { font-size: 1.28rem; line-height: 1.5; color: var(--ink-2); max-width: 36rem; }
+
+.frame {
+  margin: 2.5rem 0 0;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--line-2);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+.frame b { font-weight: 600; color: var(--ink); }
+
+section.part { padding-top: 5.5rem; scroll-margin-top: 60px; }
+section.part + section.part { border-top: 1px solid var(--line); margin-top: 4rem; padding-top: 4rem; }
+
+.part-head { margin: 0 0 2rem; }
+.part-num {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--pen);
+  margin: 0 0 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.9rem, 4.2vw, 2.6rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+h3 {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 2.6rem 0 1rem;
+  display: flex; align-items: center; gap: 0.8em;
+}
+h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.pull {
+  margin: 2rem 0;
+  padding: 0 0 0 1.2rem;
+  border-left: 2px solid var(--pen);
+  font-size: 1.3rem;
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--ink);
+  max-width: 32rem;
+}
+
+.practice { margin: 1.4rem 0; max-width: var(--measure); }
+.practice dt {
+  font-family: var(--sans); font-weight: 600; font-size: 0.98rem;
+  margin: 0 0 0.2rem;
+}
+.practice dd { margin: 0 0 1.1rem; color: var(--ink-2); }
+
+.callout {
+  margin: 3rem 0;
+  padding: 1.5rem 1.6rem;
+  background: var(--paper-2);
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  max-width: var(--measure);
+}
+.callout .kicker { color: var(--ink-3); margin-bottom: 0.6rem; }
+.callout p { margin-bottom: 1rem; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ---------------------------------------------------------------
+   Lab — the interactive chrome
+--------------------------------------------------------------- */
+
+.lab {
+  margin: 2rem 0 2.5rem;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--paper-2);
+  overflow: hidden;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.lab-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.7rem 1.15rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lab);
+}
+.lab-head .state { color: var(--ink-3); letter-spacing: 0.06em; text-transform: none; font-size: 0.7rem; }
+.lab-head .state.on { color: var(--ok); }
+.lab-body { padding: 1.15rem 1.15rem 1.3rem; }
+.lab-body > p { margin: 0 0 1rem; color: var(--ink-2); }
+.lab-body > p.q { color: var(--ink); font-family: var(--serif); font-size: 1.1rem; }
+.lab .step {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-3); margin: 1.4rem 0 0.5rem;
+}
+.lab .step:first-child { margin-top: 0; }
+.lab label.field { display: block; font-weight: 500; font-size: 0.9rem; margin: 0.9rem 0 0.35rem; }
+.lab label.field small { font-weight: 400; color: var(--ink-3); }
+textarea, input[type="text"], input[type="number"], select {
+  width: 100%;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  border-radius: 7px;
+  padding: 0.6rem 0.75rem;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+textarea { min-height: 4.2rem; }
+textarea:focus, input:focus, select:focus { border-color: var(--lab); }
+input[type="number"] { width: 6.5rem; }
+
+.btn {
+  appearance: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--line-2);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.btn:hover { border-color: var(--lab); color: var(--lab); }
+.btn.primary { background: var(--lab); border-color: var(--lab); color: var(--paper); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--paper); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn[aria-pressed="true"] { background: var(--lab-soft); border-color: var(--lab); color: var(--lab); }
+.btn.pen[aria-pressed="true"] { background: var(--pen-soft); border-color: var(--pen); color: var(--pen); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-3); }
+.btn.ghost:hover { color: var(--pen); }
+.row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.9rem; }
+
+.result {
+  margin-top: 1.1rem;
+  padding: 0.9rem 1rem;
+  border-left: 2px solid var(--lab);
+  background: var(--lab-soft);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.result[hidden] { display: none; }
+.result.pen { border-color: var(--pen); background: var(--pen-soft); }
+.result p { margin: 0 0 0.6rem; }
+.result p:last-child { margin: 0; }
+.result small { display: block; font-family: var(--sans); font-size: 0.8rem; color: var(--ink-2); margin-top: 0.5rem; }
+
+.hl {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  min-height: 2.6rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.hl .who { display: block; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.3rem; }
+.hl .none { color: var(--ink-3); font-style: italic; font-size: 0.95rem; }
+mark { border-radius: 3px; padding: 0 0.15em; color: inherit; }
+mark.a { background: var(--pen-soft); box-shadow: inset 0 -1px 0 var(--pen); }
+mark.o { background: var(--lab-soft); box-shadow: inset 0 -1px 0 var(--lab); }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--ink-2); margin-top: 0.6rem; }
+.legend i { display: inline-block; width: 0.9em; height: 0.9em; border-radius: 2px; vertical-align: -0.1em; margin-right: 0.35em; }
+.legend i.a { background: var(--pen-soft); box-shadow: inset 0 -1px 0 var(--pen); }
+.legend i.o { background: var(--lab-soft); box-shadow: inset 0 -1px 0 var(--lab); }
+.two { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 680px) { .two { grid-template-columns: 1fr 1fr; } }
+
+/* Paragraph marking (2.2) and reading (2.5) */
+.paras { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.6rem; }
+.para {
+  display: grid; grid-template-columns: 1fr; gap: 0.6rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 1.03rem;
+  line-height: 1.5;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+@media (min-width: 680px) { .para { grid-template-columns: 1fr auto; align-items: start; } }
+.para .marks { display: flex; gap: 0.4rem; flex-shrink: 0; }
+.para .marks .btn { padding: 0.4rem 0.6rem; font-size: 0.66rem; white-space: nowrap; }
+.para.flag { border-left-color: var(--pen); background: color-mix(in srgb, var(--pen-soft) 60%, var(--paper)); }
+.para.calm { opacity: 0.72; }
+.para .tag {
+  display: block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pen); margin-top: 0.4rem;
+}
+.para .tag.calm { color: var(--ink-3); }
+.para[hidden] { display: none; }
+.para .lean { display: block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.3rem; }
+.para .lean[hidden] { display: none; }
+
+/* Sentence picking (2.4) */
+.sents { font-family: var(--serif); font-size: 1.06rem; line-height: 1.75; padding: 0.8rem 1rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+.sent {
+  cursor: pointer; border-radius: 3px; padding: 0.05em 0.1em;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  border: none; background: none; font: inherit; color: inherit; text-align: left; display: inline;
+}
+.sent:hover { background: var(--lab-soft); }
+.sent[aria-pressed="true"] { background: var(--pen-soft); box-shadow: inset 0 -1.5px 0 var(--pen); }
+.sents.revealed .sent { cursor: default; background: none; box-shadow: none; }
+.sents.revealed .sent.load { background: var(--pen-soft); box-shadow: inset 0 -1.5px 0 var(--pen); }
+.sents.revealed .sent.cheap { box-shadow: inset 0 -1.5px 0 var(--ink-3); }
+.sents .sn { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); vertical-align: super; margin-right: 0.2em; }
+.verdicts { list-style: none; padding: 0; margin: 0.8rem 0 0; display: grid; gap: 0.5rem; }
+.verdicts li { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; font-family: var(--sans); font-size: 0.88rem; line-height: 1.45; }
+.verdicts .k { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pen); padding-top: 0.25em; min-width: 6.5em; }
+.verdicts .k.dim { color: var(--ink-3); }
+
+/* Trust pattern bars (2.2b) */
+.bars {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem; align-items: end;
+  height: 150px; padding: 0 0.3rem; margin-top: 1.6rem;
+  border-bottom: 1px solid var(--line-2);
+  position: relative;
+}
+.bars::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+  background: var(--line); pointer-events: none;
+}
+.bar { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.bar i {
+  display: block; width: 100%; max-width: 34px;
+  background: var(--lab);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.25s ease, background-color 0.25s ease;
+  min-height: 2px;
+}
+.bar[data-kind="pushed"] i { background: var(--pen); }
+.bar b {
+  position: absolute; top: -1.4rem; left: 0; right: 0; text-align: center;
+  font-family: var(--mono); font-size: 0.66rem; font-weight: 400; color: var(--ink-2);
+  opacity: 0; transition: opacity 0.15s ease;
+}
+.bar:hover b, .bar:focus-within b { opacity: 1; }
+.bar-labels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem; padding: 0.4rem 0.3rem 0; font-family: var(--mono); font-size: 0.66rem; color: var(--ink-3); text-align: center; }
+.bars-legend { display: flex; gap: 1.2rem; font-size: 0.78rem; color: var(--ink-2); margin: 0.6rem 0 0; }
+.bars-legend i { display: inline-block; width: 0.75em; height: 0.75em; border-radius: 2px; margin-right: 0.4em; vertical-align: -0.05em; }
+.bars-legend i.p { background: var(--pen); }
+.bars-legend i.l { background: var(--lab); }
+.slider { margin-top: 1.2rem; }
+.slider label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.3rem; }
+.slider output { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); }
+input[type="range"] { width: 100%; accent-color: var(--pen); }
+
+/* Prompt cards (2.3, 2.5) */
+.prompts { display: grid; gap: 0.8rem; margin-top: 0.8rem; }
+.prompt { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem 0.9rem; }
+.prompt .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem; margin-bottom: 0.4rem; }
+.prompt .ph b { font-weight: 600; font-size: 0.9rem; }
+.prompt .ph small { color: var(--ink-3); font-size: 0.75rem; white-space: nowrap; }
+.prompt pre {
+  margin: 0; white-space: pre-wrap; word-break: break-word;
+  font-family: var(--sans); font-size: 0.9rem; line-height: 1.5; color: var(--ink-2);
+}
+.prompt .pf { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-top: 0.6rem; flex-wrap: wrap; }
+.prompt .pf .why { font-size: 0.78rem; color: var(--ink-3); font-style: italic; }
+
+/* Reveal reading (2.5a) */
+.reader-ctl { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.9rem; }
+.reader-ctl .count { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); margin-left: auto; }
+
+/* Carry-out list + card */
+.carry { list-style: none; counter-reset: c; padding: 0; margin: 1.5rem 0 0; max-width: var(--measure); }
+.carry li {
+  counter-increment: c;
+  display: grid; grid-template-columns: 2.4rem 1fr; gap: 0.6rem;
+  padding: 1rem 0; border-top: 1px solid var(--line);
+}
+.carry li:last-child { border-bottom: 1px solid var(--line); }
+.carry li::before { content: counter(c, decimal-leading-zero); font-family: var(--mono); font-size: 0.8rem; color: var(--pen); padding-top: 0.25em; }
+
+.card { font-family: var(--serif); background: var(--paper); border: 1px solid var(--line-2); border-radius: 10px; padding: 1.2rem 1.3rem; }
+.card h4 { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 1rem; font-weight: 500; }
+.card dl { margin: 0; display: grid; gap: 0.9rem; }
+.card dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pen); margin-bottom: 0.2rem; }
+.card dd { margin: 0; font-size: 1.05rem; line-height: 1.45; white-space: pre-wrap; }
+.card dd.empty { color: var(--ink-3); font-style: italic; font-size: 0.95rem; }
+
+/* Sources + footer */
+.sources { font-family: var(--sans); font-size: 0.88rem; line-height: 1.55; color: var(--ink-2); max-width: var(--measure); padding-left: 0; list-style: none; margin: 0; }
+.sources li { margin-bottom: 0.9rem; padding-left: 1.6rem; text-indent: -1.6rem; }
+.sources em { font-style: italic; }
+.foot {
+  margin-top: 5rem; padding-top: 1.6rem; border-top: 1px solid var(--line);
+  font-family: var(--sans); font-size: 0.85rem; line-height: 1.55; color: var(--ink-3);
+  max-width: var(--measure);
+}
+.foot .mk { display: inline-flex; align-items: center; gap: 0.5em; color: var(--ink-2); text-decoration: none; font-family: var(--mono); font-size: 0.75rem; margin-top: 1rem; }
+.foot .mk:hover { color: var(--pen); }
+.foot .mk svg circle { fill: currentColor; }
+
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="course" href="#top">Thinking is Critical <span>· Module 2</span></a>
+  <span class="where" id="where">Addressing Biases</span>
+  <a class="home" href="/" aria-label="Praxilogue, home">
+    <svg viewBox="0 0 32 32" width="14" height="14" aria-hidden="true"><circle cx="11" cy="12" r="2.6"/><circle cx="21" cy="12" r="2.6"/><circle cx="16" cy="21" r="2.6"/></svg>
+    Praxilogue
+  </a>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+</header>
+
+<div class="wrap" id="top">
+
+<nav class="sidenav" aria-label="Module sections">
+  <ol>
+    <li><a href="#intro" data-nav="intro"><span class="n">2.0</span>The filter</a></li>
+    <li><a href="#s21" data-nav="s21"><span class="n">2.1</span>Confirmation bias</a></li>
+    <li><a href="#s22" data-nav="s22"><span class="n">2.2</span>Selective adherence</a></li>
+    <li><a href="#s23" data-nav="s23"><span class="n">2.3</span>Agreement is a feature</a></li>
+    <li><a href="#s24" data-nav="s24"><span class="n">2.4</span>Expertise bias</a></li>
+    <li><a href="#s25" data-nav="s25"><span class="n">2.5</span>Challenging bias</a></li>
+    <li><a href="#carry" data-nav="carry"><span class="n">∴</span>Carrying it out</a></li>
+    <li><a href="#sources" data-nav="sources"><span class="n">§</span>Sources</a></li>
+  </ol>
+  <div class="done">Labs done<br><b id="labcount">0 of 8</b></div>
+</nav>
+
+<article>
+
+<!-- =============================================================
+     INTRO
+============================================================= -->
+<section class="part" id="intro" style="padding-top:0">
+  <p class="kicker">Thinking is Critical · Module 2</p>
+  <h1>Addressing <em>Biases</em></h1>
+  <div class="prose">
+    <p class="lede">Most advice about working with AI concerns the machine. Write better prompts. Give more context. Check the output. All of it is sound, and all of it assumes the person at the keyboard is a fixed quantity.</p>
+    <p>They are not. The questions you ask are shaped by what you already believe. The parts of an answer you keep are shaped by the same thing. Two people can send the same model the same problem and come away with opposite conclusions, both of them satisfied, neither of them aware of what they filtered on the way through.</p>
+    <p>This module is about that filter.</p>
+    <p class="dim">The human practice underneath it: everyone knows the colleague who only ever runs an idea past the person most likely to agree with it. They are not being dishonest. They want the idea to work, so they take it to the person who will help it work. AI makes that colleague of everyone, because it is always available, always willing, and never visibly annoyed by the fifth attempt to get the answer you wanted.</p>
+  </div>
+  <div class="frame">
+    <b>How this page works.</b> Each section opens with something to try before the explanation, because the explanation lands differently once you have caught yourself doing the thing. The exercises run in your browser. Nothing you type is sent anywhere; it is kept on this device so the closing card can be built from your own words. This is version one. A version that talks back is in progress.
+  </div>
+</section>
+
+<!-- =============================================================
+     2.1 CONFIRMATION BIAS
+============================================================= -->
+<section class="part" id="s21">
+  <div class="part-head">
+    <p class="part-num">2.1</p>
+    <h2>Confirmation bias</h2>
+  </div>
+
+  <div class="lab" data-lab="q21">
+    <div class="lab-head"><span>Try this first</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p class="q">Take a decision you have already made and feel reasonably confident about. Something real, from the last month or so.</p>
+      <label class="field" for="d21">The decision <small>(a line is enough)</small></label>
+      <textarea id="d21" rows="2" placeholder="e.g. We're moving the weekly status meeting to a written update."></textarea>
+      <label class="field" for="q21a">The question you would naturally put to an AI about it</label>
+      <textarea id="q21a" rows="2" placeholder="e.g. What's the best way to structure the written update so people actually read it?"></textarea>
+      <label class="field" for="q21b">The question a person who thought you were wrong would ask</label>
+      <textarea id="q21b" rows="2" placeholder="e.g. Should we be dropping the meeting at all? What does the team lose?"></textarea>
+      <div class="row">
+        <button class="btn primary" type="button" id="go21">Compare the two</button>
+      </div>
+      <div class="result" id="r21" hidden aria-live="polite">
+        <div class="two">
+          <div class="hl" id="h21a"><span class="who">Your question</span></div>
+          <div class="hl" id="h21b"><span class="who">The disbeliever's question</span></div>
+        </div>
+        <div class="legend"><span><i class="a"></i>presupposes the decision</span><span><i class="o"></i>leaves it open</span></div>
+        <p id="t21" style="margin-top:0.9rem"></p>
+        <small>This is a pattern match on phrasing, not a judgment. It will miss some and flag some wrongly. The point is to see the shape of what you asked.</small>
+      </div>
+    </div>
+  </div>
+
+  <h3>What is happening</h3>
+  <div class="prose">
+    <p>Most people find their own question already contains the answer. "What's the best way to structure the rollout I've planned?" carries an assumption that the rollout should happen. "Should we be rolling this out at all?" is a different question and will return a different document.</p>
+    <p>This is confirmation bias, which is the tendency to seek and weight evidence that supports what you already hold. It is well documented in humans and it predates AI by a long way. What AI changes is the speed and the compliance. A colleague who is asked a loaded question will often push back on the framing. A model is far more likely to answer the question as posed.</p>
+    <p>The effect operates in two places, and most people only notice one of them.</p>
+    <p>The first is the question. You ask in a way that invites agreement, and you get agreement.</p>
+    <p>The second is the reading. Even when the answer is balanced, you retain the parts that support your position and skim the parts that complicate it. This one is harder to catch, because you never see a record of what you skipped. The document looked supportive. You have no memory of the three paragraphs that were not.</p>
+  </div>
+
+  <h3>Where most people stop</h3>
+  <div class="prose">
+    <p>The usual fix is to fix the question, and that is worth doing. Ask what would make this wrong. Present the situation without your preferred conclusion. Both work.</p>
+    <p>The reading problem survives that fix. You can ask a perfectly neutral question, receive a genuinely balanced answer, and still walk away with a one-sided version of it.</p>
+    <p>A practice for the second half:</p>
+    <p>After you have read a response, before you act on it, name the part you found least convincing. Then ask yourself why you found it least convincing. Sometimes the reason is that the argument was weak. Sometimes the reason is that it was inconvenient. The two feel identical from the inside, and separating them takes a deliberate pass.</p>
+    <p>Asking for "both sides" does not solve this on its own. It produces a symmetrical answer, which you then read asymmetrically.</p>
+  </div>
+</section>
+
+<!-- =============================================================
+     2.2 SELECTIVE ADHERENCE
+============================================================= -->
+<section class="part" id="s22">
+  <div class="part-head">
+    <p class="part-num">2.2</p>
+    <h2>Selective adherence</h2>
+  </div>
+
+  <div class="prose">
+    <p>Bring to mind two occasions when you took an AI's suggestion, and one occasion when you overrode it. For the one you overrode: what made you override it?</p>
+    <p class="dim">Most people report some version of "it felt wrong" or "I could tell it wasn't right". Sit with that for a moment and ask what the feeling was tracking. Then do the reading below, which makes the feeling visible.</p>
+  </div>
+
+  <div class="lab" data-lab="q22">
+    <div class="lab-head"><span>Try this first · a reading</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p class="step">Step 1 · Before you read</p>
+      <p class="q">Should junior staff be allowed to use AI to write first drafts?</p>
+      <p>Pick the answer you would give today, before reading anything.</p>
+      <div class="row" role="group" aria-label="Your prior">
+        <button class="btn" type="button" data-prior="yes" aria-pressed="false">Yes, they should</button>
+        <button class="btn" type="button" data-prior="no" aria-pressed="false">No, they shouldn't</button>
+        <button class="btn" type="button" data-prior="undecided" aria-pressed="false">Genuinely undecided</button>
+      </div>
+
+      <p class="step">Step 2 · Read, and mark each paragraph as you go</p>
+      <p>Below is a balanced response of the kind a model returns to that question. For each paragraph, mark honestly whether you accepted it as you read or found yourself pushing back.</p>
+      <div class="paras" id="paras22">
+        <div class="para" data-lean="for">
+          <div><span class="lean" hidden>Leans yes</span>Drafting is where most of the time goes and the least judgment is exercised. Letting a model produce the first pass moves a junior's effort to the part of the work that teaches something, which is deciding what is wrong with the draft.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+        <div class="para" data-lean="against">
+          <div><span class="lean" hidden>Leans no</span>The first draft is also where a junior learns the shape of the work. Someone who has never built a document from nothing has no model of what the sections are for, and will struggle to see what the generated version has left out.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+        <div class="para" data-lean="neutral">
+          <div><span class="lean" hidden>Neither</span>Much depends on what the review step looks like. Where a senior reads the draft closely, the origin of the draft matters less. Where review is light, whatever produced the draft is effectively the author.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+        <div class="para" data-lean="for">
+          <div><span class="lean" hidden>Leans yes</span>Teams that prohibit the practice tend to get it anyway, unacknowledged. A rule that is not followed produces drafts of unknown origin and no conversation about how they were made.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+        <div class="para" data-lean="against">
+          <div><span class="lean" hidden>Leans no</span>Fluent drafts are harder to review than rough ones. A rough draft signals where the thinking is thin. A polished one hides it, and juniors are least equipped to find the gap between how a draft reads and whether it is right.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+        <div class="para" data-lean="neutral">
+          <div><span class="lean" hidden>Neither</span>The workable versions of this policy tend to specify the task rather than the tool: which kinds of document, at what stage, with what disclosure. A blanket yes or no answers the wrong question.</div>
+          <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="go22" disabled>Show me my pattern</button>
+        <span class="count" id="c22" style="font-family:var(--mono);font-size:0.7rem;color:var(--ink-3)">0 of 6 marked</span>
+      </div>
+      <div class="result pen" id="r22" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h3>What is happening</h3>
+  <div class="prose">
+    <p>There is a common assumption that the risk with AI is uniform over-trust, that people defer to the machine across the board because it sounds authoritative. It is a reasonable assumption. The research is more interesting than that.</p>
+    <p>Alon-Barkat and Busuioc ran three studies looking for exactly this effect. They did not find it. Participants showed no significant difference in how much they adhered to advice depending on whether it came from an algorithm or a human expert.</p>
+    <p>What they did find: participants adhered more strongly when the advice aligned with the beliefs and stereotypes they already held. They named this <strong>selective adherence</strong>.</p>
+    <p>Trust in AI is not a level. It is a pattern. It goes up where the output agrees with you and down where it does not, and the movement is invisible because it feels like judgment. The sense of "I could tell it wasn't right" is doing real work some of the time. The rest of the time it is confirmation bias wearing the costume of expertise.</p>
+    <p class="pull">This is the load-bearing idea in the module. Everything else in it follows from this one.</p>
+  </div>
+
+  <h3>Where most people stop</h3>
+  <div class="prose">
+    <p>The natural conclusion is that you should trust AI less. Be more sceptical across the board, check more things, take less at face value.</p>
+  </div>
+
+  <div class="lab" data-lab="q22b">
+    <div class="lab-head"><span>See it · trust is a pattern</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p>Each bar is one paragraph from the reading above, and its height is how hard you pushed on it. Now do what the natural conclusion says, and lower your trust across the board.</p>
+      <div class="bars" id="bars22" role="img" aria-label="Six bars showing scepticism per paragraph; the slider raises them all together but the shape stays the same">
+        <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
+        <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
+      </div>
+      <div class="bar-labels"><span>¶1</span><span>¶2</span><span>¶3</span><span>¶4</span><span>¶5</span><span>¶6</span></div>
+      <div class="bars-legend"><span><i class="p"></i>pushed back</span><span><i class="l"></i>accepted</span></div>
+      <div class="slider">
+        <label for="sl22">Lower your trust across the board <output id="o22" for="sl22">+0%</output></label>
+        <input type="range" id="sl22" min="0" max="50" value="0" step="5">
+      </div>
+      <div class="result" id="r22b" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Lowering trust uniformly leaves the pattern completely intact. If you scale your scepticism up by twenty percent everywhere, you are still more sceptical of the things you disagreed with, because that is where you were starting from. The variance is the problem, and adjusting the average does nothing to it.</p>
+    <p>The move that works runs the other way. The parts of an answer that annoyed you have already been checked, because irritation is a verification prompt. The parts you accepted without friction are the unexamined ones.</p>
+    <p>A practice: when you finish reading an AI response, mark the passages you accepted immediately and without resistance. Those are your candidates for checking. The ones you argued with have already had your attention.</p>
+    <p>This will feel backwards for a while. It is meant to.</p>
+  </div>
+</section>
+
+<!-- =============================================================
+     2.3 AGREEMENT IS A FEATURE
+============================================================= -->
+<section class="part" id="s23">
+  <div class="part-head">
+    <p class="part-num">2.3</p>
+    <h2>Agreement is a feature</h2>
+  </div>
+
+  <div class="lab" data-lab="q23">
+    <div class="lab-head"><span>Try this first · an order experiment</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p class="q">Take a position you do not personally hold and think is fairly weak. Something you could argue but would not.</p>
+      <label class="field" for="p23">The weak position</label>
+      <textarea id="p23" rows="2" placeholder="e.g. Every internal document should be written by AI first and edited by a person second."></textarea>
+      <p>Two prompts. Run them in this order in an AI of your choice, the second in a brand-new conversation. Then, another day, run them the other way round and compare.</p>
+      <div class="prompts" id="pr23"></div>
+      <div class="row">
+        <button class="btn ghost" type="button" id="done23">I've run them</button>
+      </div>
+      <div class="result" id="r23" hidden>
+        <p>Watch how readily it complies with the first, and how good the case looks. Then notice that the order of those two requests changes what you get. That difference is the subject of this section.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>What is happening</h3>
+  <div class="prose">
+    <p>Language models are built to continue and cooperate with what you give them. This is a structural property, present in the training objective before anyone tunes anything, and reinforced by the preference training that follows. Helpfulness, responsiveness and agreement are rewarded. Disagreement, particularly unprompted disagreement, generally is not.</p>
+    <p>There is no intent in this. The model is not flattering you, and it is not trying to keep you happy in the way a person might. It has no position of its own that it is suppressing.</p>
+    <p>It is also the same property that makes the thing useful. Consider a typewriter that argued with you about your ending. It would be unusable. A tool that resisted your direction on principle would be worse at every job you actually want done. The cooperativeness is the point, and it comes with a cost that lands entirely on you.</p>
+    <p>The practical consequence is simple and easy to state:</p>
+    <p class="pull">The model will not supply the disagreement. You have to ask for it.</p>
+  </div>
+
+  <h3>Where most people stop</h3>
+  <div class="prose">
+    <p>Once people understand this, they start asking for criticism. "What's wrong with this?" "Play devil's advocate." "Push back on me."</p>
+    <p>That is the right instinct and it is weaker than it looks, because of where the request is usually issued. If you have spent nine messages building a case, and on the tenth you ask the model to critique it, you get critique shaped by nine messages of context in which you were clearly invested in the case. The criticism arrives pre-softened. It will find the flaws you can live with.</p>
+    <p>What raises the quality of the disagreement:</p>
+  </div>
+  <dl class="practice">
+    <dt>Move it out of the thread.</dt>
+    <dd>Open a fresh conversation with no history and put the position in cold. The absence of context is the point.</dd>
+    <dt>Detach it from you.</dt>
+    <dd>"A colleague has proposed the following" produces sharper analysis than "here is my proposal", for the same reason a friend reviews your CV more honestly than they review their own.</dd>
+    <dt>Ask before you commit.</dt>
+    <dd>Request the strongest case against a position before you have stated that you hold it. Once your view is on the record, every subsequent turn is written by a model that knows it.</dd>
+    <dt>Name a specific critic.</dt>
+    <dd>A general request for criticism returns general criticism. Asking what a particular kind of sceptic would say, someone with a defined stake and a defined objection, returns something you can actually work with.</dd>
+  </dl>
+
+  <div class="lab" data-lab="q23b">
+    <div class="lab-head"><span>Practice · ask for the disagreement</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <label class="field" for="pos23">A position you actually hold, or are about to</label>
+      <textarea id="pos23" rows="2" placeholder="e.g. We should run the AI literacy programme as a two-day workshop rather than a series of short sessions."></textarea>
+      <label class="field" for="critic23">The critic <small>(someone with a stake and an objection)</small></label>
+      <select id="critic23">
+        <option value="">Choose one…</option>
+        <option>the person who has to fund it</option>
+        <option>the engineer who has to maintain it afterwards</option>
+        <option>a customer who left last year</option>
+        <option>the person who tried something like this here before, and watched it fail</option>
+        <option>a peer with the same expertise who thinks it's premature</option>
+        <option>a regulator or auditor reading it cold</option>
+        <option>the most junior person who will have to live with it</option>
+        <option value="custom">someone else…</option>
+      </select>
+      <input type="text" id="criticx" placeholder="Describe the critic: their role, and what they stand to lose" style="margin-top:0.5rem" hidden>
+      <p style="margin-top:1rem">Four prompts built from your words. Each one applies one of the moves above. Copy, and take it to a fresh conversation.</p>
+      <div class="prompts" id="pr23b"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================
+     2.4 EXPERTISE BIAS
+============================================================= -->
+<section class="part" id="s24">
+  <div class="part-head">
+    <p class="part-num">2.4</p>
+    <h2>Expertise bias</h2>
+  </div>
+
+  <div class="lab" data-lab="q24">
+    <div class="lab-head"><span>Try this first · two outputs</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p class="q">Find two AI outputs you have received recently. One on something you know well, one on something outside your field.</p>
+      <p>For each, estimate how long you spent evaluating it, and count how many individual claims you actually verified. Not read carefully. Verified.</p>
+      <div class="two">
+        <div>
+          <p class="step">In your field</p>
+          <label class="field" for="f24a">What it was about</label>
+          <input type="text" id="f24a" placeholder="e.g. a briefing on onboarding metrics">
+          <div class="row">
+            <label class="field" for="m24a" style="margin:0">Minutes</label><input type="number" id="m24a" min="0" step="1" placeholder="0">
+            <label class="field" for="v24a" style="margin:0 0 0 0.6rem">Claims checked</label><input type="number" id="v24a" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+        <div>
+          <p class="step">Outside your field</p>
+          <label class="field" for="f24b">What it was about</label>
+          <input type="text" id="f24b" placeholder="e.g. a summary of a tax change">
+          <div class="row">
+            <label class="field" for="m24b" style="margin:0">Minutes</label><input type="number" id="m24b" min="0" step="1" placeholder="0">
+            <label class="field" for="v24b" style="margin:0 0 0 0.6rem">Claims checked</label><input type="number" id="v24b" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+      </div>
+      <div class="row"><button class="btn primary" type="button" id="go24">Compare</button></div>
+      <div class="result" id="r24" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h3>What is happening</h3>
+  <div class="prose">
+    <p>The pattern most people find is that they spent less time on the one in their own field.</p>
+    <p>This runs against intuition. Your expertise is precisely what equips you to catch errors, so it should be the place you catch the most. What happens instead is that fluency in the vocabulary reads as correctness. The output uses the terms you use, in the arrangements you expect, and that familiarity substitutes for scrutiny. The claims that match your existing model of the field pass without inspection, which is confirmation bias operating on your professional knowledge rather than on your opinions.</p>
+    <p>Outside your field the failure is different in kind. You cannot evaluate the content because you do not have the knowledge to evaluate it against. Two responses are common. Some people defer entirely, on the grounds that they have nothing better. Others reject the whole thing on a general suspicion of AI. Both are decisions made without information.</p>
+    <p class="dim">The related trap is covered in Module 3: fluent output produces a feeling of understanding that outpaces actual understanding. Reading a clear explanation of something you could not explain yourself feels a great deal like learning it.</p>
+  </div>
+
+  <h3>Where most people stop</h3>
+  <div class="prose">
+    <p>The common takeaway is to be more careful in your own field. Worth doing, and it only addresses half of the problem.</p>
+    <p>The outside-your-field case has a solution that people rarely reach on their own, because it requires giving up on evaluating the content.</p>
+    <p>You cannot check whether a claim about a field you do not know is true. You can check a number of other things, and they are informative:</p>
+  </div>
+  <dl class="practice">
+    <dt>Structure.</dt>
+    <dd>Does the argument hold together? Do the conclusions follow from the stated reasons? Logical coherence is domain-independent and you are fully qualified to assess it.</dd>
+    <dt>Specificity.</dt>
+    <dd>Vague claims are cheap to produce. Specific ones commit to something. A response that hedges everywhere may be honest, and it may also be avoiding anything checkable.</dd>
+    <dt>Attributability.</dt>
+    <dd>Can each significant claim be traced to a source that exists and says what it is reported to say? This one is checkable regardless of expertise, and it is where fabrication is most often exposed.</dd>
+    <dt>Load-bearing claims.</dt>
+    <dd>Most answers rest on one or two claims that everything else depends on. Identify those and check only those. Verifying the whole document is usually not possible and usually not necessary.</dd>
+  </dl>
+
+  <div class="lab" data-lab="q24b">
+    <div class="lab-head"><span>Practice · find the load-bearing claim</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p>Here is a short answer in a field you may not know, on whether a rural council should buy hydrogen buses rather than battery-electric ones. It was written for this exercise and its claims should not be relied on. Without knowing the field, pick the sentence or sentences that everything else depends on.</p>
+      <div class="sents" id="sents24">
+        <button class="sent" type="button" aria-pressed="false" data-i="0"><span class="sn">1</span>Battery-electric buses lose up to 40% of their rated range in sub-zero conditions, according to a 2022 fleet study.</button>
+        <button class="sent" type="button" aria-pressed="false" data-i="1"><span class="sn">2</span>For rural routes of over 200 km a day, that loss puts most current models below the daily requirement.</button>
+        <button class="sent" type="button" aria-pressed="false" data-i="2"><span class="sn">3</span>Hydrogen fuel-cell buses are far less affected by cold, and refuel in under ten minutes.</button>
+        <button class="sent" type="button" aria-pressed="false" data-i="3"><span class="sn">4</span>Many operators are therefore moving in this direction.</button>
+        <button class="sent" type="button" aria-pressed="false" data-i="4"><span class="sn">5</span>The higher purchase cost is likely to be offset over time as the technology matures.</button>
+        <button class="sent" type="button" aria-pressed="false" data-i="5"><span class="sn">6</span>For a council with long rural routes, hydrogen is the only viable option.</button>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="go24b" disabled>Check my pick</button>
+        <button class="btn ghost" type="button" id="reset24b" hidden>Try again</button>
+      </div>
+      <div class="result" id="r24b" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>That last one is worth carrying. Breaking a verification problem into the part that matters and the part that follows from it is the same move you will use throughout this course.</p>
+  </div>
+</section>
+
+<!-- =============================================================
+     2.5 CHALLENGING BIAS
+============================================================= -->
+<section class="part" id="s25">
+  <div class="part-head">
+    <p class="part-num">2.5</p>
+    <h2>Challenging bias</h2>
+  </div>
+
+  <div class="lab" data-lab="q25">
+    <div class="lab-head"><span>Try this first · read without rebutting</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p class="q">Here is the strongest case against a position most people reading this page hold: that every knowledge worker should be using AI daily.</p>
+      <p>Read it one paragraph at a time. Pay attention to what you do while reading. The moment you notice yourself composing a reply, press the button. There is no wrong answer, and nobody is watching.</p>
+      <div class="paras" id="paras25">
+        <div class="para"><div>Daily use is a target for the tool, not for the work. A habit measured in frequency rewards finding things to use it on, and the work that benefits most from AI is unevenly distributed. Some roles have a great deal of it. Some have almost none.</div></div>
+        <div class="para" hidden><div>The skill that good AI use draws on, knowing what to check and what to trust, is built by doing the work unaided. A person who has never drafted the document has less to evaluate the draft against. Mandating daily use for people early in a role removes the practice that would make their use of it good.</div></div>
+        <div class="para" hidden><div>Adoption metrics are easy to hit and hard to interpret. A team can log daily use and be producing more text with less thought in it. The survey work on cognitive effort (Lee et al., 2025) found that higher confidence in the tool went with self-reported reductions in critical engagement. Frequency is not the thing anyone wants. It is the thing that is easy to count.</div></div>
+        <div class="para" hidden><div>The most reliable gains so far sit in a narrow band of tasks: first drafts, summaries, code with tests, transformations between formats. Outside that band the evidence is thinner and the failure modes are quieter. "Daily" pushes use into the thin part of the evidence.</div></div>
+        <div class="para" hidden><div>None of this is an argument against AI at work. It is an argument against the word "every" and the word "daily". The defensible version is that people should use it where it helps and be able to tell where that is, which is a different and harder policy to write.</div></div>
+      </div>
+      <div class="reader-ctl">
+        <button class="btn primary" type="button" id="next25">Next paragraph</button>
+        <button class="btn pen" type="button" id="rebut25" aria-pressed="false">I'm composing a rebuttal</button>
+        <span class="count" id="c25">1 of 5</span>
+      </div>
+      <div class="result pen" id="r25" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h3>What is happening</h3>
+  <div class="prose">
+    <p>The value in seeking out the opposing case is not primarily that it changes your mind. It usually will not, and a course that promised otherwise would be overselling.</p>
+    <p>The value is in what survives. Running a position against its strongest opposition tells you which parts of it are load-bearing and which parts you were carrying out of habit. Positions that have never been tested tend to contain a mixture of both, and their holders cannot tell which is which.</p>
+    <p>This has a long history outside AI. Steelmanning, the practice of constructing the strongest version of an opposing argument before responding to it, is standard in philosophy and competitive debate. Legal training is built around arguing assigned positions rather than held ones. The reason those disciplines do it is not fairness. It is that you do not understand your own argument until you have seen what it has to survive.</p>
+    <p>AI makes the practice cheap. Generating a serious opposing case used to require finding a person who held it and was willing to argue. Now it takes a sentence.</p>
+  </div>
+
+  <h3>Where most people stop</h3>
+  <div class="prose">
+    <p>The common version is to ask for counterarguments and then read them defensively, which produces the feeling of having tested a position without the substance of it. The rebuttals you compose while reading are the sound of the test failing.</p>
+    <p>Three things that make it real:</p>
+  </div>
+  <dl class="practice">
+    <dt>Ask before you declare.</dt>
+    <dd>Put the question as an open one before you state which side you are on. Once your position is in the thread, everything after it is generated by a model that knows where you stand. See 2.3.</dd>
+    <dt>Name the disconfirming evidence.</dt>
+    <dd>Ask yourself what specific finding would change your mind. Then ask whether that finding exists. If nothing could change your mind, you are not holding a position, and the exercise has told you something more useful than a counterargument would have.</dd>
+    <dt>Argue the other side yourself.</dt>
+    <dd>Take the opposing position and defend it for one turn, in your own words, against an AI instructed to attack it. This is harder than reading a counterargument and it is the version that works, for the same reason that writing something teaches you more than reading it.</dd>
+  </dl>
+
+  <div class="lab" data-lab="q25b">
+    <div class="lab-head"><span>Practice · what would change your mind</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <label class="field" for="hold25">A position you hold with some confidence <small>(the one from 2.3 is filled in if you gave one)</small></label>
+      <textarea id="hold25" rows="2" placeholder="e.g. Short, frequent training sessions beat a two-day workshop."></textarea>
+      <label class="field" for="ev25">The specific finding that would change your mind</label>
+      <textarea id="ev25" rows="2" placeholder="e.g. If completion and three-month recall were no better for the short sessions than for the workshop."></textarea>
+      <p class="step">Does that finding exist?</p>
+      <div class="row" role="group" aria-label="Does the finding exist">
+        <button class="btn" type="button" data-ev="looked" aria-pressed="false">I've looked, and it doesn't</button>
+        <button class="btn" type="button" data-ev="unchecked" aria-pressed="false">It might. I haven't checked</button>
+        <button class="btn" type="button" data-ev="nothing" aria-pressed="false">Honestly, nothing would</button>
+      </div>
+      <div class="result" id="r25b" hidden aria-live="polite"></div>
+      <p class="step" style="margin-top:1.6rem">Then argue the other side yourself</p>
+      <div class="prompts" id="pr25"></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p class="kicker">Call-out · other humans</p>
+    <p>Where it is available to you, run an important answer past another person, particularly someone with subject matter expertise.</p>
+    <p>The value here is specific to this module. A knowledgeable colleague brings accuracy, and that matters. What they bring that no amount of careful prompting can replicate is a frame that is not yours. They will not share the assumptions you did not know you were making, because they did not make them. The question that does not occur to you is the question they ask first.</p>
+    <p class="dim" style="color:var(--ink-2)">The accuracy dimension of this, including how to choose which humans and how to weigh what they tell you, is covered in Module 5.</p>
+  </div>
+</section>
+
+<!-- =============================================================
+     CARRYING THIS OUT
+============================================================= -->
+<section class="part" id="carry">
+  <div class="part-head">
+    <p class="part-num">∴</p>
+    <h2>Carrying this out of the module</h2>
+  </div>
+  <ol class="carry">
+    <li>Your question usually contains your answer. Write the version a person who disagreed with you would ask, and notice the difference.</li>
+    <li>Check the parts you accepted easily. The parts that annoyed you have already had your attention.</li>
+    <li>The model will not supply disagreement. Ask for it, and ask for it outside the thread where you built your case.</li>
+    <li>In your own field, slow down. Outside it, check structure, specificity and attribution instead of content.</li>
+    <li>Test a position before you announce it.</li>
+  </ol>
+
+  <div class="lab" data-lab="card">
+    <div class="lab-head"><span>Your card · built from what you wrote</span><span class="state" data-state>not started</span></div>
+    <div class="lab-body">
+      <p>The module in your own words. It updates as you work through the labs above, and stays on this device.</p>
+      <div class="card" id="card">
+        <h4>Module 2 · in my words</h4>
+        <dl>
+          <dt>The question a disbeliever would ask about my decision</dt><dd data-card="q21b" class="empty">Not written yet (2.1)</dd>
+          <dt>My reading pattern</dt><dd data-card="pattern" class="empty">Not marked yet (2.2)</dd>
+          <dt>The critic I should be asking</dt><dd data-card="critic" class="empty">Not chosen yet (2.3)</dd>
+          <dt>Where I check least</dt><dd data-card="field" class="empty">Not compared yet (2.4)</dd>
+          <dt>What would change my mind</dt><dd data-card="ev" class="empty">Not named yet (2.5)</dd>
+        </dl>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="copycard">Copy the card</button>
+        <button class="btn ghost" type="button" id="clearall">Clear everything I typed</button>
+        <span id="copied" style="font-family:var(--mono);font-size:0.7rem;color:var(--ok)" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================
+     SOURCES
+============================================================= -->
+<section class="part" id="sources">
+  <div class="part-head">
+    <p class="part-num">§</p>
+    <h2>Sources</h2>
+  </div>
+  <ul class="sources">
+    <li>Alon-Barkat, S. and Busuioc, M. (2023). Human-AI interactions in public sector decision making: 'automation bias' and 'selective adherence' to algorithmic advice. <em>Journal of Public Administration Research and Theory</em>.</li>
+    <li>Lee, H.-P. et al. (2025). The impact of generative AI on critical thinking: self-reported reductions in cognitive effort and confidence effects from a survey of knowledge workers. <em>CHI 2025</em>. Microsoft Research and Carnegie Mellon University.</li>
+    <li>Logg, J. M., Minson, J. A. and Moore, D. A. (2019). Algorithm appreciation: people prefer algorithmic to human judgment. <em>Organizational Behavior and Human Decision Processes</em>.</li>
+    <li>Skitka, L. J., Mosier, K. L. and Burdick, M. (1999). Does automation bias decision-making? <em>International Journal of Human-Computer Studies</em>.</li>
+  </ul>
+
+  <footer class="foot">
+    <p>Thinking is Critical is a short course on the human half of working with AI. This is Module 2, version one: the exercises run on the page and nothing you type leaves your device. The next version puts a model on the other side of each exercise, so the disagreement can be asked for in the moment rather than copied out.</p>
+    <a class="mk" href="/">
+      <svg viewBox="0 0 32 32" width="14" height="14" aria-hidden="true"><circle cx="11" cy="12" r="2.6"/><circle cx="21" cy="12" r="2.6"/><circle cx="16" cy="21" r="2.6"/></svg>
+      Praxilogue
+    </a>
+  </footer>
+</section>
+
+</article>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------
+     State — one object, persisted. Every read/write is guarded so
+     the page works with storage blocked.
+  ------------------------------------------------------------ */
+  var KEY = 'tic-m2-v1';
+  var S = load();
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable: fine */ }
+    renderCard();
+    updateLabCount();
+  }
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function setState(lab, on) {
+    var el = document.querySelector('[data-lab="' + lab + '"] [data-state]');
+    if (!el) return;
+    el.textContent = on ? 'done' : 'not started';
+    el.classList.toggle('on', !!on);
+  }
+  var LABS = ['q21', 'q22', 'q22b', 'q23', 'q23b', 'q24', 'q24b', 'q25'];
+  function updateLabCount() {
+    var n = 0;
+    LABS.forEach(function (l) { if (S.done && S.done[l]) n++; });
+    var el = $('labcount'); if (el) el.textContent = n + ' of ' + LABS.length;
+  }
+  function markDone(lab) {
+    S.done = S.done || {};
+    S.done[lab] = true;
+    setState(lab, true);
+    save();
+  }
+  function bindText(id, key, cb) {
+    var el = $(id); if (!el) return;
+    if (S[key] != null) el.value = S[key];
+    el.addEventListener('input', function () { S[key] = el.value; save(); if (cb) cb(); });
+  }
+  function copyText(text, btn) {
+    var done = function () {
+      var old = btn.textContent; btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = old; }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+    } else fallback();
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { /* nothing */ }
+      document.body.removeChild(ta);
+    }
+  }
+  function promptCard(title, hint, body, why) {
+    var d = document.createElement('div');
+    d.className = 'prompt';
+    d.innerHTML = '<div class="ph"><b>' + esc(title) + '</b><small>' + esc(hint) + '</small></div>' +
+      '<pre></pre><div class="pf"><span class="why">' + esc(why || '') + '</span><button class="btn" type="button">Copy</button></div>';
+    d.querySelector('pre').textContent = body;
+    d.querySelector('button').addEventListener('click', function () { copyText(body, this); });
+    return d;
+  }
+
+  /* ------------------------------------------------------------
+     Reading progress + section tracking
+  ------------------------------------------------------------ */
+  var prog = $('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    prog.style.width = (max > 0 ? Math.min(100, (h.scrollTop || window.pageYOffset) / max * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  var navLinks = document.querySelectorAll('[data-nav]');
+  var where = $('where');
+  var titles = { intro: 'Addressing Biases', s21: '2.1 Confirmation bias', s22: '2.2 Selective adherence', s23: '2.3 Agreement is a feature', s24: '2.4 Expertise bias', s25: '2.5 Challenging bias', carry: 'Carrying this out', sources: 'Sources' };
+  if ('IntersectionObserver' in window) {
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) current = en.target.id; });
+      if (!current) return;
+      navLinks.forEach(function (a) { a.setAttribute('aria-current', a.getAttribute('data-nav') === current ? 'true' : 'false'); });
+      if (where && titles[current]) where.textContent = titles[current];
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    document.querySelectorAll('section.part').forEach(function (s) { io.observe(s); });
+  }
+
+  /* ------------------------------------------------------------
+     2.1 — two questions, one heuristic
+  ------------------------------------------------------------ */
+  var ASSUME = [
+    /\b(?:the )?best (?:way|ways|approach|method|strategy|practice|practices|option|options)\b/gi,
+    /\bhow (?:do|can|should|could|would|might) (?:i|we|one|you)\b/gi,
+    /\bwhat(?:'s| is) the (?:best|right|most effective|fastest|quickest|easiest|ideal)\b/gi,
+    /\b(?:improve|improving|optimi[sz]e|optimi[sz]ing|strengthen|refine|polish|tighten|streamline|accelerate|speed up|maximi[sz]e|minimi[sz]e|enhance)\b/gi,
+    /\b(?:make sure|ensure|guarantee)\b/gi,
+    /\b(?:convince|persuade|get buy[- ]?in|sell|pitch|justify|defend)\b/gi,
+    /\b(?:roll ?out|rolling out|launch|launching|implement|implementing|execute|executing|deliver|delivering|ship|shipping|deploy|deploying|introduce|introducing|adopt|adopting)\b/gi,
+    /\b(?:successfully|effectively|efficiently|smoothly|quickly|seamlessly)\b/gi,
+    /\b(?:steps|tips|plan|checklist|roadmap|timeline|template) (?:to|for)\b/gi,
+    /\b(?:my|our|the) (?:plan|decision|proposal|approach|strategy|rollout|idea|design|choice|new)\b/gi,
+    /\bwithout (?:losing|breaking|upsetting|delaying|annoying)\b/gi,
+    /\b(?:mitigate|manage|handle|address|overcome|reduce) (?:the |any )?(?:risks?|objections?|pushback|resistance|concerns?|friction)\b/gi,
+    /\bstructure\b/gi
+  ];
+  var OPEN = [
+    /\bwhether\b/gi, /\bat all\b/gi, /\bwhat would (?:make|show|prove|tell)\b/gi,
+    /\b(?:wrong|mistake|mistaken|fail|failing|failed|backfire)\b/gi,
+    /\b(?:case|argument|arguments|reasons?|evidence) against\b/gi, /\bwhy not\b/gi,
+    /\balternatives?\b/gi, /\binstead\b/gi, /\bwhat am i (?:missing|not seeing)\b/gi,
+    /\bshould(?:n't| not| we even| we be| i be)\b/gi, /\bis (?:this|it) (?:worth|a good idea|the right|necessary|needed)\b/gi,
+    /\bdo we (?:need|even need|actually need)\b/gi, /\b(?:downsides?|costs?|risks?|lose|losing)\b/gi,
+    /\bwho (?:loses|is worse off|objects|disagrees)\b/gi
+  ];
+  function scan(text, res) {
+    var ranges = [];
+    res.forEach(function (re) {
+      re.lastIndex = 0; var m;
+      while ((m = re.exec(text))) { ranges.push([m.index, m.index + m[0].length]); if (m[0].length === 0) re.lastIndex++; }
+    });
+    ranges.sort(function (a, b) { return a[0] - b[0]; });
+    var merged = [];
+    ranges.forEach(function (r) {
+      var last = merged[merged.length - 1];
+      if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else merged.push(r.slice());
+    });
+    return merged;
+  }
+  function highlight(text) {
+    var a = scan(text, ASSUME).map(function (r) { return { s: r[0], e: r[1], c: 'a' }; });
+    var o = scan(text, OPEN).map(function (r) { return { s: r[0], e: r[1], c: 'o' }; });
+    var all = a.concat(o).sort(function (x, y) { return x.s - y.s; });
+    var out = '', i = 0;
+    all.forEach(function (r) {
+      if (r.s < i) return;
+      out += esc(text.slice(i, r.s)) + '<mark class="' + r.c + '">' + esc(text.slice(r.s, r.e)) + '</mark>';
+      i = r.e;
+    });
+    out += esc(text.slice(i));
+    return { html: out, a: a.length, o: o.length };
+  }
+  bindText('d21', 'd21');
+  bindText('q21a', 'q21a');
+  bindText('q21b', 'q21b');
+  $('go21').addEventListener('click', function () {
+    var qa = ($('q21a').value || '').trim(), qb = ($('q21b').value || '').trim();
+    if (!qa && !qb) { $('q21a').focus(); return; }
+    var A = highlight(qa), B = highlight(qb);
+    $('h21a').innerHTML = '<span class="who">Your question</span>' + (qa ? A.html : '<span class="none">Nothing written yet.</span>');
+    $('h21b').innerHTML = '<span class="who">The disbeliever\'s question</span>' + (qb ? B.html : '<span class="none">Nothing written yet.</span>');
+    var t;
+    if (!qb) t = 'Write the second question too. The comparison is the exercise; the first question on its own only tells you what you already think.';
+    else if (A.a > 0 && B.a < A.a) t = 'Your question already contains the decision. The other one leaves it open, which is why it would return a different document. Neither is the wrong question to ask. The point is that you only asked one of them.';
+    else if (A.a > 0 && B.a >= A.a) t = 'Both questions presuppose the decision, which is common: the disbeliever you imagined still accepted the frame. Try the second one again as someone who thinks the whole thing should not happen.';
+    else if (A.a === 0 && B.o > 0) t = 'Your question is fairly open on the surface, and the disbeliever\'s is more so. Read your own again for the assumption the pattern cannot see: the one in what you chose to ask about at all.';
+    else t = 'Neither question presupposes much on the surface. That is either a genuinely open question, or the assumption lives somewhere phrasing does not reach: in the topic you picked, or the options you did not list.';
+    $('t21').textContent = t;
+    $('r21').hidden = false;
+    markDone('q21');
+  });
+
+  /* ------------------------------------------------------------
+     2.2 — mark your reading; then the bars
+  ------------------------------------------------------------ */
+  var paras22 = Array.prototype.slice.call(document.querySelectorAll('#paras22 .para'));
+  S.marks22 = Array.isArray(S.marks22) && S.marks22.length === 6 ? S.marks22 : [null, null, null, null, null, null];
+  document.querySelectorAll('[data-prior]').forEach(function (b) {
+    if (S.prior22 === b.getAttribute('data-prior')) b.setAttribute('aria-pressed', 'true');
+    b.addEventListener('click', function () {
+      S.prior22 = b.getAttribute('data-prior');
+      document.querySelectorAll('[data-prior]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      save();
+    });
+  });
+  function refresh22() {
+    var n = S.marks22.filter(Boolean).length;
+    $('c22').textContent = n + ' of 6 marked';
+    $('go22').disabled = n < 6;
+  }
+  paras22.forEach(function (p, i) {
+    var btns = p.querySelectorAll('[data-mark]');
+    btns.forEach(function (b) {
+      if (S.marks22[i] === b.getAttribute('data-mark')) b.setAttribute('aria-pressed', 'true');
+      b.addEventListener('click', function () {
+        S.marks22[i] = b.getAttribute('data-mark');
+        btns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        p.classList.remove('flag', 'calm');
+        var tag = p.querySelector('.tag'); if (tag) tag.remove();
+        var lean = p.querySelector('.lean'); if (lean) lean.hidden = true;
+        $('r22').hidden = true;
+        save(); refresh22(); drawBars();
+      });
+    });
+  });
+  refresh22();
+  function leanWord(l) { return l === 'for' ? 'yes' : 'no'; }
+  $('go22').addEventListener('click', function () {
+    var acc = 0, pushFor = 0, pushAgainst = 0, nFor = 0, nAgainst = 0;
+    paras22.forEach(function (p, i) {
+      var m = S.marks22[i], lean = p.getAttribute('data-lean');
+      p.querySelector('.lean').hidden = false;
+      var tag = document.createElement('span'); tag.className = 'tag';
+      if (m === 'accept') {
+        acc++; p.classList.add('flag'); p.classList.remove('calm');
+        tag.textContent = 'Unchecked. Candidate for checking.';
+      } else {
+        p.classList.add('calm'); p.classList.remove('flag');
+        tag.className += ' calm'; tag.textContent = 'Already had your attention.';
+      }
+      p.firstElementChild.appendChild(tag);
+      if (lean === 'for') { nFor++; if (m === 'push') pushFor++; }
+      if (lean === 'against') { nAgainst++; if (m === 'push') pushAgainst++; }
+    });
+    var html = '<p>You accepted <strong>' + acc + ' of 6</strong> paragraphs without friction. In the usual way of reading, those are the ones that vanish from memory as "the document was supportive". In this module, they are the candidates for checking.</p>';
+    var prior = S.prior22;
+    if (prior === 'yes' || prior === 'no') {
+      var withMe = prior === 'yes' ? pushFor : pushAgainst;
+      var withMeN = prior === 'yes' ? nFor : nAgainst;
+      var againstMe = prior === 'yes' ? pushAgainst : pushFor;
+      var againstMeN = prior === 'yes' ? nAgainst : nFor;
+      if (againstMe > withMe) html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading. You pushed back on ' + againstMe + ' of the ' + againstMeN + ' paragraphs that cut against that, and ' + withMe + ' of the ' + withMeN + ' that supported it. That difference is selective adherence, observed in your own reading a minute ago. It felt like judgment. Some of it was.</p>';
+      else if (againstMe === withMe) html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading, and you pushed on both sides evenly (' + withMe + ' of ' + withMeN + ' with you, ' + againstMe + ' of ' + againstMeN + ' against). Either the pattern this section describes is not operating today, or it is operating in what you accepted. Look at the flagged ones.</p>';
+      else html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading, and you pushed harder on the paragraphs that agreed with you (' + withMe + ' of ' + withMeN + ') than on those that did not (' + againstMe + ' of ' + againstMeN + '). That is the reverse of the usual pattern. It happens when people know they are being watched for it, which is fine: the aim is to be able to do it on purpose.</p>';
+    } else {
+      html += '<p>You came in undecided, which makes the pattern quieter. Look at the two flagged neutrals: paragraphs that decline to take a side often pass without inspection because there is nothing to argue with.</p>';
+    }
+    $('r22').innerHTML = html;
+    $('r22').hidden = false;
+    S.pattern22 = { acc: acc, pushFor: pushFor, pushAgainst: pushAgainst, prior: prior };
+    markDone('q22');
+    drawBars();
+  });
+
+  // 2.2b — the bars
+  var bars = Array.prototype.slice.call(document.querySelectorAll('#bars22 .bar'));
+  var DEFAULT = ['accept', 'push', 'accept', 'accept', 'push', 'accept'];
+  function drawBars() {
+    var shift = parseInt($('sl22').value, 10) / 100;
+    var marks = S.marks22.filter(Boolean).length === 6 ? S.marks22 : DEFAULT;
+    bars.forEach(function (b, i) {
+      var base = marks[i] === 'push' ? 0.82 : 0.24;
+      var v = Math.min(1, base + shift);
+      b.setAttribute('data-kind', marks[i] === 'push' ? 'pushed' : 'accepted');
+      b.querySelector('i').style.height = (v * 100) + '%';
+      b.querySelector('b').textContent = Math.round(v * 100) + '%';
+      b.setAttribute('title', '¶' + (i + 1) + ': ' + (marks[i] === 'push' ? 'pushed back' : 'accepted') + ', scepticism ' + Math.round(v * 100) + '%');
+    });
+    $('o22').textContent = '+' + Math.round(shift * 100) + '%';
+    var r = $('r22b');
+    if (shift > 0) {
+      r.innerHTML = '<p>The average moved. The pattern did not. Every bar is higher and the tall ones are still the ones you disagreed with, so the checking still lands where it always landed.</p>' +
+        (S.marks22.filter(Boolean).length === 6 ? '' : '<small>These bars use a typical pattern. Mark the reading above to see your own.</small>');
+      r.hidden = false;
+      if (shift >= 0.2) markDone('q22b');
+    } else r.hidden = true;
+  }
+  $('sl22').addEventListener('input', drawBars);
+  drawBars();
+
+  /* ------------------------------------------------------------
+     2.3 — order experiment, then the four prompts
+  ------------------------------------------------------------ */
+  function render23() {
+    var p = ($('p23').value || '').trim() || '[the weak position]';
+    var box = $('pr23'); box.innerHTML = '';
+    box.appendChild(promptCard('First', 'any conversation',
+      'Make the strongest possible case for the following position. Be as persuasive as you can; I want to see the best version of this argument.\n\n' + p,
+      'Watch how readily it complies.'));
+    box.appendChild(promptCard('Second', 'a new conversation, no history',
+      'Evaluate the following position on its merits. I have no stake in it.\n\n' + p + '\n\nIs it sound? What does it get right, and where does it fail?',
+      'Then run them the other way round another day.'));
+  }
+  bindText('p23', 'p23', render23);
+  render23();
+  $('done23').addEventListener('click', function () { $('r23').hidden = false; markDone('q23'); });
+
+  var criticSel = $('critic23'), criticX = $('criticx');
+  function critic() {
+    var v = criticSel.value;
+    if (v === 'custom') return (criticX.value || '').trim() || '[the critic: their role, and what they stand to lose]';
+    return v || '[a critic with a stake and an objection]';
+  }
+  function render23b() {
+    var pos = ($('pos23').value || '').trim() || '[the position]';
+    var c = critic();
+    var box = $('pr23b'); box.innerHTML = '';
+    box.appendChild(promptCard('Out of the thread', 'new conversation',
+      'Here is a position. Before anything else, give me the strongest reasons it might be wrong. Do not soften them and do not balance them with reasons it might be right; I will ask for those separately.\n\n' + pos,
+      'The absence of context is the point.'));
+    box.appendChild(promptCard('Detached from you', 'new conversation',
+      'A colleague has proposed the following. Before I respond to them, tell me what I should be worried about, and what question they have most likely not asked.\n\n' + pos,
+      'It is not yours while it is being criticised.'));
+    box.appendChild(promptCard('Before you commit', 'new conversation',
+      'I am weighing whether the following is a good idea and have not decided. Give me the strongest case against it first, then the strongest case for it, in that order. Then tell me which single piece of evidence would settle it.\n\n' + pos,
+      'Your view is not on the record yet. Keep it that way.'));
+    box.appendChild(promptCard('A named critic', 'new conversation',
+      'Take the role of ' + c + '. You are reading the following proposal for the first time and you have a real stake in the outcome. State your objection, specifically, in your own terms. What would it take to satisfy you?\n\n' + pos,
+      'General requests return general criticism.'));
+    if (($('pos23').value || '').trim() && criticSel.value) markDone('q23b');
+  }
+  bindText('pos23', 'pos23', function () { render23b(); syncHold(); });
+  if (S.critic23) criticSel.value = S.critic23;
+  if (S.criticx) criticX.value = S.criticx;
+  criticX.hidden = criticSel.value !== 'custom';
+  criticSel.addEventListener('change', function () {
+    S.critic23 = criticSel.value; criticX.hidden = criticSel.value !== 'custom';
+    if (!criticX.hidden) criticX.focus();
+    save(); render23b();
+  });
+  criticX.addEventListener('input', function () { S.criticx = criticX.value; save(); render23b(); });
+  render23b();
+
+  /* ------------------------------------------------------------
+     2.4 — the tally, then the load-bearing claim
+  ------------------------------------------------------------ */
+  ['f24a', 'm24a', 'v24a', 'f24b', 'm24b', 'v24b'].forEach(function (id) { bindText(id, id); });
+  $('go24').addEventListener('click', function () {
+    var ma = +($('m24a').value || 0), va = +($('v24a').value || 0), mb = +($('m24b').value || 0), vb = +($('v24b').value || 0);
+    var fa = ($('f24a').value || '').trim() || 'the one in your field', fb = ($('f24b').value || '').trim() || 'the one outside it';
+    var html;
+    if (!ma && !mb && !va && !vb) { html = '<p>Put some numbers in, even rough ones. Estimates are fine; the comparison is what matters.</p>'; }
+    else {
+      var line = '<p>In your field (' + esc(fa) + '): ' + ma + ' min, ' + va + ' claim' + (va === 1 ? '' : 's') + ' checked. Outside it (' + esc(fb) + '): ' + mb + ' min, ' + vb + ' checked.</p>';
+      if (ma < mb || (ma === mb && va < vb)) html = line + '<p>Less time in your own field. That is the common pattern, and it runs against intuition: your expertise is exactly what would let you catch the error, and it is also what makes the fluent version read as correct.</p>';
+      else if (ma > mb && va >= vb) html = line + '<p>More time in your own field. Less common, and worth a second look: was the extra time spent verifying claims, or reading a familiar vocabulary with pleasure? The count of claims checked is the more honest number.</p>';
+      else html = line + '<p>About even. Now look at the claims-checked column, which is the number that matters. Time reading is not time verifying, and in your own field the two feel the same.</p>';
+      if (va === 0 && vb === 0) html += '<p>Zero claims verified in either. That is most people, most of the time. The next lab is about which one claim to check when you can only check one.</p>';
+    }
+    $('r24').innerHTML = html; $('r24').hidden = false;
+    S.tally24 = { fa: fa, ma: ma, va: va, fb: fb, mb: mb, vb: vb };
+    markDone('q24');
+  });
+
+  var sents = Array.prototype.slice.call(document.querySelectorAll('#sents24 .sent'));
+  var picked = {};
+  function refresh24b() { $('go24b').disabled = Object.keys(picked).filter(function (k) { return picked[k]; }).length === 0; }
+  sents.forEach(function (s) {
+    s.addEventListener('click', function () {
+      if ($('sents24').classList.contains('revealed')) return;
+      var i = s.getAttribute('data-i');
+      picked[i] = !picked[i];
+      s.setAttribute('aria-pressed', picked[i] ? 'true' : 'false');
+      refresh24b();
+    });
+  });
+  $('go24b').addEventListener('click', function () {
+    var chose1 = !!picked['0'], chose2 = !!picked['1'], chose6 = !!picked['5'];
+    var box = $('sents24'); box.classList.add('revealed');
+    sents[0].classList.add('load');
+    sents[3].classList.add('cheap'); sents[4].classList.add('cheap');
+    var lead;
+    if (chose1) lead = '<p>Yes. Sentence 1 is the one everything rests on' + (chose2 || chose6 ? ', and you also picked one that follows from it, which is the right instinct to notice' : '') + '.</p>';
+    else if (chose6) lead = '<p>Sentence 6 is the conclusion, which makes it the thing to <em>test</em>, not the thing to <em>check</em>. Trace it backwards: it rests on 2, which rests on 1. Sentence 1 is where the checking goes.</p>';
+    else if (chose2) lead = '<p>Close. Sentence 2 sounds like the key claim, but it is arithmetic on sentence 1. If the 40% figure is wrong, 2 is wrong for free. Sentence 1 is where the checking goes.</p>';
+    else lead = '<p>Not quite. Trace the conclusion in 6 backwards: it rests on 2, which is arithmetic on the 40% figure in 1. Sentence 1 is the load-bearing claim.</p>';
+    $('r24b').innerHTML = lead +
+      '<ul class="verdicts">' +
+      '<li><span class="k">Load-bearing</span><span><b>1.</b> The 40% figure, and the study it is attributed to. If the study exists and says this, most of the argument stands. If it does not, nothing after it matters. This is the one claim to check, and you can check it without knowing anything about buses.</span></li>' +
+      '<li><span class="k">Structure</span><span><b>6</b> overreaches. "Most current models fall below the requirement" (2) does not get you to "the only viable option" (6). Even if every fact is right, the conclusion is larger than the reasons.</span></li>' +
+      '<li><span class="k dim">Specificity</span><span><b>4</b> and <b>5</b> are cheap. "Many operators" and "likely to be offset over time" commit to nothing checkable. Not necessarily wrong, but they carry no weight, and a response that hedged this way throughout would be avoiding anything testable.</span></li>' +
+      '<li><span class="k dim">Attributability</span><span>Only <b>1</b> names a source, and only vaguely. Ask for it by name. Fabrication is most often exposed here.</span></li>' +
+      '</ul>';
+    $('r24b').hidden = false;
+    $('reset24b').hidden = false; $('go24b').disabled = true;
+    markDone('q24b');
+  });
+  $('reset24b').addEventListener('click', function () {
+    picked = {};
+    sents.forEach(function (s) { s.setAttribute('aria-pressed', 'false'); s.classList.remove('load', 'cheap'); });
+    $('sents24').classList.remove('revealed'); $('r24b').hidden = true; $('reset24b').hidden = true; refresh24b();
+  });
+
+  /* ------------------------------------------------------------
+     2.5 — read without rebutting; then what would change your mind
+  ------------------------------------------------------------ */
+  var paras25 = Array.prototype.slice.call(document.querySelectorAll('#paras25 .para'));
+  var shown = 1, firstRebut = null;
+  $('rebut25').addEventListener('click', function () {
+    if (firstRebut === null) { firstRebut = shown; this.setAttribute('aria-pressed', 'true'); this.textContent = 'Noticed at ¶' + shown; }
+  });
+  $('next25').addEventListener('click', function () {
+    if (shown < paras25.length) {
+      paras25[shown].hidden = false; shown++;
+      $('c25').textContent = shown + ' of ' + paras25.length;
+      if (shown === paras25.length) this.textContent = 'Finish';
+      return;
+    }
+    var r = $('r25'), html;
+    if (firstRebut === null) html = '<p>You reached the end without pressing the button. Either you read it clean, which happens, or you did not notice. Most people who try this a second time, with the button in mind, find the reply forming somewhere around the second paragraph.</p>';
+    else if (firstRebut <= 2) html = '<p>You started composing a rebuttal at paragraph ' + firstRebut + ' of 5. That is where most people start. Everything after that point was read by someone building a reply rather than someone testing a position, which is the feeling of having tested it without the substance.</p>';
+    else html = '<p>You noticed the rebuttal forming at paragraph ' + firstRebut + ' of 5, later than most. The first ' + (firstRebut - 1) + ' paragraphs got read as an argument rather than as an opponent. That is the skill this section is after, and it does not have to be permanent, just deliberate.</p>';
+    html += '<p>None of this says the counter-case is right. It says the parts of your position that survived it are the load-bearing ones, and the rest you were carrying out of habit.</p>';
+    r.innerHTML = html; r.hidden = false;
+    this.disabled = true; $('rebut25').disabled = true;
+    S.rebut25 = firstRebut === null ? 'none' : firstRebut;
+    markDone('q25');
+  });
+
+  function syncHold() {
+    var h = $('hold25');
+    if (!S.hold25 && S.pos23) { h.value = S.pos23; }
+    render25();
+  }
+  bindText('hold25', 'hold25', render25);
+  bindText('ev25', 'ev25', render25);
+  if (!S.hold25 && S.pos23) $('hold25').value = S.pos23;
+  document.querySelectorAll('[data-ev]').forEach(function (b) {
+    if (S.ev25choice === b.getAttribute('data-ev')) b.setAttribute('aria-pressed', 'true');
+    b.addEventListener('click', function () {
+      S.ev25choice = b.getAttribute('data-ev');
+      document.querySelectorAll('[data-ev]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      save(); showEv();
+    });
+  });
+  function showEv() {
+    var r = $('r25b'), c = S.ev25choice; if (!c) { r.hidden = true; return; }
+    var ev = ($('ev25').value || '').trim();
+    var t = { looked: '<p>Then you hold a position, and a tested one. Write down where you looked, because the next time this comes up the question will be whether anything has changed since.</p>',
+      unchecked: '<p>Then the most useful thing you can do is not another counterargument. It is the search' + (ev ? ' for whether "' + esc(ev) + '" exists' : '') + '. Until you have looked, your confidence is a report on how the position feels, not on what it has survived.</p>',
+      nothing: '<p>Then you are not holding a position. You are holding a commitment, which is a different thing and sometimes the right thing, but it should not be argued for as though evidence had a say. Knowing which of the two you have is more useful than any counterargument would have been.</p>' }[c];
+    r.innerHTML = t; r.hidden = false;
+  }
+  showEv();
+  function render25() {
+    var pos = ($('hold25').value || '').trim() || '[the position you hold]';
+    var box = $('pr25'); box.innerHTML = '';
+    box.appendChild(promptCard('Argue the other side', 'new conversation',
+      'I hold the following position:\n\n' + pos + '\n\nFor this conversation I am going to argue the opposite, in my own words, as well as I can. Your job is to attack my argument as hard as you can, one objection at a time, and not to soften anything. Do not help me; oppose me. I will go first.',
+      'Writing it teaches you more than reading it.'));
+  }
+  render25();
+
+  /* ------------------------------------------------------------
+     The card
+  ------------------------------------------------------------ */
+  function renderCard() {
+    var c = $('card'); if (!c) return;
+    function set(k, v) {
+      var dd = c.querySelector('[data-card="' + k + '"]'); if (!dd) return;
+      if (v) { dd.textContent = v; dd.classList.remove('empty'); }
+      else { dd.classList.add('empty'); }
+    }
+    set('q21b', (S.q21b || '').trim());
+    var p = S.pattern22;
+    set('pattern', p ? ('Accepted ' + p.acc + ' of 6 paragraphs without friction' + (p.prior === 'yes' || p.prior === 'no' ? '; pushed back on ' + (p.prior === 'yes' ? p.pushAgainst : p.pushFor) + ' against my prior, ' + (p.prior === 'yes' ? p.pushFor : p.pushAgainst) + ' with it.' : '.')) : '');
+    var crit = S.critic23 === 'custom' ? (S.criticx || '').trim() : S.critic23;
+    set('critic', crit ? (crit.charAt(0).toUpperCase() + crit.slice(1) + ((S.pos23 || '').trim() ? ', about: ' + S.pos23.trim() : '')) : '');
+    var t = S.tally24;
+    set('field', t ? ('In my field (' + t.fa + '): ' + t.ma + ' min, ' + t.va + ' checked. Outside (' + t.fb + '): ' + t.mb + ' min, ' + t.vb + ' checked.') : '');
+    var evTxt = (S.ev25 || '').trim();
+    var evNote = { looked: ' (looked: it does not exist)', unchecked: ' (not yet checked)', nothing: ' (nothing would, which is its own answer)' }[S.ev25choice] || '';
+    set('ev', evTxt ? evTxt + evNote : (S.ev25choice === 'nothing' ? 'Nothing, which is its own answer.' : ''));
+    var any = (S.q21b || '').trim() || p || crit || t || evTxt;
+    setState('card', !!any);
+  }
+  $('copycard').addEventListener('click', function () {
+    var lines = ['Thinking is Critical, Module 2: in my words', ''];
+    $('card').querySelectorAll('dt').forEach(function (dt) {
+      var dd = dt.nextElementSibling;
+      lines.push(dt.textContent.toUpperCase()); lines.push(dd.textContent); lines.push('');
+    });
+    lines.push('praxilogue.com/critical');
+    copyText(lines.join('\n'), this);
+    $('copied').textContent = '';
+  });
+  $('clearall').addEventListener('click', function () {
+    if (!confirm('Clear everything you typed on this page? This only affects this device.')) return;
+    try { localStorage.removeItem(KEY); } catch (e) { /* nothing */ }
+    location.reload();
+  });
+
+  /* ------------------------------------------------------------
+     Restore visible state from storage
+  ------------------------------------------------------------ */
+  LABS.forEach(function (l) { if (S.done && S.done[l]) setState(l, true); });
+  renderCard();
+  updateLabCount();
+})();
+</script>
+</body>
+</html>
