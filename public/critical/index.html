@@ -538,6 +538,43 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* Choice lists (2.1, 2.3) */
+.choices { display: grid; gap: 0.5rem; margin-top: 0.4rem; }
+.choice {
+  display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.6rem; align-items: start;
+  text-align: left; width: 100%;
+  padding: 0.7rem 0.85rem;
+  background: var(--paper); border: 1px solid var(--line-2); border-radius: 8px;
+  font: inherit; font-family: var(--serif); font-size: 1.02rem; line-height: 1.45; color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.3s ease;
+}
+.choice:hover { border-color: var(--lab); }
+.choice[aria-pressed="true"] { border-color: var(--lab); background: var(--lab-soft); }
+.choice .ci { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); padding-top: 0.3em; }
+.choice[aria-pressed="true"] .ci { color: var(--lab); }
+.choices.revealed .choice { cursor: default; }
+.choices.revealed .choice.dimmed { opacity: 0.55; }
+.choice .tag { display: block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.4rem; color: var(--ink-3); }
+.choice .tag.load { color: var(--pen); }
+.choice .tag.open { color: var(--lab); }
+.choices.revealed .choice[aria-pressed="true"]:has(.tag.load) { border-color: var(--pen); background: color-mix(in srgb, var(--pen-soft) 60%, var(--paper)); }
+.choices.revealed .choice[aria-pressed="true"]:has(.tag.open) { border-color: var(--lab); background: var(--paper); }
+details.opt { margin-top: 1.4rem; border-top: 1px solid var(--line); padding-top: 0.9rem; }
+details.opt summary { cursor: pointer; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+details.opt summary:hover { color: var(--lab); }
+.count { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
+
+/* 2.4 spot the errors */
+.sents.revealed .sent.caught { background: var(--pen-soft); box-shadow: inset 0 -1.5px 0 var(--pen); }
+.sents.revealed .sent.missed { box-shadow: inset 0 -1.5px 0 var(--pen); background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--pen-soft) 4px 6px); }
+.sents.revealed .sent.false { box-shadow: inset 0 -1.5px 0 var(--ink-3); color: var(--ink-2); }
+.legend i.m { box-shadow: inset 0 -1px 0 var(--pen); background: repeating-linear-gradient(-45deg, transparent 0 2px, var(--pen-soft) 2px 4px); }
+.legend i.x { box-shadow: inset 0 -1px 0 var(--ink-3); }
+.verdicts em { font-style: normal; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.verdicts em.got { color: var(--ok); }
+.verdicts em.miss { color: var(--pen); }
 </style>
 </head>
 <body>
@@ -577,10 +614,11 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   <p class="kicker">Thinking is Critical · Module 2</p>
   <h1>Addressing <em>Biases</em></h1>
   <div class="prose">
-    <p class="lede">Most advice about working with AI concerns the machine. Write better prompts. Give more context. Check the output. All of it is sound, and all of it assumes the person at the keyboard is a fixed quantity.</p>
-    <p>They are not. The questions you ask are shaped by what you already believe. The parts of an answer you keep are shaped by the same thing. Two people can send the same model the same problem and come away with opposite conclusions, both of them satisfied, neither of them aware of what they filtered on the way through.</p>
+    <p class="lede">Up until LLMs arrived on the scene, learning how to control computer output was literally learning another language. In some ways this made it easier. The computer required strict instructions executed with precision, there wasn't much room for interpretation, and getting it wrong would simply mean that your expected response didn't render. The failure was obvious and it was immediate.</p>
+    <p>Ask an LLM a poorly formed question and it will answer you anyway, fluently and at length. Nothing fails to render. The precision still matters, and there is no longer anything to tell you when you have not applied it.</p>
+    <p>Which is why the skill has moved. Some of it is still about the machine, and we will cover that in other modules: how to improve your prompts, how to provide comprehensive context, how to evaluate and validate the responses you get. The rest is about you, and specifically about understanding your own cognition, a science known as metacognition.</p>
+    <p>Because unlike traditional programming, the questions you ask and the way you pose them are shaped by what you already believe. Two people can send the same model the same problem and come away with opposite conclusions, both of them satisfied, often unaware of what they filtered in or out as they progressed through the work.</p>
     <p>This module is about that filter.</p>
-    <p class="dim">The human practice underneath it: everyone knows the colleague who only ever runs an idea past the person most likely to agree with it. They are not being dishonest. They want the idea to work, so they take it to the person who will help it work. AI makes that colleague of everyone, because it is always available, always willing, and never visibly annoyed by the fifth attempt to get the answer you wanted.</p>
   </div>
   <div class="frame">
     <b>How this page works.</b> Each section opens with something to try before the explanation, because the explanation lands differently once you have caught yourself doing the thing. The exercises run in your browser. Nothing you type is sent anywhere; it is kept on this device so the closing card can be built from your own words. This is version one. A version that talks back is in progress.
@@ -597,46 +635,49 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </div>
 
   <div class="lab" data-lab="q21">
-    <div class="lab-head"><span>Try this first</span><span class="state" data-state>not started</span></div>
+    <div class="lab-head"><span>Try this first · pick your questions</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <p class="q">Take a decision you have already made and feel reasonably confident about. Something real, from the last month or so.</p>
-      <label class="field" for="d21">The decision <small>(a line is enough)</small></label>
-      <textarea id="d21" rows="2" placeholder="e.g. We're moving the weekly status meeting to a written update."></textarea>
-      <label class="field" for="q21a">The question you would naturally put to an AI about it</label>
-      <textarea id="q21a" rows="2" placeholder="e.g. What's the best way to structure the written update so people actually read it?"></textarea>
-      <label class="field" for="q21b">The question a person who thought you were wrong would ask</label>
-      <textarea id="q21b" rows="2" placeholder="e.g. Should we be dropping the meeting at all? What does the team lose?"></textarea>
+      <p class="q">You have decided to replace your team's weekly status meeting with a written update. You open an AI to help. Which three of these would you most naturally ask?</p>
+      <div class="choices" id="ch21" role="group" aria-label="Candidate questions"></div>
       <div class="row">
-        <button class="btn primary" type="button" id="go21">Compare the two</button>
+        <button class="btn primary" type="button" id="go21" disabled>Show me what I picked</button>
+        <span class="count" id="c21">0 of 3 chosen</span>
       </div>
-      <div class="result" id="r21" hidden aria-live="polite">
-        <div class="two">
-          <div class="hl" id="h21a"><span class="who">Your question</span></div>
-          <div class="hl" id="h21b"><span class="who">The disbeliever's question</span></div>
+      <div class="result pen" id="r21" hidden aria-live="polite"></div>
+
+      <details class="opt" id="own21">
+        <summary>Optional: try it with a decision of your own</summary>
+        <label class="field" for="q21a">The question you would naturally put to an AI about it</label>
+        <textarea id="q21a" rows="2" placeholder="e.g. What's the best way to structure the written update so people actually read it?"></textarea>
+        <label class="field" for="q21b">The question a person who thought you were wrong would ask</label>
+        <textarea id="q21b" rows="2" placeholder="e.g. Should we be dropping the meeting at all? What does the team lose?"></textarea>
+        <div class="row"><button class="btn" type="button" id="go21b">Compare the two</button></div>
+        <div class="result" id="r21b" hidden aria-live="polite">
+          <div class="two">
+            <div class="hl" id="h21a"><span class="who">Your question</span></div>
+            <div class="hl" id="h21b"><span class="who">The disbeliever's question</span></div>
+          </div>
+          <div class="legend"><span><i class="a"></i>assumes the decision</span><span><i class="o"></i>leaves it open</span></div>
+          <p id="t21" style="margin-top:0.9rem"></p>
+          <small>A pattern match on phrasing, not a judgment. It will miss some and flag some wrongly. The point is to see the shape of what you asked.</small>
         </div>
-        <div class="legend"><span><i class="a"></i>presupposes the decision</span><span><i class="o"></i>leaves it open</span></div>
-        <p id="t21" style="margin-top:0.9rem"></p>
-        <small>This is a pattern match on phrasing, not a judgment. It will miss some and flag some wrongly. The point is to see the shape of what you asked.</small>
-      </div>
+      </details>
     </div>
   </div>
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Most people find their own question already contains the answer. "What's the best way to structure the rollout I've planned?" carries an assumption that the rollout should happen. "Should we be rolling this out at all?" is a different question and will return a different document.</p>
-    <p>This is confirmation bias, which is the tendency to seek and weight evidence that supports what you already hold. It is well documented in humans and it predates AI by a long way. What AI changes is the speed and the compliance. A colleague who is asked a loaded question will often push back on the framing. A model is far more likely to answer the question as posed.</p>
-    <p>The effect operates in two places, and most people only notice one of them.</p>
-    <p>The first is the question. You ask in a way that invites agreement, and you get agreement.</p>
-    <p>The second is the reading. Even when the answer is balanced, you retain the parts that support your position and skim the parts that complicate it. This one is harder to catch, because you never see a record of what you skipped. The document looked supportive. You have no memory of the three paragraphs that were not.</p>
+    <p>Most of the questions people actually ask already contain the decision. "What's the best format for the update?" has decided there will be an update. The model answers the question as posed, and you get a well-written plan for something nobody examined.</p>
+    <p>The name for this is confirmation bias: seeking and weighting evidence that supports what you already hold. Peter Wason gave it the name in 1960 after an experiment where people were shown the sequence 2, 4, 6 and asked to work out the rule by proposing sequences of their own. Almost everyone proposed sequences that fit their guess. Almost nobody proposed one designed to break it. Sixty-five years on, the model is the perfect partner for that experiment: it will confirm whatever rule you bring.</p>
+    <p>A colleague asked a loaded question will often push back on the framing. A model mostly won't. Same bias, far less friction.</p>
+    <p>It operates twice. Once in the question, which you can see. Once in the reading, which you can't: even a balanced answer gets read unevenly, and you keep no record of what you skimmed. The document looked supportive. You have no memory of the three paragraphs that weren't.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The usual fix is to fix the question, and that is worth doing. Ask what would make this wrong. Present the situation without your preferred conclusion. Both work.</p>
-    <p>The reading problem survives that fix. You can ask a perfectly neutral question, receive a genuinely balanced answer, and still walk away with a one-sided version of it.</p>
-    <p>A practice for the second half:</p>
-    <p>After you have read a response, before you act on it, name the part you found least convincing. Then ask yourself why you found it least convincing. Sometimes the reason is that the argument was weak. Sometimes the reason is that it was inconvenient. The two feel identical from the inside, and separating them takes a deliberate pass.</p>
-    <p>Asking for "both sides" does not solve this on its own. It produces a symmetrical answer, which you then read asymmetrically.</p>
+    <p>Fixing the question is the obvious move, and it works. Ask what would make this wrong. Describe the situation without your preferred ending.</p>
+    <p>The reading problem survives it. So, one habit for after you read: before you act on an answer, name the part you found least convincing, then ask why. "The argument was weak" and "the argument was inconvenient" feel identical from the inside. Telling them apart takes a deliberate pass.</p>
+    <p>Asking for "both sides" doesn't fix it either. You get a symmetrical answer and read it asymmetrically.</p>
   </div>
 </section>
 
@@ -650,8 +691,7 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </div>
 
   <div class="prose">
-    <p>Bring to mind two occasions when you took an AI's suggestion, and one occasion when you overrode it. For the one you overrode: what made you override it?</p>
-    <p class="dim">Most people report some version of "it felt wrong" or "I could tell it wasn't right". Sit with that for a moment and ask what the feeling was tracking. Then do the reading below, which makes the feeling visible.</p>
+    <p>Think of two occasions when you took an AI's suggestion, and one when you overrode it. What made you override it? Most people say "it felt wrong" or "I could tell it wasn't right". Hold that thought, and do the reading below, which makes the feeling visible.</p>
   </div>
 
   <div class="lab" data-lab="q22">
@@ -696,7 +736,7 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
       </div>
       <div class="row">
         <button class="btn primary" type="button" id="go22" disabled>Show me my pattern</button>
-        <span class="count" id="c22" style="font-family:var(--mono);font-size:0.7rem;color:var(--ink-3)">0 of 6 marked</span>
+        <span class="count" id="c22">0 of 6 marked</span>
       </div>
       <div class="result pen" id="r22" hidden aria-live="polite"></div>
     </div>
@@ -704,22 +744,22 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>There is a common assumption that the risk with AI is uniform over-trust, that people defer to the machine across the board because it sounds authoritative. It is a reasonable assumption. The research is more interesting than that.</p>
-    <p>Alon-Barkat and Busuioc ran three studies looking for exactly this effect. They did not find it. Participants showed no significant difference in how much they adhered to advice depending on whether it came from an algorithm or a human expert.</p>
-    <p>What they did find: participants adhered more strongly when the advice aligned with the beliefs and stereotypes they already held. They named this <strong>selective adherence</strong>.</p>
-    <p>Trust in AI is not a level. It is a pattern. It goes up where the output agrees with you and down where it does not, and the movement is invisible because it feels like judgment. The sense of "I could tell it wasn't right" is doing real work some of the time. The rest of the time it is confirmation bias wearing the costume of expertise.</p>
-    <p class="pull">This is the load-bearing idea in the module. Everything else in it follows from this one.</p>
+    <p>You would expect the risk with AI to be uniform over-trust: the machine sounds authoritative, so people defer. There is a name for that, automation bias, and it comes out of aviation. Skitka and colleagues put people in a flight-simulation task with an automated aid and watched them follow it even when the other instruments said otherwise.</p>
+    <p>Alon-Barkat and Busuioc went looking for the same thing in public-sector decisions, across three studies. They didn't find it. People took the advice at about the same rate whether it came from an algorithm or a human expert.</p>
+    <p>What they found instead: people followed the advice more when it matched what they already believed. They called it <strong>selective adherence</strong>.</p>
+    <p>So trust in AI isn't a level. It's a pattern. It goes up where the output agrees with you and down where it doesn't, and the movement feels like judgment. Sometimes it is. The rest of the time it is confirmation bias in the costume of expertise.</p>
+    <p class="pull">This is the load-bearing idea in the module. Everything else follows from it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The natural conclusion is that you should trust AI less. Be more sceptical across the board, check more things, take less at face value.</p>
+    <p>The natural fix is to trust AI less across the board. Check more, take less at face value. Let's see what that does.</p>
   </div>
 
   <div class="lab" data-lab="q22b">
     <div class="lab-head"><span>See it · trust is a pattern</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <p>Each bar is one paragraph from the reading above, and its height is how hard you pushed on it. Now do what the natural conclusion says, and lower your trust across the board.</p>
+      <p>Each bar is one paragraph from the reading above, and its height is how hard you pushed on it. Now do what the natural fix says, and lower your trust across the board.</p>
       <div class="bars" id="bars22" role="img" aria-label="Six bars showing scepticism per paragraph; the slider raises them all together but the shape stays the same">
         <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
         <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
@@ -735,10 +775,9 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </div>
 
   <div class="prose">
-    <p>Lowering trust uniformly leaves the pattern completely intact. If you scale your scepticism up by twenty percent everywhere, you are still more sceptical of the things you disagreed with, because that is where you were starting from. The variance is the problem, and adjusting the average does nothing to it.</p>
-    <p>The move that works runs the other way. The parts of an answer that annoyed you have already been checked, because irritation is a verification prompt. The parts you accepted without friction are the unexamined ones.</p>
-    <p>A practice: when you finish reading an AI response, mark the passages you accepted immediately and without resistance. Those are your candidates for checking. The ones you argued with have already had your attention.</p>
-    <p>This will feel backwards for a while. It is meant to.</p>
+    <p>Lowering trust everywhere leaves the pattern exactly where it was. The tall bars are still the paragraphs you disagreed with. The variance is the problem, and moving the average does nothing to it.</p>
+    <p>The move that works runs the other way. The parts that annoyed you have already been checked, because irritation is a verification prompt. The parts you accepted without friction are the unexamined ones. So when you finish an AI response, mark what you accepted immediately. Those are your candidates for checking.</p>
+    <p>This will feel backwards for a while. It's meant to.</p>
   </div>
 </section>
 
@@ -754,51 +793,50 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   <div class="lab" data-lab="q23">
     <div class="lab-head"><span>Try this first · an order experiment</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <p class="q">Take a position you do not personally hold and think is fairly weak. Something you could argue but would not.</p>
-      <label class="field" for="p23">The weak position</label>
-      <textarea id="p23" rows="2" placeholder="e.g. Every internal document should be written by AI first and edited by a person second."></textarea>
-      <p>Two prompts. Run them in this order in an AI of your choice, the second in a brand-new conversation. Then, another day, run them the other way round and compare.</p>
+      <p class="q">Pick a position you don't hold and think is fairly weak. Something you could argue but wouldn't.</p>
+      <div class="choices" id="ch23"></div>
+      <input type="text" id="weak23x" placeholder="Your own weak position" style="margin-top:0.5rem" hidden>
+      <p style="margin-top:1rem">Two prompts. Run them in this order in an AI of your choice, the second in a brand-new conversation. Then, another day, run them the other way round and compare.</p>
       <div class="prompts" id="pr23"></div>
       <div class="row">
         <button class="btn ghost" type="button" id="done23">I've run them</button>
       </div>
       <div class="result" id="r23" hidden>
-        <p>Watch how readily it complies with the first, and how good the case looks. Then notice that the order of those two requests changes what you get. That difference is the subject of this section.</p>
+        <p>Notice how readily it complied with the first, and how good the case looked. Then notice that the order of the two requests changed what you got. That difference is this section.</p>
       </div>
     </div>
   </div>
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Language models are built to continue and cooperate with what you give them. This is a structural property, present in the training objective before anyone tunes anything, and reinforced by the preference training that follows. Helpfulness, responsiveness and agreement are rewarded. Disagreement, particularly unprompted disagreement, generally is not.</p>
-    <p>There is no intent in this. The model is not flattering you, and it is not trying to keep you happy in the way a person might. It has no position of its own that it is suppressing.</p>
-    <p>It is also the same property that makes the thing useful. Consider a typewriter that argued with you about your ending. It would be unusable. A tool that resisted your direction on principle would be worse at every job you actually want done. The cooperativeness is the point, and it comes with a cost that lands entirely on you.</p>
-    <p>The practical consequence is simple and easy to state:</p>
+    <p>Language models are built to continue and cooperate with whatever you give them. Agreement gets rewarded in training. Unprompted disagreement mostly doesn't. Researchers have a word for the result, sycophancy, and Sharma and colleagues at Anthropic showed in 2023 that the human preference data used to train assistants favours the agreeable answer over the accurate one often enough to teach it.</p>
+    <p>There is no intent in this. The model isn't flattering you, and it has no opinion it is holding back. The same property is what makes it useful: a typewriter that argued with you about your ending would be unusable. The cooperativeness is the point, and the cost lands entirely on you.</p>
+    <p>Which leaves one sentence to remember:</p>
     <p class="pull">The model will not supply the disagreement. You have to ask for it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>Once people understand this, they start asking for criticism. "What's wrong with this?" "Play devil's advocate." "Push back on me."</p>
-    <p>That is the right instinct and it is weaker than it looks, because of where the request is usually issued. If you have spent nine messages building a case, and on the tenth you ask the model to critique it, you get critique shaped by nine messages of context in which you were clearly invested in the case. The criticism arrives pre-softened. It will find the flaws you can live with.</p>
-    <p>What raises the quality of the disagreement:</p>
+    <p>Once people know this, they start asking. "What's wrong with this?" "Play devil's advocate." Right instinct, weaker than it looks, because of where it gets asked. Nine messages building a case, then a request for critique on the tenth, gets critique shaped by nine messages of you being invested. It arrives pre-softened. It finds the flaws you can live with.</p>
+    <p>Four things raise the quality of the disagreement:</p>
   </div>
   <dl class="practice">
     <dt>Move it out of the thread.</dt>
-    <dd>Open a fresh conversation with no history and put the position in cold. The absence of context is the point.</dd>
+    <dd>Fresh conversation, no history, position in cold. The absence of context is the point.</dd>
     <dt>Detach it from you.</dt>
-    <dd>"A colleague has proposed the following" produces sharper analysis than "here is my proposal", for the same reason a friend reviews your CV more honestly than they review their own.</dd>
+    <dd>"A colleague has proposed the following" gets sharper analysis than "here is my proposal", for the same reason a friend reviews your CV more honestly than their own.</dd>
     <dt>Ask before you commit.</dt>
-    <dd>Request the strongest case against a position before you have stated that you hold it. Once your view is on the record, every subsequent turn is written by a model that knows it.</dd>
+    <dd>Get the case against before you say you're for. Once your view is on the record, every later turn is written by a model that knows it.</dd>
     <dt>Name a specific critic.</dt>
-    <dd>A general request for criticism returns general criticism. Asking what a particular kind of sceptic would say, someone with a defined stake and a defined objection, returns something you can actually work with.</dd>
+    <dd>General requests return general criticism. Ask what a particular sceptic would say, someone with a stake and an objection, and you get something you can use.</dd>
   </dl>
 
   <div class="lab" data-lab="q23b">
     <div class="lab-head"><span>Practice · ask for the disagreement</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <label class="field" for="pos23">A position you actually hold, or are about to</label>
-      <textarea id="pos23" rows="2" placeholder="e.g. We should run the AI literacy programme as a two-day workshop rather than a series of short sessions."></textarea>
+      <p class="q">Pick a position you actually hold, or one close enough to argue.</p>
+      <div class="choices" id="ch23b"></div>
+      <input type="text" id="pos23x" placeholder="Your own position" style="margin-top:0.5rem" hidden>
       <label class="field" for="critic23">The critic <small>(someone with a stake and an objection)</small></label>
       <select id="critic23">
         <option value="">Choose one…</option>
@@ -812,7 +850,7 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
         <option value="custom">someone else…</option>
       </select>
       <input type="text" id="criticx" placeholder="Describe the critic: their role, and what they stand to lose" style="margin-top:0.5rem" hidden>
-      <p style="margin-top:1rem">Four prompts built from your words. Each one applies one of the moves above. Copy, and take it to a fresh conversation.</p>
+      <p style="margin-top:1rem">Four prompts, one per move above. Copy, and take each to a fresh conversation.</p>
       <div class="prompts" id="pr23b"></div>
     </div>
   </div>
@@ -828,58 +866,46 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </div>
 
   <div class="lab" data-lab="q24">
-    <div class="lab-head"><span>Try this first · two outputs</span><span class="state" data-state>not started</span></div>
+    <div class="lab-head"><span>Try this first · spot the errors</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <p class="q">Find two AI outputs you have received recently. One on something you know well, one on something outside your field.</p>
-      <p>For each, estimate how long you spent evaluating it, and count how many individual claims you actually verified. Not read carefully. Verified.</p>
-      <div class="two">
-        <div>
-          <p class="step">In your field</p>
-          <label class="field" for="f24a">What it was about</label>
-          <input type="text" id="f24a" placeholder="e.g. a briefing on onboarding metrics">
-          <div class="row">
-            <label class="field" for="m24a" style="margin:0">Minutes</label><input type="number" id="m24a" min="0" step="1" placeholder="0">
-            <label class="field" for="v24a" style="margin:0 0 0 0.6rem">Claims checked</label><input type="number" id="v24a" min="0" step="1" placeholder="0">
-          </div>
-        </div>
-        <div>
-          <p class="step">Outside your field</p>
-          <label class="field" for="f24b">What it was about</label>
-          <input type="text" id="f24b" placeholder="e.g. a summary of a tax change">
-          <div class="row">
-            <label class="field" for="m24b" style="margin:0">Minutes</label><input type="number" id="m24b" min="0" step="1" placeholder="0">
-            <label class="field" for="v24b" style="margin:0 0 0 0.6rem">Claims checked</label><input type="number" id="v24b" min="0" step="1" placeholder="0">
-          </div>
-        </div>
+      <p class="q">Two short explanations, each in a field you may not know, each with five errors planted in it. Pick the field you know <em>less</em> about, read it as you would read an AI answer, and click every sentence you think is wrong.</p>
+      <div class="row" role="group" aria-label="Choose a passage" style="margin-top:0">
+        <button class="btn" type="button" data-pass="accounts" aria-pressed="false">Company accounts</button>
+        <button class="btn" type="button" data-pass="bees" aria-pressed="false">Honeybees</button>
       </div>
-      <div class="row"><button class="btn primary" type="button" id="go24">Compare</button></div>
-      <div class="result" id="r24" hidden aria-live="polite"></div>
+      <div class="sents" id="sents24a" hidden></div>
+      <div class="row" id="ctl24" hidden>
+        <button class="btn primary" type="button" id="go24" disabled>Check what I caught</button>
+        <button class="btn ghost" type="button" id="reset24" hidden>Try the other one</button>
+        <span class="count" id="c24">0 flagged</span>
+      </div>
+      <div class="legend" id="lg24" hidden><span><i class="a"></i>error you caught</span><span><i class="m"></i>error you missed</span><span><i class="x"></i>true sentence you flagged</span></div>
+      <div class="result pen" id="r24" hidden aria-live="polite"></div>
     </div>
   </div>
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>The pattern most people find is that they spent less time on the one in their own field.</p>
-    <p>This runs against intuition. Your expertise is precisely what equips you to catch errors, so it should be the place you catch the most. What happens instead is that fluency in the vocabulary reads as correctness. The output uses the terms you use, in the arrangements you expect, and that familiarity substitutes for scrutiny. The claims that match your existing model of the field pass without inspection, which is confirmation bias operating on your professional knowledge rather than on your opinions.</p>
-    <p>Outside your field the failure is different in kind. You cannot evaluate the content because you do not have the knowledge to evaluate it against. Two responses are common. Some people defer entirely, on the grounds that they have nothing better. Others reject the whole thing on a general suspicion of AI. Both are decisions made without information.</p>
-    <p class="dim">The related trap is covered in Module 3: fluent output produces a feeling of understanding that outpaces actual understanding. Reading a clear explanation of something you could not explain yourself feels a great deal like learning it.</p>
+    <p>Most people spend less time checking output in their own field. That runs against intuition, because your expertise is exactly what would catch the error. What happens instead is that fluency reads as correctness. The output uses your vocabulary in the arrangements you expect, and familiarity stands in for scrutiny. Confirmation bias again, applied to your professional knowledge instead of your opinions.</p>
+    <p>Logg, Minson and Moore found a related pattern in forecasting: the people with the most expertise were the least willing to take an algorithm's advice, and their forecasts were worse for it. Expertise changes where you look, in both directions.</p>
+    <p>Outside your field, the failure is different in kind. You can't evaluate the content, because you have nothing to evaluate it against. Two responses are common: defer completely, or reject the lot on general suspicion. Both are decisions made without information, and you just watched the first one happen. The errors that needed the field sat in plain sight, reading exactly like the true sentences around them.</p>
+    <p class="dim">Module 3 covers the related trap: a clear explanation of something you couldn't explain yourself feels a great deal like learning it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The common takeaway is to be more careful in your own field. Worth doing, and it only addresses half of the problem.</p>
-    <p>The outside-your-field case has a solution that people rarely reach on their own, because it requires giving up on evaluating the content.</p>
-    <p>You cannot check whether a claim about a field you do not know is true. You can check a number of other things, and they are informative:</p>
+    <p>The usual takeaway is to be more careful in your own field. Worth doing. It's half the problem.</p>
+    <p>Outside your field, the fix means giving up on checking the content and checking other things instead. You just did some of them without being told to. They are:</p>
   </div>
   <dl class="practice">
     <dt>Structure.</dt>
-    <dd>Does the argument hold together? Do the conclusions follow from the stated reasons? Logical coherence is domain-independent and you are fully qualified to assess it.</dd>
+    <dd>Does the argument hold together? Do the conclusions follow from the reasons given? Logic is domain-independent, and you are fully qualified to assess it.</dd>
     <dt>Specificity.</dt>
-    <dd>Vague claims are cheap to produce. Specific ones commit to something. A response that hedges everywhere may be honest, and it may also be avoiding anything checkable.</dd>
+    <dd>Vague claims are cheap. Specific ones commit to something. An answer that hedges everywhere may be honest, and it may be avoiding anything checkable.</dd>
     <dt>Attributability.</dt>
-    <dd>Can each significant claim be traced to a source that exists and says what it is reported to say? This one is checkable regardless of expertise, and it is where fabrication is most often exposed.</dd>
+    <dd>Can each significant claim be traced to a source that exists and says what it is reported to say? Checkable regardless of expertise, and where fabrication is most often exposed.</dd>
     <dt>Load-bearing claims.</dt>
-    <dd>Most answers rest on one or two claims that everything else depends on. Identify those and check only those. Verifying the whole document is usually not possible and usually not necessary.</dd>
+    <dd>Most answers rest on one or two claims that everything else depends on. Find those and check only those. Verifying the whole document is usually neither possible nor necessary.</dd>
   </dl>
 
   <div class="lab" data-lab="q24b">
@@ -903,7 +929,7 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </div>
 
   <div class="prose">
-    <p>That last one is worth carrying. Breaking a verification problem into the part that matters and the part that follows from it is the same move you will use throughout this course.</p>
+    <p>That last one is worth carrying. Splitting a verification job into the part that matters and the part that follows from it is the move you will use throughout this course.</p>
   </div>
 </section>
 
@@ -920,7 +946,7 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     <div class="lab-head"><span>Try this first · read without rebutting</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
       <p class="q">Here is the strongest case against a position most people reading this page hold: that every knowledge worker should be using AI daily.</p>
-      <p>Read it one paragraph at a time. Pay attention to what you do while reading. The moment you notice yourself composing a reply, press the button. There is no wrong answer, and nobody is watching.</p>
+      <p>Read it one paragraph at a time and pay attention to what you do while reading. The moment you notice yourself composing a reply, press the button. There is no wrong answer and nobody is watching.</p>
       <div class="paras" id="paras25">
         <div class="para"><div>Daily use is a target for the tool, not for the work. A habit measured in frequency rewards finding things to use it on, and the work that benefits most from AI is unevenly distributed. Some roles have a great deal of it. Some have almost none.</div></div>
         <div class="para" hidden><div>The skill that good AI use draws on, knowing what to check and what to trust, is built by doing the work unaided. A person who has never drafted the document has less to evaluate the draft against. Mandating daily use for people early in a role removes the practice that would make their use of it good.</div></div>
@@ -939,30 +965,29 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>The value in seeking out the opposing case is not primarily that it changes your mind. It usually will not, and a course that promised otherwise would be overselling.</p>
-    <p>The value is in what survives. Running a position against its strongest opposition tells you which parts of it are load-bearing and which parts you were carrying out of habit. Positions that have never been tested tend to contain a mixture of both, and their holders cannot tell which is which.</p>
-    <p>This has a long history outside AI. Steelmanning, the practice of constructing the strongest version of an opposing argument before responding to it, is standard in philosophy and competitive debate. Legal training is built around arguing assigned positions rather than held ones. The reason those disciplines do it is not fairness. It is that you do not understand your own argument until you have seen what it has to survive.</p>
-    <p>AI makes the practice cheap. Generating a serious opposing case used to require finding a person who held it and was willing to argue. Now it takes a sentence.</p>
+    <p>Seeking out the opposing case rarely changes your mind, and a course that promised otherwise would be overselling. The value is in what survives. Run a position against its strongest opposition and you find out which parts are load-bearing and which you were carrying out of habit. Untested positions contain both, and their holders can't tell which is which.</p>
+    <p>None of this is new. Steelmanning, building the strongest version of the other side before you answer it, is standard in philosophy and debate. The word is recent, a play on "strawman", but the practice is old: Aquinas opened every question in the <em>Summa</em> by stating the objections first. Law schools make students argue assigned sides. None of those disciplines do it for fairness. They do it because you don't understand your own argument until you have seen what it has to survive.</p>
+    <p>AI makes this cheap. A serious opposing case used to need a person who held it and had time to argue. Now it takes a sentence.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The common version is to ask for counterarguments and then read them defensively, which produces the feeling of having tested a position without the substance of it. The rebuttals you compose while reading are the sound of the test failing.</p>
+    <p>The common version is to ask for counterarguments and read them defensively. That gives you the feeling of having tested a position without the substance. The rebuttals you compose while reading are the sound of the test failing.</p>
     <p>Three things that make it real:</p>
   </div>
   <dl class="practice">
     <dt>Ask before you declare.</dt>
-    <dd>Put the question as an open one before you state which side you are on. Once your position is in the thread, everything after it is generated by a model that knows where you stand. See 2.3.</dd>
+    <dd>Put the question as an open one before you say which side you're on. Once your position is in the thread, everything after it comes from a model that knows where you stand. See 2.3.</dd>
     <dt>Name the disconfirming evidence.</dt>
-    <dd>Ask yourself what specific finding would change your mind. Then ask whether that finding exists. If nothing could change your mind, you are not holding a position, and the exercise has told you something more useful than a counterargument would have.</dd>
+    <dd>What specific finding would change your mind? Then: does it exist? If nothing could change your mind, you are not holding a position, and that is more useful to know than any counterargument.</dd>
     <dt>Argue the other side yourself.</dt>
-    <dd>Take the opposing position and defend it for one turn, in your own words, against an AI instructed to attack it. This is harder than reading a counterargument and it is the version that works, for the same reason that writing something teaches you more than reading it.</dd>
+    <dd>Take the opposing position and defend it for one turn, in your own words, against an AI told to attack it. Harder than reading a counterargument, and the version that works, for the same reason writing teaches more than reading.</dd>
   </dl>
 
   <div class="lab" data-lab="q25b">
     <div class="lab-head"><span>Practice · what would change your mind</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <label class="field" for="hold25">A position you hold with some confidence <small>(the one from 2.3 is filled in if you gave one)</small></label>
+      <label class="field" for="hold25">A position you hold with some confidence <small>(filled in from 2.3 if you picked one there)</small></label>
       <textarea id="hold25" rows="2" placeholder="e.g. Short, frequent training sessions beat a two-day workshop."></textarea>
       <label class="field" for="ev25">The specific finding that would change your mind</label>
       <textarea id="ev25" rows="2" placeholder="e.g. If completion and three-month recall were no better for the short sessions than for the workshop."></textarea>
@@ -980,9 +1005,9 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
 
   <div class="callout">
     <p class="kicker">Call-out · other humans</p>
-    <p>Where it is available to you, run an important answer past another person, particularly someone with subject matter expertise.</p>
-    <p>The value here is specific to this module. A knowledgeable colleague brings accuracy, and that matters. What they bring that no amount of careful prompting can replicate is a frame that is not yours. They will not share the assumptions you did not know you were making, because they did not make them. The question that does not occur to you is the question they ask first.</p>
-    <p class="dim" style="color:var(--ink-2)">The accuracy dimension of this, including how to choose which humans and how to weigh what they tell you, is covered in Module 5.</p>
+    <p>Where you can, run an important answer past another person, ideally someone who knows the subject.</p>
+    <p>They bring accuracy, and that matters. What they bring that no prompt can replicate is a frame that isn't yours. They don't share the assumptions you didn't know you were making, because they didn't make them. The question that never occurs to you is the one they ask first.</p>
+    <p style="color:var(--ink-2)">How to choose which humans, and how to weigh what they tell you, is covered in Module 5.</p>
   </div>
 </section>
 
@@ -1003,23 +1028,22 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   </ol>
 
   <div class="lab" data-lab="card">
-    <div class="lab-head"><span>Your card · built from what you wrote</span><span class="state" data-state>not started</span></div>
+    <div class="lab-head"><span>Your card · built from what you did</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
       <p>The module in your own words. It updates as you work through the labs above, and stays on this device.</p>
       <div class="card" id="card">
         <h4>Module 2 · in my words</h4>
         <dl>
-          <dt>The question a disbeliever would ask about my decision</dt><dd data-card="q21b" class="empty">Not written yet (2.1)</dd>
+          <dt>The question a disbeliever would ask</dt><dd data-card="q21b" class="empty">Not picked yet (2.1)</dd>
           <dt>My reading pattern</dt><dd data-card="pattern" class="empty">Not marked yet (2.2)</dd>
           <dt>The critic I should be asking</dt><dd data-card="critic" class="empty">Not chosen yet (2.3)</dd>
-          <dt>Where I check least</dt><dd data-card="field" class="empty">Not compared yet (2.4)</dd>
+          <dt>What slipped past me outside my field</dt><dd data-card="field" class="empty">Not tried yet (2.4)</dd>
           <dt>What would change my mind</dt><dd data-card="ev" class="empty">Not named yet (2.5)</dd>
         </dl>
       </div>
       <div class="row">
         <button class="btn primary" type="button" id="copycard">Copy the card</button>
-        <button class="btn ghost" type="button" id="clearall">Clear everything I typed</button>
-        <span id="copied" style="font-family:var(--mono);font-size:0.7rem;color:var(--ok)" aria-live="polite"></span>
+        <button class="btn ghost" type="button" id="clearall">Clear everything I did</button>
       </div>
     </div>
   </div>
@@ -1037,7 +1061,9 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     <li>Alon-Barkat, S. and Busuioc, M. (2023). Human-AI interactions in public sector decision making: 'automation bias' and 'selective adherence' to algorithmic advice. <em>Journal of Public Administration Research and Theory</em>.</li>
     <li>Lee, H.-P. et al. (2025). The impact of generative AI on critical thinking: self-reported reductions in cognitive effort and confidence effects from a survey of knowledge workers. <em>CHI 2025</em>. Microsoft Research and Carnegie Mellon University.</li>
     <li>Logg, J. M., Minson, J. A. and Moore, D. A. (2019). Algorithm appreciation: people prefer algorithmic to human judgment. <em>Organizational Behavior and Human Decision Processes</em>.</li>
+    <li>Sharma, M. et al. (2023). Towards understanding sycophancy in language models. Anthropic. <em>ICLR 2024</em>.</li>
     <li>Skitka, L. J., Mosier, K. L. and Burdick, M. (1999). Does automation bias decision-making? <em>International Journal of Human-Computer Studies</em>.</li>
+    <li>Wason, P. C. (1960). On the failure to eliminate hypotheses in a conceptual task. <em>Quarterly Journal of Experimental Psychology</em>.</li>
   </ul>
 
   <footer class="foot">
@@ -1124,6 +1150,36 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     d.querySelector('button').addEventListener('click', function () { copyText(body, this); });
     return d;
   }
+  // A list of pick-one choices with an optional "your own" text field.
+  function choiceList(boxId, items, key, customId, onChange) {
+    var box = $(boxId), custom = $(customId);
+    box.innerHTML = '';
+    items.forEach(function (t, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'choice'; b.setAttribute('aria-pressed', String(S[key] === i));
+      b.innerHTML = '<span class="ci">' + (i + 1) + '</span><span>' + esc(t) + '</span>';
+      b.addEventListener('click', function () { S[key] = i; sync(); save(); onChange(); });
+      box.appendChild(b);
+    });
+    var o = document.createElement('button');
+    o.type = 'button'; o.className = 'choice'; o.setAttribute('aria-pressed', String(S[key] === 'custom'));
+    o.innerHTML = '<span class="ci">+</span><span>Something else</span>';
+    o.addEventListener('click', function () { S[key] = 'custom'; sync(); save(); custom.focus(); onChange(); });
+    box.appendChild(o);
+    if (S[key + 'x'] != null) custom.value = S[key + 'x'];
+    custom.addEventListener('input', function () { S[key + 'x'] = custom.value; save(); onChange(); });
+    function sync() {
+      var kids = box.querySelectorAll('.choice');
+      kids.forEach(function (k, i) { k.setAttribute('aria-pressed', String(i < items.length ? S[key] === i : S[key] === 'custom')); });
+      custom.hidden = S[key] !== 'custom';
+    }
+    sync();
+    return function value() {
+      if (S[key] === 'custom') return (custom.value || '').trim();
+      if (typeof S[key] === 'number') return items[S[key]];
+      return '';
+    };
+  }
 
   /* ------------------------------------------------------------
      Reading progress + section tracking
@@ -1152,31 +1208,88 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   }
 
   /* ------------------------------------------------------------
-     2.1 — two questions, one heuristic
+     2.1 — pick three questions from a worked scenario
   ------------------------------------------------------------ */
+  var Q21 = [
+    { t: "What's the best format for a written weekly update that people will actually read?", loaded: true, why: '"Best format" has already decided there will be an update.' },
+    { t: 'Should we replace the status meeting at all? What do teams lose when they do?', loaded: false, why: 'Puts the decision itself back on the table.' },
+    { t: 'How do I get the team on board with moving to written updates?', loaded: true, why: 'Treats objections as an obstacle to manage rather than information to hear.' },
+    { t: 'What problems is the status meeting currently solving that a written update would not?', loaded: false, why: 'Asks what the current thing does before replacing it.' },
+    { t: 'Write me a short announcement for the switch to written updates.', loaded: true, why: 'The decision is not assumed here. It is announced.' },
+    { t: 'What would have to be true for keeping the meeting to be the better choice?', loaded: false, why: 'Asks for the conditions that would reverse the decision.' }
+  ];
+  S.pick21 = Array.isArray(S.pick21) ? S.pick21 : [];
+  var ch21 = $('ch21');
+  Q21.forEach(function (q, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'choice';
+    b.setAttribute('aria-pressed', String(S.pick21.indexOf(i) >= 0));
+    b.innerHTML = '<span class="ci">' + String.fromCharCode(65 + i) + '</span><span class="ct">' + esc(q.t) + '</span>';
+    b.addEventListener('click', function () {
+      if (ch21.classList.contains('revealed')) return;
+      var at = S.pick21.indexOf(i);
+      if (at >= 0) S.pick21.splice(at, 1);
+      else if (S.pick21.length < 3) S.pick21.push(i);
+      else return;
+      b.setAttribute('aria-pressed', String(S.pick21.indexOf(i) >= 0));
+      refresh21(); save();
+    });
+    ch21.appendChild(b);
+  });
+  function refresh21() {
+    $('c21').textContent = S.pick21.length + ' of 3 chosen';
+    $('go21').disabled = S.pick21.length < 3;
+  }
+  refresh21();
+  $('go21').addEventListener('click', function () {
+    ch21.classList.add('revealed');
+    var loaded = 0;
+    ch21.querySelectorAll('.choice').forEach(function (b, i) {
+      var q = Q21[i], chosen = S.pick21.indexOf(i) >= 0;
+      var tag = document.createElement('span');
+      tag.className = 'tag ' + (q.loaded ? 'load' : 'open');
+      tag.textContent = (q.loaded ? 'Assumes the decision' : 'Leaves it open') + (chosen ? '. ' + q.why : '');
+      b.querySelector('.ct').appendChild(tag);
+      b.classList.toggle('dimmed', !chosen);
+      if (chosen && q.loaded) loaded++;
+    });
+    var t = {
+      3: 'All three of yours assume the decision. Each would return a helpful, well-written document about a switch nobody examined. Most people pick this way, which is the point: the loaded questions are the natural ones.',
+      2: 'Two of your three assume the decision. You would get two plans and one examination, and plans are easier to act on than examinations.',
+      1: 'One of your three assumes the decision. That is an unusually balanced set. Notice which one you reached for first.',
+      0: 'None of yours assume the decision. Either you are an unusually careful asker, or you saw the exercise coming. Try it again as the person who has to send the announcement on Monday.'
+    }[loaded];
+    $('r21').innerHTML = '<p>' + t + '</p>';
+    $('r21').hidden = false;
+    S.loaded21 = loaded;
+    markDone('q21');
+  });
+  if (S.done && S.done.q21 && S.pick21.length === 3) $('go21').click();
+
+  // Optional: the reader's own question, run through a phrasing heuristic.
   var ASSUME = [
-    /\b(?:the )?best (?:way|ways|approach|method|strategy|practice|practices|option|options)\b/gi,
+    /\b(?:the )?best (?:way|ways|approach|method|strategy|practice|practices|option|options|format)\b/gi,
     /\bhow (?:do|can|should|could|would|might) (?:i|we|one|you)\b/gi,
     /\bwhat(?:'s| is) the (?:best|right|most effective|fastest|quickest|easiest|ideal)\b/gi,
     /\b(?:improve|improving|optimi[sz]e|optimi[sz]ing|strengthen|refine|polish|tighten|streamline|accelerate|speed up|maximi[sz]e|minimi[sz]e|enhance)\b/gi,
     /\b(?:make sure|ensure|guarantee)\b/gi,
-    /\b(?:convince|persuade|get buy[- ]?in|sell|pitch|justify|defend)\b/gi,
+    /\b(?:convince|persuade|get buy[- ]?in|get .{1,20} on board|sell|pitch|justify|defend)\b/gi,
     /\b(?:roll ?out|rolling out|launch|launching|implement|implementing|execute|executing|deliver|delivering|ship|shipping|deploy|deploying|introduce|introducing|adopt|adopting)\b/gi,
     /\b(?:successfully|effectively|efficiently|smoothly|quickly|seamlessly)\b/gi,
-    /\b(?:steps|tips|plan|checklist|roadmap|timeline|template) (?:to|for)\b/gi,
-    /\b(?:my|our|the) (?:plan|decision|proposal|approach|strategy|rollout|idea|design|choice|new)\b/gi,
+    /\b(?:steps|tips|plan|checklist|roadmap|timeline|template|announcement) (?:to|for)\b/gi,
+    /\b(?:my|our|the) (?:plan|decision|proposal|approach|strategy|rollout|idea|design|choice|new|switch)\b/gi,
     /\bwithout (?:losing|breaking|upsetting|delaying|annoying)\b/gi,
     /\b(?:mitigate|manage|handle|address|overcome|reduce) (?:the |any )?(?:risks?|objections?|pushback|resistance|concerns?|friction)\b/gi,
     /\bstructure\b/gi
   ];
   var OPEN = [
-    /\bwhether\b/gi, /\bat all\b/gi, /\bwhat would (?:make|show|prove|tell)\b/gi,
+    /\bwhether\b/gi, /\bat all\b/gi, /\bwhat would (?:make|show|prove|tell|have to be true)\b/gi,
     /\b(?:wrong|mistake|mistaken|fail|failing|failed|backfire)\b/gi,
     /\b(?:case|argument|arguments|reasons?|evidence) against\b/gi, /\bwhy not\b/gi,
     /\balternatives?\b/gi, /\binstead\b/gi, /\bwhat am i (?:missing|not seeing)\b/gi,
     /\bshould(?:n't| not| we even| we be| i be)\b/gi, /\bis (?:this|it) (?:worth|a good idea|the right|necessary|needed)\b/gi,
     /\bdo we (?:need|even need|actually need)\b/gi, /\b(?:downsides?|costs?|risks?|lose|losing)\b/gi,
-    /\bwho (?:loses|is worse off|objects|disagrees)\b/gi
+    /\bwho (?:loses|is worse off|objects|disagrees)\b/gi, /\bcurrently solving\b/gi
   ];
   function scan(text, res) {
     var ranges = [];
@@ -1205,24 +1318,24 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     out += esc(text.slice(i));
     return { html: out, a: a.length, o: o.length };
   }
-  bindText('d21', 'd21');
   bindText('q21a', 'q21a');
   bindText('q21b', 'q21b');
-  $('go21').addEventListener('click', function () {
+  if ((S.q21a || S.q21b)) $('own21').open = true;
+  $('go21b').addEventListener('click', function () {
     var qa = ($('q21a').value || '').trim(), qb = ($('q21b').value || '').trim();
     if (!qa && !qb) { $('q21a').focus(); return; }
     var A = highlight(qa), B = highlight(qb);
     $('h21a').innerHTML = '<span class="who">Your question</span>' + (qa ? A.html : '<span class="none">Nothing written yet.</span>');
     $('h21b').innerHTML = '<span class="who">The disbeliever\'s question</span>' + (qb ? B.html : '<span class="none">Nothing written yet.</span>');
     var t;
-    if (!qb) t = 'Write the second question too. The comparison is the exercise; the first question on its own only tells you what you already think.';
+    if (!qb) t = 'Write the second question too. The comparison is the exercise; the first on its own only tells you what you already think.';
     else if (A.a > 0 && B.a < A.a) t = 'Your question already contains the decision. The other one leaves it open, which is why it would return a different document. Neither is the wrong question to ask. The point is that you only asked one of them.';
-    else if (A.a > 0 && B.a >= A.a) t = 'Both questions presuppose the decision, which is common: the disbeliever you imagined still accepted the frame. Try the second one again as someone who thinks the whole thing should not happen.';
+    else if (A.a > 0 && B.a >= A.a) t = 'Both questions assume the decision, which is common: the disbeliever you imagined still accepted the frame. Try the second one again as someone who thinks the whole thing should not happen.';
     else if (A.a === 0 && B.o > 0) t = 'Your question is fairly open on the surface, and the disbeliever\'s is more so. Read your own again for the assumption the pattern cannot see: the one in what you chose to ask about at all.';
-    else t = 'Neither question presupposes much on the surface. That is either a genuinely open question, or the assumption lives somewhere phrasing does not reach: in the topic you picked, or the options you did not list.';
+    else t = 'Neither question assumes much on the surface. That is either a genuinely open question, or the assumption lives somewhere phrasing does not reach: in the topic you picked, or the options you did not list.';
     $('t21').textContent = t;
-    $('r21').hidden = false;
-    markDone('q21');
+    $('r21b').hidden = false;
+    save();
   });
 
   /* ------------------------------------------------------------
@@ -1259,12 +1372,12 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     });
   });
   refresh22();
-  function leanWord(l) { return l === 'for' ? 'yes' : 'no'; }
   $('go22').addEventListener('click', function () {
     var acc = 0, pushFor = 0, pushAgainst = 0, nFor = 0, nAgainst = 0;
     paras22.forEach(function (p, i) {
       var m = S.marks22[i], lean = p.getAttribute('data-lean');
       p.querySelector('.lean').hidden = false;
+      var old = p.querySelector('.tag'); if (old) old.remove();
       var tag = document.createElement('span'); tag.className = 'tag';
       if (m === 'accept') {
         acc++; p.classList.add('flag'); p.classList.remove('calm');
@@ -1284,11 +1397,11 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
       var withMeN = prior === 'yes' ? nFor : nAgainst;
       var againstMe = prior === 'yes' ? pushAgainst : pushFor;
       var againstMeN = prior === 'yes' ? nAgainst : nFor;
-      if (againstMe > withMe) html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading. You pushed back on ' + againstMe + ' of the ' + againstMeN + ' paragraphs that cut against that, and ' + withMe + ' of the ' + withMeN + ' that supported it. That difference is selective adherence, observed in your own reading a minute ago. It felt like judgment. Some of it was.</p>';
-      else if (againstMe === withMe) html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading, and you pushed on both sides evenly (' + withMe + ' of ' + withMeN + ' with you, ' + againstMe + ' of ' + againstMeN + ' against). Either the pattern this section describes is not operating today, or it is operating in what you accepted. Look at the flagged ones.</p>';
-      else html += '<p>You said <em>' + (prior === 'yes' ? 'yes' : 'no') + '</em> before reading, and you pushed harder on the paragraphs that agreed with you (' + withMe + ' of ' + withMeN + ') than on those that did not (' + againstMe + ' of ' + againstMeN + '). That is the reverse of the usual pattern. It happens when people know they are being watched for it, which is fine: the aim is to be able to do it on purpose.</p>';
+      if (againstMe > withMe) html += '<p>You said <em>' + prior + '</em> before reading. You pushed back on ' + againstMe + ' of the ' + againstMeN + ' paragraphs that cut against that, and ' + withMe + ' of the ' + withMeN + ' that supported it. That difference is selective adherence, observed in your own reading a minute ago. It felt like judgment. Some of it was.</p>';
+      else if (againstMe === withMe) html += '<p>You said <em>' + prior + '</em> before reading, and you pushed on both sides evenly (' + withMe + ' of ' + withMeN + ' with you, ' + againstMe + ' of ' + againstMeN + ' against). Either the pattern this section describes is not operating today, or it is operating in what you accepted. Look at the flagged ones.</p>';
+      else html += '<p>You said <em>' + prior + '</em> before reading, and you pushed harder on the paragraphs that agreed with you (' + withMe + ' of ' + withMeN + ') than on those that did not (' + againstMe + ' of ' + againstMeN + '). That is the reverse of the usual pattern. It happens when people know they are being watched for it, which is fine: the aim is to be able to do it on purpose.</p>';
     } else {
-      html += '<p>You came in undecided, which makes the pattern quieter. Look at the two flagged neutrals: paragraphs that decline to take a side often pass without inspection because there is nothing to argue with.</p>';
+      html += '<p>You came in undecided, which makes the pattern quieter. Look at the neutral paragraphs: ones that decline to take a side often pass without inspection because there is nothing to argue with.</p>';
     }
     $('r22').innerHTML = html;
     $('r22').hidden = false;
@@ -1297,7 +1410,6 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     drawBars();
   });
 
-  // 2.2b — the bars
   var bars = Array.prototype.slice.call(document.querySelectorAll('#bars22 .bar'));
   var DEFAULT = ['accept', 'push', 'accept', 'accept', 'push', 'accept'];
   function drawBars() {
@@ -1326,8 +1438,15 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   /* ------------------------------------------------------------
      2.3 — order experiment, then the four prompts
   ------------------------------------------------------------ */
+  var WEAK = [
+    'Every internal document should be drafted by AI first and edited by a person second.',
+    'Email should be switched off company-wide and replaced with chat.',
+    'Performance reviews should be generated from activity data rather than written by managers.',
+    'Any meeting without a written agenda should be automatically cancelled.'
+  ];
+  var weak23 = choiceList('ch23', WEAK, 'weak23', 'weak23x', render23);
   function render23() {
-    var p = ($('p23').value || '').trim() || '[the weak position]';
+    var p = weak23() || '[the weak position]';
     var box = $('pr23'); box.innerHTML = '';
     box.appendChild(promptCard('First', 'any conversation',
       'Make the strongest possible case for the following position. Be as persuasive as you can; I want to see the best version of this argument.\n\n' + p,
@@ -1336,18 +1455,24 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
       'Evaluate the following position on its merits. I have no stake in it.\n\n' + p + '\n\nIs it sound? What does it get right, and where does it fail?',
       'Then run them the other way round another day.'));
   }
-  bindText('p23', 'p23', render23);
   render23();
   $('done23').addEventListener('click', function () { $('r23').hidden = false; markDone('q23'); });
 
+  var HELD = [
+    'AI training should be mandatory for everyone in the company.',
+    'Junior staff should be allowed to use AI for first drafts.',
+    'Our weekly status meeting should become a written update.',
+    'Short, frequent training sessions beat a two-day workshop.'
+  ];
   var criticSel = $('critic23'), criticX = $('criticx');
   function critic() {
     var v = criticSel.value;
     if (v === 'custom') return (criticX.value || '').trim() || '[the critic: their role, and what they stand to lose]';
     return v || '[a critic with a stake and an objection]';
   }
+  var pos23 = choiceList('ch23b', HELD, 'pos23', 'pos23x', function () { render23b(); syncHold(); });
   function render23b() {
-    var pos = ($('pos23').value || '').trim() || '[the position]';
+    var pos = pos23() || '[the position]';
     var c = critic();
     var box = $('pr23b'); box.innerHTML = '';
     box.appendChild(promptCard('Out of the thread', 'new conversation',
@@ -1362,9 +1487,8 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     box.appendChild(promptCard('A named critic', 'new conversation',
       'Take the role of ' + c + '. You are reading the following proposal for the first time and you have a real stake in the outcome. State your objection, specifically, in your own terms. What would it take to satisfy you?\n\n' + pos,
       'General requests return general criticism.'));
-    if (($('pos23').value || '').trim() && criticSel.value) markDone('q23b');
+    if (pos23() && criticSel.value && (criticSel.value !== 'custom' || (criticX.value || '').trim())) markDone('q23b');
   }
-  bindText('pos23', 'pos23', function () { render23b(); syncHold(); });
   if (S.critic23) criticSel.value = S.critic23;
   if (S.criticx) criticX.value = S.criticx;
   criticX.hidden = criticSel.value !== 'custom';
@@ -1377,25 +1501,98 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
   render23b();
 
   /* ------------------------------------------------------------
-     2.4 — the tally, then the load-bearing claim
+     2.4 — spot the errors in a field you don't know; then the
+     load-bearing claim
   ------------------------------------------------------------ */
-  ['f24a', 'm24a', 'v24a', 'f24b', 'm24b', 'v24b'].forEach(function (id) { bindText(id, id); });
-  $('go24').addEventListener('click', function () {
-    var ma = +($('m24a').value || 0), va = +($('v24a').value || 0), mb = +($('m24b').value || 0), vb = +($('v24b').value || 0);
-    var fa = ($('f24a').value || '').trim() || 'the one in your field', fb = ($('f24b').value || '').trim() || 'the one outside it';
-    var html;
-    if (!ma && !mb && !va && !vb) { html = '<p>Put some numbers in, even rough ones. Estimates are fine; the comparison is what matters.</p>'; }
-    else {
-      var line = '<p>In your field (' + esc(fa) + '): ' + ma + ' min, ' + va + ' claim' + (va === 1 ? '' : 's') + ' checked. Outside it (' + esc(fb) + '): ' + mb + ' min, ' + vb + ' checked.</p>';
-      if (ma < mb || (ma === mb && va < vb)) html = line + '<p>Less time in your own field. That is the common pattern, and it runs against intuition: your expertise is exactly what would let you catch the error, and it is also what makes the fluent version read as correct.</p>';
-      else if (ma > mb && va >= vb) html = line + '<p>More time in your own field. Less common, and worth a second look: was the extra time spent verifying claims, or reading a familiar vocabulary with pleasure? The count of claims checked is the more honest number.</p>';
-      else html = line + '<p>About even. Now look at the claims-checked column, which is the number that matters. Time reading is not time verifying, and in your own field the two feel the same.</p>';
-      if (va === 0 && vb === 0) html += '<p>Zero claims verified in either. That is most people, most of the time. The next lab is about which one claim to check when you can only check one.</p>';
+  var PASS = {
+    accounts: {
+      name: 'company accounts',
+      s: [
+        { t: "A company's income statement reports revenue, costs and profit over a period, while the balance sheet is a snapshot of what it owns and owes on a single date." },
+        { t: 'Under accrual accounting, revenue is recognised when the cash arrives in the bank.', e: 'field', short: 'when revenue is recognised', note: 'Accrual accounting recognises revenue when it is earned, which is often before or after the cash moves. Every accountant catches this on sight. Nobody else does.' },
+        { t: 'Depreciation spreads the cost of an asset over its useful life, and because it is a cash expense it reduces the cash balance each year.', e: 'field', short: 'depreciation as a cash expense', note: 'Depreciation is the textbook example of a non-cash expense. The cash left when the asset was bought. Fluent, confident, and wrong.' },
+        { t: 'Gross profit is revenue minus the direct cost of the goods or services sold; on revenue of £2m at a 40% gross margin, that is £600,000.', e: 'arith', short: 'the gross-profit arithmetic', note: '40% of £2m is £800,000. No accounting needed, only the arithmetic.' },
+        { t: 'Double-entry bookkeeping, in which every transaction is recorded twice, was invented in the nineteenth century to cope with the railways.', e: 'attr', short: 'who invented double-entry', note: 'Luca Pacioli described it in print in 1494 and Italian merchants were using it well before that. A date and a name are checkable by anyone.' },
+        { t: 'Working capital is current assets minus current liabilities, and a business can be profitable and still run out of it.' },
+        { t: 'Because gross margin has risen for three consecutive years, the company is well managed.', e: 'logic', short: 'the leap from one metric to "well managed"', note: 'One rising number does not get you to a verdict on management. The conclusion is bigger than the reason, and you can see that without knowing what gross margin is.' },
+        { t: 'Auditors give an opinion on whether the accounts present a true and fair view; they do not guarantee that no fraud has occurred.' }
+      ]
+    },
+    bees: {
+      name: 'honeybees',
+      s: [
+        { t: 'A honeybee colony in summer holds somewhere between twenty and sixty thousand workers, a few hundred drones, and a single queen.' },
+        { t: "Worker bees are all female and live for about two years, which is why a colony's population is so stable.", e: 'field', short: 'how long a worker lives', note: 'A summer worker lives about six weeks. Any beekeeper catches this instantly. To everyone else, two years sounds perfectly reasonable.' },
+        { t: 'The queen mates once, with a single drone, early in her life, and stores that sperm for the rest of it.', e: 'field', short: 'how the queen mates', note: 'She mates with many drones, often a dozen or more, across one or more flights, and stores the mix for life. Fluent, specific, and wrong.' },
+        { t: 'Drones develop from unfertilised eggs, so a drone has a mother but no father.' },
+        { t: 'Foragers report the direction of a food source with the waggle dance, first decoded by Charles Darwin in the 1850s.', e: 'attr', short: 'who decoded the waggle dance', note: 'Karl von Frisch, in the 1940s, and he got a Nobel Prize for it in 1973. A famous name attached to a famous finding is exactly where fabrication hides, and exactly what you can check.' },
+        { t: 'Honey keeps almost indefinitely because its water content is low and it is mildly acidic.' },
+        { t: 'A strong queen lays about two thousand eggs a day, so a colony of fifty thousand replaces itself in roughly a week.', e: 'arith', short: 'the replacement arithmetic', note: 'Fifty thousand at two thousand a day is twenty-five days. No bees needed, only the division.' },
+        { t: 'Since bees can see ultraviolet light, any flower that reflects ultraviolet must be pollinated by bees.', e: 'logic', short: 'the leap from "bees see UV" to "must be bee-pollinated"', note: 'Bees seeing UV does not make every UV-reflecting flower theirs. The conclusion is bigger than the reason, and you can see that without knowing a thing about bees.' }
+      ]
     }
-    $('r24').innerHTML = html; $('r24').hidden = false;
-    S.tally24 = { fa: fa, ma: ma, va: va, fb: fb, mb: mb, vb: vb };
+  };
+  var TYPES = { field: 'Needs the field', arith: 'Arithmetic', attr: 'Attribution', logic: 'Structure' };
+  var pass24 = null, flag24 = {};
+  document.querySelectorAll('[data-pass]').forEach(function (b) {
+    b.addEventListener('click', function () { openPass(b.getAttribute('data-pass')); });
+  });
+  function openPass(k) {
+    pass24 = k; flag24 = {};
+    document.querySelectorAll('[data-pass]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-pass') === k)); });
+    var box = $('sents24a'); box.innerHTML = ''; box.classList.remove('revealed'); box.hidden = false;
+    PASS[k].s.forEach(function (s, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'sent'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('data-i', i);
+      b.innerHTML = '<span class="sn">' + (i + 1) + '</span>' + esc(s.t);
+      b.addEventListener('click', function () {
+        if (box.classList.contains('revealed')) return;
+        flag24[i] = !flag24[i];
+        b.setAttribute('aria-pressed', String(!!flag24[i]));
+        var n = Object.keys(flag24).filter(function (x) { return flag24[x]; }).length;
+        $('c24').textContent = n + ' flagged';
+        $('go24').disabled = n === 0;
+      });
+      box.appendChild(b);
+      box.appendChild(document.createTextNode(' '));
+    });
+    $('ctl24').hidden = false; $('go24').disabled = true; $('go24').hidden = false; $('reset24').hidden = true;
+    $('c24').textContent = '0 flagged'; $('r24').hidden = true; $('lg24').hidden = true;
+  }
+  $('go24').addEventListener('click', function () {
+    var P = PASS[pass24], box = $('sents24a');
+    box.classList.add('revealed');
+    var caught = [], missed = [], falsePos = 0, fieldTotal = 0, fieldCaught = 0, otherTotal = 0, otherCaught = 0;
+    var sentEls = box.querySelectorAll('.sent');
+    P.s.forEach(function (s, i) {
+      var el = sentEls[i], f = !!flag24[i];
+      if (s.e) {
+        if (s.e === 'field') fieldTotal++; else otherTotal++;
+        if (f) { caught.push(s); el.classList.add('caught'); if (s.e === 'field') fieldCaught++; else otherCaught++; }
+        else { missed.push(s); el.classList.add('missed'); }
+      } else if (f) { falsePos++; el.classList.add('false'); }
+    });
+    function names(list) { return list.map(function (s) { return s.short; }).join(', '); }
+    var html = '<p>You caught <strong>' + caught.length + ' of 5</strong> errors' + (falsePos ? ', and flagged ' + falsePos + ' true sentence' + (falsePos === 1 ? '' : 's') + ' as wrong' : '') + '.</p>';
+    var fm = missed.filter(function (s) { return s.e === 'field'; });
+    if (fieldCaught === 0) html += '<p>The two you missed that matter most are the ones that need the field: ' + names(fm) + '. They read exactly like the true sentences around them. That is the crack things fall through, and no amount of care closes it from outside the field.</p>';
+    else if (fieldCaught === 1) html += '<p>You caught one of the two that need the field and missed the other: ' + names(fm) + '. It reads exactly like the true sentences around it, which is the crack things fall through.</p>';
+    else html += '<p>You caught both errors that need the field. Either this is closer to your field than you thought, or you were lucky. Try the other passage.</p>';
+    var om = missed.filter(function (s) { return s.e !== 'field'; });
+    if (otherCaught === otherTotal) html += '<p>And you caught all three that don\'t need the field: the arithmetic, the attribution and the overreach. That is the skill the rest of this section is about, and you already have it.</p>';
+    else if (otherCaught > 0) html += '<p>You caught ' + otherCaught + ' of the three that don\'t need the field, and missed ' + names(om) + '. Those are checks you can always run, and the next part is about them.</p>';
+    else html += '<p>You missed all three that don\'t need the field: the arithmetic, the attribution, the overreach. Those are checks you can always run, whatever the subject, and the next part is about them.</p>';
+    if (falsePos > 0) html += '<p>The true sentence' + (falsePos === 1 ? '' : 's') + ' you flagged ' + (falsePos === 1 ? 'is' : 'are') + ' the other failure outside your field: rejecting on general suspicion. It feels like rigour and it is just as uninformed as deferring.</p>';
+    html += '<ul class="verdicts">' + P.s.filter(function (s) { return s.e; }).map(function (s) {
+      var got = caught.indexOf(s) >= 0;
+      return '<li><span class="k' + (s.e === 'field' ? '' : ' dim') + '">' + TYPES[s.e] + '</span><span><b>' + (P.s.indexOf(s) + 1) + '.</b> ' + esc(s.note) + ' <em class="' + (got ? 'got' : 'miss') + '">' + (got ? 'Caught.' : 'Missed.') + '</em></span></li>';
+    }).join('') + '</ul>';
+    $('r24').innerHTML = html; $('r24').hidden = false; $('lg24').hidden = false;
+    $('go24').hidden = true; $('reset24').hidden = false;
+    S.err24 = { passage: P.name, caught: caught.length, fieldCaught: fieldCaught, fieldTotal: fieldTotal, otherCaught: otherCaught, falsePos: falsePos };
     markDone('q24');
   });
+  $('reset24').addEventListener('click', function () { openPass(pass24 === 'accounts' ? 'bees' : 'accounts'); });
 
   var sents = Array.prototype.slice.call(document.querySelectorAll('#sents24 .sent'));
   var picked = {};
@@ -1462,14 +1659,17 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     markDone('q25');
   });
 
+  // The held position flows in from 2.3 until the reader edits it here.
   function syncHold() {
-    var h = $('hold25');
-    if (!S.hold25 && S.pos23) { h.value = S.pos23; }
+    if (S.hold25Manual) return;
+    var v = pos23();
+    $('hold25').value = v; S.hold25 = v;
     render25();
   }
-  bindText('hold25', 'hold25', render25);
-  bindText('ev25', 'ev25', render25);
-  if (!S.hold25 && S.pos23) $('hold25').value = S.pos23;
+  $('hold25').addEventListener('input', function () { S.hold25 = $('hold25').value; S.hold25Manual = true; save(); render25(); });
+  if (S.hold25 != null) $('hold25').value = S.hold25;
+  if (!S.hold25Manual) syncHold();
+  bindText('ev25', 'ev25', showEv);
   document.querySelectorAll('[data-ev]').forEach(function (b) {
     if (S.ev25choice === b.getAttribute('data-ev')) b.setAttribute('aria-pressed', 'true');
     b.addEventListener('click', function () {
@@ -1506,17 +1706,21 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
       if (v) { dd.textContent = v; dd.classList.remove('empty'); }
       else { dd.classList.add('empty'); }
     }
-    set('q21b', (S.q21b || '').trim());
+    var own = (S.q21b || '').trim();
+    var openPick = (S.pick21 || []).filter(function (i) { return !Q21[i].loaded; }).map(function (i) { return Q21[i].t; });
+    var q21 = own || (S.loaded21 != null ? (openPick.length ? openPick[0] + (S.loaded21 ? ' (' + S.loaded21 + ' of my 3 picks assumed the decision)' : '') : 'All three of my picks assumed the decision. The open ones were the ones I skipped.') : '');
+    set('q21b', q21);
     var p = S.pattern22;
     set('pattern', p ? ('Accepted ' + p.acc + ' of 6 paragraphs without friction' + (p.prior === 'yes' || p.prior === 'no' ? '; pushed back on ' + (p.prior === 'yes' ? p.pushAgainst : p.pushFor) + ' against my prior, ' + (p.prior === 'yes' ? p.pushFor : p.pushAgainst) + ' with it.' : '.')) : '');
     var crit = S.critic23 === 'custom' ? (S.criticx || '').trim() : S.critic23;
-    set('critic', crit ? (crit.charAt(0).toUpperCase() + crit.slice(1) + ((S.pos23 || '').trim() ? ', about: ' + S.pos23.trim() : '')) : '');
-    var t = S.tally24;
-    set('field', t ? ('In my field (' + t.fa + '): ' + t.ma + ' min, ' + t.va + ' checked. Outside (' + t.fb + '): ' + t.mb + ' min, ' + t.vb + ' checked.') : '');
+    var pos = typeof pos23 === 'function' ? pos23() : '';
+    set('critic', crit ? (crit.charAt(0).toUpperCase() + crit.slice(1) + (pos ? ', about: ' + pos : '')) : '');
+    var e = S.err24;
+    set('field', e ? ('On ' + e.passage + ': caught ' + e.caught + ' of 5 planted errors; missed ' + (e.fieldTotal - e.fieldCaught) + ' of the ' + e.fieldTotal + ' that needed the field' + (e.falsePos ? '; flagged ' + e.falsePos + ' true sentence' + (e.falsePos === 1 ? '' : 's') : '') + '.') : '');
     var evTxt = (S.ev25 || '').trim();
     var evNote = { looked: ' (looked: it does not exist)', unchecked: ' (not yet checked)', nothing: ' (nothing would, which is its own answer)' }[S.ev25choice] || '';
     set('ev', evTxt ? evTxt + evNote : (S.ev25choice === 'nothing' ? 'Nothing, which is its own answer.' : ''));
-    var any = (S.q21b || '').trim() || p || crit || t || evTxt;
+    var any = q21 || p || crit || e || evTxt;
     setState('card', !!any);
   }
   $('copycard').addEventListener('click', function () {
@@ -1527,10 +1731,9 @@ input[type="range"] { width: 100%; accent-color: var(--pen); }
     });
     lines.push('praxilogue.com/critical');
     copyText(lines.join('\n'), this);
-    $('copied').textContent = '';
   });
   $('clearall').addEventListener('click', function () {
-    if (!confirm('Clear everything you typed on this page? This only affects this device.')) return;
+    if (!confirm('Clear everything you did on this page? This only affects this device.')) return;
     try { localStorage.removeItem(KEY); } catch (e) { /* nothing */ }
     location.reload();
   });

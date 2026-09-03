@@ -83,10 +83,11 @@ Two things to keep in mind when editing the page:
 
 Module 2 of a short course on the human half of working with AI. A single
 self-contained page: prose with an interactive "lab" set into each section
-(a question-phrasing highlighter, a mark-your-reading exercise that feeds a
-scepticism bar chart, prompt builders, a load-bearing-claim picker, a
-read-without-rebutting counter, and a closing card built from the reader's
-own inputs).
+(a pick-three-questions scenario with the bias embedded, a mark-your-reading
+exercise that feeds a scepticism bar chart, prompt builders driven by
+pick-lists, a spot-the-planted-errors passage in a field the reader doesn't
+know, a load-bearing-claim picker, a read-without-rebutting counter, and a
+closing card built from the reader's own choices).
 
 - **V1 is entirely client-side.** No API calls; the labs are heuristics and
   scripted samples, and the page says so. Inputs persist in `localStorage`
