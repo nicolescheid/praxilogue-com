@@ -1,8 +1,9 @@
 # praxilogue.com
 
-The studio site for [praxilogue.com](https://praxilogue.com): a single-page record of
-the practice — methodologies, projects, and the thinking behind them. Static,
-no build step, served by a **Cloudflare Worker** (Workers Static Assets).
+[praxilogue.com](https://praxilogue.com): Nic's AI enablement and capability
+consultancy. The homepage speaks to prospective clients; the original studio
+page (methodologies, projects, and the thinking behind them) lives at `/studio`.
+Static, no build step, served by a **Cloudflare Worker** (Workers Static Assets).
 
 This is the practice record. The conversational-AI experiments themselves
 (Adelaide, Ask Nicole, the Qantas concierge) live in the separate `praxilogue`
@@ -10,8 +11,9 @@ monorepo, deployed under nicolescheid.com.
 
 ## Edit & deploy
 
-The site is `public/index.html`, `public/styles.css`, `public/script.js` — no
-build step. Edit, then deploy by hand:
+The homepage is `public/index.html`, `public/home.css`, `public/home.js`; the
+studio page is `public/studio/index.html` with `public/styles.css` and
+`public/script.js`. No build step. Edit, then deploy by hand:
 
 ```
 npx wrangler deploy
@@ -30,10 +32,18 @@ npx serve public
 
 ## Structure
 
-- `public/index.html` — content and structure
-- `public/styles.css` — design tokens (dual type system: Fraunces for prose,
-  IBM Plex Mono for structural chrome), layout, both color themes
-- `public/script.js` — rail progress, section counter, reveal-on-scroll,
+- `public/index.html` — the consultancy homepage (light, services-site layout:
+  Fraunces headings, IBM Plex Sans body, Plex Mono section numbers)
+- `public/home.css` — homepage styles
+- `public/home.js` — homepage contact form. It posts cross-origin to the
+  `nicolescheid-contact` Worker at `nicolescheid.com/api/contact`, which allows
+  `https://praxilogue.com` as an origin and labels those emails "praxilogue.com".
+  Local previews can't send (wrong origin); test the form on the live site.
+- `public/studio/index.html` — the studio page, published at `/studio`
+  (formerly the homepage). Paths are root-absolute.
+- `public/styles.css` — studio design tokens (dual type system: Fraunces for
+  prose, IBM Plex Mono for structural chrome), layout, both color themes
+- `public/script.js` — studio rail progress, section counter, reveal-on-scroll,
   magnetic hover on project rows
 - `public/favicon.svg` — the ∴ mark
 - `public/valence/index.html` — Valence, the interactive day/night poem,

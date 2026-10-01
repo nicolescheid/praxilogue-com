@@ -505,6 +505,17 @@ a.project-name {
   font-size: 0.78rem;
   color: var(--text-faint);
 }
+/* Studio lives at /studio; these lead back to the homepage. */
+.home-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--rule-strong);
+  transition: text-decoration-color 0.3s ease;
+}
+.home-link:hover { text-decoration-color: currentColor; }
+
 .mark-inline { color: var(--accent-dim); display: inline-flex; transition: color 0.6s ease; }
 .mark-inline svg circle { fill: currentColor; }
 

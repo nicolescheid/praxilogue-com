@@ -32,11 +32,6 @@
   document.querySelectorAll("[data-target]:not(.scene-nav-item)").forEach((el) => {
     el.addEventListener("click", () => goToScene(el.dataset.target));
   });
-  document.querySelector(".mark").addEventListener("click", (e) => {
-    e.preventDefault();
-    goToScene("00");
-  });
-
   window.addEventListener("keydown", (e) => {
     const order = scenes.map((s) => s.dataset.index);
     const pos = order.indexOf(activeIndex);
