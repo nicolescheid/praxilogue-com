@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Addressing Biases — Thinking is Critical</title>
-<meta name="description" content="Module 2 of Thinking is Critical: the human half of working with AI. Confirmation bias, selective adherence, why the model agrees with you, expertise bias, and how to test a position before you announce it. With exercises you do on the page.">
+<title>Addressing Biases | Thinking is Critical</title>
+<meta name="description" content="Module 2 of Thinking is Critical: the human side of working with AI. Confirmation bias, selective adherence, why the model agrees with you, expertise bias, and how to test a position before you announce it, with exercises you do on the page.">
 <meta name="theme-color" content="#f7f3ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15130f" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="https://praxilogue.com/critical">
 
-<meta property="og:title" content="Thinking is Critical — Module 2: Addressing Biases">
+<meta property="og:title" content="Thinking is Critical | Module 2: Addressing Biases">
 <meta property="og:description" content="Most advice about working with AI concerns the machine. This module is about the person at the keyboard, and the filter they bring.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://praxilogue.com/critical">
@@ -22,7 +22,7 @@
 
 <style>
 /* ===================================================================
-   Thinking is Critical — Module 2
+   Thinking is Critical, Module 2
    A reading page with labs set into it. The prose is set in a text
    serif; the labs wear a cooler chrome (mono labels, sans inputs) so
    the reader can always tell "this is the module talking" from
@@ -288,7 +288,7 @@ h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .callout p:last-child { margin-bottom: 0; }
 
 /* ---------------------------------------------------------------
-   Lab — the interactive chrome
+   Lab: the interactive chrome
 --------------------------------------------------------------- */
 
 .lab {
@@ -602,7 +602,7 @@ details.opt summary:hover { color: var(--lab); }
     <li><a href="#carry" data-nav="carry"><span class="n">∴</span>Carrying it out</a></li>
     <li><a href="#sources" data-nav="sources"><span class="n">§</span>Sources</a></li>
   </ol>
-  <div class="done">Labs done<br><b id="labcount">0 of 8</b></div>
+  <div class="done">Labs done<br><b id="labcount">0 of 9</b></div>
 </nav>
 
 <article>
@@ -614,14 +614,14 @@ details.opt summary:hover { color: var(--lab); }
   <p class="kicker">Thinking is Critical · Module 2</p>
   <h1>Addressing <em>Biases</em></h1>
   <div class="prose">
-    <p class="lede">Up until LLMs arrived on the scene, learning how to control computer output was literally learning another language. In some ways this made it easier. The computer required strict instructions executed with precision, there wasn't much room for interpretation, and getting it wrong would simply mean that your expected response didn't render. The failure was obvious and it was immediate.</p>
-    <p>Ask an LLM a poorly formed question and it will answer you anyway, fluently and at length. Nothing fails to render. The precision still matters, and there is no longer anything to tell you when you have not applied it.</p>
-    <p>Which is why the skill has moved. Some of it is still about the machine, and we will cover that in other modules: how to improve your prompts, how to provide comprehensive context, how to evaluate and validate the responses you get. The rest is about you, and specifically about understanding your own cognition, a science known as metacognition.</p>
-    <p>Because unlike traditional programming, the questions you ask and the way you pose them are shaped by what you already believe. Two people can send the same model the same problem and come away with opposite conclusions, both of them satisfied, often unaware of what they filtered in or out as they progressed through the work.</p>
+    <p class="lede">Before LLMs, getting a computer to do what you wanted meant learning its language. In some ways that made it easier. The computer needed strict, precise instructions, there was little room for interpretation, and if you got it wrong, you simply didn't get the result you expected. The failure was obvious and immediate.</p>
+    <p>Ask an LLM a poorly formed question and it will answer anyway, fluently and at length. Precision still matters, but nothing tells you when it's missing.</p>
+    <p>So the skill has shifted. Part of it is still about the machine: writing better prompts, providing the right context, and evaluating the responses you get, which later modules cover. The other part is about you, and how your own thinking works, known as metacognition.</p>
+    <p>The questions you ask, and how you frame them, are shaped by what you already believe. Two people can give the same model the same problem and come away with opposite conclusions, both satisfied, and often unaware of what they filtered in or out along the way.</p>
     <p>This module is about that filter.</p>
   </div>
   <div class="frame">
-    <b>How this page works.</b> Each section opens with something to try before the explanation, because the explanation lands differently once you have caught yourself doing the thing. The exercises run in your browser. Nothing you type is sent anywhere; it is kept on this device so the closing card can be built from your own words. This is version one. A version that talks back is in progress.
+    <b>How this page works.</b> Each section opens with something to try before the explanation, because the explanation lands differently once you've caught yourself doing it. The exercises run in your browser. Nothing you type is sent anywhere; it stays on this device so the closing card can be built from your own words. This is version one; a version that responds to you is in progress.
   </div>
 </section>
 
@@ -659,7 +659,7 @@ details.opt summary:hover { color: var(--lab); }
           </div>
           <div class="legend"><span><i class="a"></i>assumes the decision</span><span><i class="o"></i>leaves it open</span></div>
           <p id="t21" style="margin-top:0.9rem"></p>
-          <small>A pattern match on phrasing, not a judgment. It will miss some and flag some wrongly. The point is to see the shape of what you asked.</small>
+          <small>A pattern match on phrasing, not a judgement. It will miss some and flag some wrongly. The point is to see the shape of what you asked.</small>
         </div>
       </details>
     </div>
@@ -667,17 +667,17 @@ details.opt summary:hover { color: var(--lab); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Most of the questions people actually ask already contain the decision. "What's the best format for the update?" has decided there will be an update. The model answers the question as posed, and you get a well-written plan for something nobody examined.</p>
-    <p>The name for this is confirmation bias: seeking and weighting evidence that supports what you already hold. Peter Wason gave it the name in 1960 after an experiment where people were shown the sequence 2, 4, 6 and asked to work out the rule by proposing sequences of their own. Almost everyone proposed sequences that fit their guess. Almost nobody proposed one designed to break it. Sixty-five years on, the model is the perfect partner for that experiment: it will confirm whatever rule you bring.</p>
-    <p>A colleague asked a loaded question will often push back on the framing. A model mostly won't. Same bias, far less friction.</p>
-    <p>It operates twice. Once in the question, which you can see. Once in the reading, which you can't: even a balanced answer gets read unevenly, and you keep no record of what you skimmed. The document looked supportive. You have no memory of the three paragraphs that weren't.</p>
+    <p>Most of the questions people actually ask already contain the decision. "What's the best format for the update?" has already decided there will be an update. The model answers the question as posed, and you get a well-written plan for something nobody examined.</p>
+    <p>This is confirmation bias: seeking out, and giving more weight to, evidence that supports what you already believe. Peter Wason demonstrated it in 1960. He showed people the sequence 2, 4, 6 and asked them to work out the rule by proposing sequences of their own. Almost everyone proposed sequences that fit their guess; almost nobody proposed one designed to break it. An LLM is an ideal partner for that mistake, because it will confirm whatever rule you bring.</p>
+    <p>A colleague asked a loaded question will often push back on the framing. A model mostly won't, so the bias meets less resistance.</p>
+    <p>It operates twice. First in the question, which you can see. Then in the reading, which you can't: even a balanced answer gets read unevenly, and you keep no record of what you skimmed. The document looked supportive because you don't remember the three paragraphs that weren't.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>Fixing the question is the obvious move, and it works. Ask what would make this wrong. Describe the situation without your preferred ending.</p>
-    <p>The reading problem survives it. So, one habit for after you read: before you act on an answer, name the part you found least convincing, then ask why. "The argument was weak" and "the argument was inconvenient" feel identical from the inside. Telling them apart takes a deliberate pass.</p>
-    <p>Asking for "both sides" doesn't fix it either. You get a symmetrical answer and read it asymmetrically.</p>
+    <p>Fixing the question is the obvious move, and it works. Ask what would make this wrong, or describe the situation without your preferred outcome.</p>
+    <p>The reading problem survives it. So add one habit after you read: before you act on an answer, name the part you found least convincing, then ask why. From the inside, "the argument was weak" and "the argument was inconvenient" feel the same. Telling them apart takes a deliberate second look.</p>
+    <p>Asking for "both sides" doesn't fix it either. You get a balanced answer and still read it unevenly.</p>
   </div>
 </section>
 
@@ -691,7 +691,7 @@ details.opt summary:hover { color: var(--lab); }
   </div>
 
   <div class="prose">
-    <p>Think of two occasions when you took an AI's suggestion, and one when you overrode it. What made you override it? Most people say "it felt wrong" or "I could tell it wasn't right". Hold that thought, and do the reading below, which makes the feeling visible.</p>
+    <p>Think of two occasions when you took an AI's suggestion, and one when you overrode it. What made you override it? Most people say "it felt wrong" or "I could tell it wasn't right". Keep that in mind, and do the reading below, which makes the feeling visible.</p>
   </div>
 
   <div class="lab" data-lab="q22">
@@ -710,7 +710,7 @@ details.opt summary:hover { color: var(--lab); }
       <p>Below is a balanced response of the kind a model returns to that question. For each paragraph, mark honestly whether you accepted it as you read or found yourself pushing back.</p>
       <div class="paras" id="paras22">
         <div class="para" data-lean="for">
-          <div><span class="lean" hidden>Leans yes</span>Drafting is where most of the time goes and the least judgment is exercised. Letting a model produce the first pass moves a junior's effort to the part of the work that teaches something, which is deciding what is wrong with the draft.</div>
+          <div><span class="lean" hidden>Leans yes</span>Drafting is where most of the time goes and the least judgement is exercised. Letting a model produce the first pass moves a junior's effort to the part of the work that teaches something, which is deciding what is wrong with the draft.</div>
           <div class="marks"><button class="btn" type="button" data-mark="accept" aria-pressed="false">Accepted as read</button><button class="btn pen" type="button" data-mark="push" aria-pressed="false">Pushed back</button></div>
         </div>
         <div class="para" data-lean="against">
@@ -744,22 +744,22 @@ details.opt summary:hover { color: var(--lab); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>You would expect the risk with AI to be uniform over-trust: the machine sounds authoritative, so people defer. There is a name for that, automation bias, and it comes out of aviation. Skitka and colleagues put people in a flight-simulation task with an automated aid and watched them follow it even when the other instruments said otherwise.</p>
-    <p>Alon-Barkat and Busuioc went looking for the same thing in public-sector decisions, across three studies. They didn't find it. People took the advice at about the same rate whether it came from an algorithm or a human expert.</p>
-    <p>What they found instead: people followed the advice more when it matched what they already believed. They called it <strong>selective adherence</strong>.</p>
-    <p>So trust in AI isn't a level. It's a pattern. It goes up where the output agrees with you and down where it doesn't, and the movement feels like judgment. Sometimes it is. The rest of the time it is confirmation bias in the costume of expertise.</p>
-    <p class="pull">This is the load-bearing idea in the module. Everything else follows from it.</p>
+    <p>You might expect the main risk with AI to be blanket over-trust: the machine sounds authoritative, so people defer. That has a name, automation bias, and it comes from aviation research. Skitka and colleagues gave people a flight-simulation task with an automated aid, and found they followed it even when the other instruments said otherwise.</p>
+    <p>Alon-Barkat and Busuioc looked for the same effect in public-sector decision-making, across three studies, and didn't find it. People took advice at about the same rate whether it came from an algorithm or a human expert.</p>
+    <p>What they found instead was that people followed the advice more when it matched what they already believed. They called this <strong>selective adherence</strong>.</p>
+    <p>So trust in AI isn't a fixed level; it's a pattern. It rises where the output agrees with you and falls where it doesn't, and that movement feels like judgement. Sometimes it is. The rest of the time it's confirmation bias that looks like expertise.</p>
+    <p class="pull">This is the central idea of the module, and the rest builds on it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The natural fix is to trust AI less across the board. Check more, take less at face value. Let's see what that does.</p>
+    <p>The natural fix is to trust AI less across the board: check more, take less at face value. Here's what that does.</p>
   </div>
 
   <div class="lab" data-lab="q22b">
     <div class="lab-head"><span>See it · trust is a pattern</span><span class="state" data-state>not started</span></div>
     <div class="lab-body">
-      <p>Each bar is one paragraph from the reading above, and its height is how hard you pushed on it. Now do what the natural fix says, and lower your trust across the board.</p>
+      <p>Each bar is one paragraph from the reading above, and its height is how hard you pushed back on it. Now do what the natural fix says, and lower your trust across the board.</p>
       <div class="bars" id="bars22" role="img" aria-label="Six bars showing scepticism per paragraph; the slider raises them all together but the shape stays the same">
         <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
         <div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div><div class="bar"><i></i><b></b></div>
@@ -775,9 +775,9 @@ details.opt summary:hover { color: var(--lab); }
   </div>
 
   <div class="prose">
-    <p>Lowering trust everywhere leaves the pattern exactly where it was. The tall bars are still the paragraphs you disagreed with. The variance is the problem, and moving the average does nothing to it.</p>
-    <p>The move that works runs the other way. The parts that annoyed you have already been checked, because irritation is a verification prompt. The parts you accepted without friction are the unexamined ones. So when you finish an AI response, mark what you accepted immediately. Those are your candidates for checking.</p>
-    <p>This will feel backwards for a while. It's meant to.</p>
+    <p>Lowering trust everywhere leaves the pattern where it was. The tall bars are still the paragraphs you disagreed with. The problem is the variation, and moving the average doesn't change it.</p>
+    <p>What works runs the other way. The parts that annoyed you have already been checked, because irritation prompts verification. The parts you accepted without friction are the ones you haven't examined. So when you finish reading an AI response, note what you accepted straight away. Those are what to check.</p>
+    <p>This can feel backwards at first.</p>
   </div>
 </section>
 
@@ -809,26 +809,26 @@ details.opt summary:hover { color: var(--lab); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Language models are built to continue and cooperate with whatever you give them. Agreement gets rewarded in training. Unprompted disagreement mostly doesn't. Researchers have a word for the result, sycophancy, and Sharma and colleagues at Anthropic showed in 2023 that the human preference data used to train assistants favours the agreeable answer over the accurate one often enough to teach it.</p>
-    <p>There is no intent in this. The model isn't flattering you, and it has no opinion it is holding back. The same property is what makes it useful: a typewriter that argued with you about your ending would be unusable. The cooperativeness is the point, and the cost lands entirely on you.</p>
+    <p>Language models are built to continue and cooperate with whatever you give them. Agreement is rewarded in training; unprompted disagreement mostly isn't. Researchers call the result sycophancy. Sharma and colleagues at Anthropic showed in 2023 that the human preference data used to train assistants favours the agreeable answer over the accurate one often enough for models to learn it.</p>
+    <p>There's no intent behind this. The model isn't flattering you and isn't holding back an opinion. The same property is what makes it useful: a typewriter that argued with you about your ending would be unusable. The cooperativeness is the point, and the cost falls on you.</p>
     <p>Which leaves one sentence to remember:</p>
     <p class="pull">The model will not supply the disagreement. You have to ask for it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>Once people know this, they start asking. "What's wrong with this?" "Play devil's advocate." Right instinct, weaker than it looks, because of where it gets asked. Nine messages building a case, then a request for critique on the tenth, gets critique shaped by nine messages of you being invested. It arrives pre-softened. It finds the flaws you can live with.</p>
-    <p>Four things raise the quality of the disagreement:</p>
+    <p>Once people know this, they start asking: "What's wrong with this?" "Play devil's advocate." It's the right instinct, but weaker than it looks, because of where it gets asked. Nine messages spent building a case, then a request for critique on the tenth, gets critique shaped by those nine messages. It arrives softened, and it finds the flaws you can live with.</p>
+    <p>Four things improve the quality of the disagreement:</p>
   </div>
   <dl class="practice">
     <dt>Move it out of the thread.</dt>
-    <dd>Fresh conversation, no history, position in cold. The absence of context is the point.</dd>
+    <dd>Start a fresh conversation with no history and put the position in cold. The missing context is what makes it work.</dd>
     <dt>Detach it from you.</dt>
-    <dd>"A colleague has proposed the following" gets sharper analysis than "here is my proposal", for the same reason a friend reviews your CV more honestly than their own.</dd>
+    <dd>"A colleague has proposed the following" gets sharper analysis than "here is my proposal", for the same reason a friend reviews your CV more honestly than they review their own.</dd>
     <dt>Ask before you commit.</dt>
-    <dd>Get the case against before you say you're for. Once your view is on the record, every later turn is written by a model that knows it.</dd>
+    <dd>Get the case against before you say you're for it. Once your view is in the thread, every later response comes from a model that knows it.</dd>
     <dt>Name a specific critic.</dt>
-    <dd>General requests return general criticism. Ask what a particular sceptic would say, someone with a stake and an objection, and you get something you can use.</dd>
+    <dd>General requests get general criticism. Ask what a particular sceptic would say, someone with a stake and an objection, and you get something you can use.</dd>
   </dl>
 
   <div class="lab" data-lab="q23b">
@@ -886,26 +886,26 @@ details.opt summary:hover { color: var(--lab); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Most people spend less time checking output in their own field. That runs against intuition, because your expertise is exactly what would catch the error. What happens instead is that fluency reads as correctness. The output uses your vocabulary in the arrangements you expect, and familiarity stands in for scrutiny. Confirmation bias again, applied to your professional knowledge instead of your opinions.</p>
-    <p>Logg, Minson and Moore found a related pattern in forecasting: the people with the most expertise were the least willing to take an algorithm's advice, and their forecasts were worse for it. Expertise changes where you look, in both directions.</p>
-    <p>Outside your field, the failure is different in kind. You can't evaluate the content, because you have nothing to evaluate it against. Two responses are common: defer completely, or reject the lot on general suspicion. Both are decisions made without information, and you just watched the first one happen. The errors that needed the field sat in plain sight, reading exactly like the true sentences around them.</p>
-    <p class="dim">Module 3 covers the related trap: a clear explanation of something you couldn't explain yourself feels a great deal like learning it.</p>
+    <p>In your own field, you might expect your expertise to catch the errors. The risk is that fluency reads as correctness: output that uses your vocabulary, arranged the way you expect, can pass on familiarity rather than scrutiny. This is confirmation bias again, applied to your professional knowledge instead of your opinions.</p>
+    <p>The evidence points to confidence as the variable. In a 2025 survey of knowledge workers, Lee and colleagues found that the more people trusted the AI, the less critical thinking they reported applying; the more confident they were in their own ability, the more they applied. Logg, Minson and Moore found a related pattern in forecasting: the people with the most expertise were the least willing to take an algorithm's advice, and their forecasts were worse for it. Expertise changes where you look, in both directions.</p>
+    <p>Outside your field, the failure is different. You can't evaluate the content, because you have nothing to compare it against. The two common responses are to defer completely, or to reject all of it on general suspicion. Both are decisions made without information, and you've just seen the first one happen: the errors that needed field knowledge sat in plain sight, reading exactly like the true sentences around them.</p>
+    <p class="dim">Module 3 covers a related trap: a clear explanation of something you couldn't explain yourself feels a lot like learning it.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The usual takeaway is to be more careful in your own field. Worth doing. It's half the problem.</p>
-    <p>Outside your field, the fix means giving up on checking the content and checking other things instead. You just did some of them without being told to. They are:</p>
+    <p>The usual takeaway is to be more careful in your own field. That's worth doing, but it's only half the problem.</p>
+    <p>Outside your field, the fix is to stop trying to check the content and check other things instead. You've just done some of these without being told to:</p>
   </div>
   <dl class="practice">
     <dt>Structure.</dt>
-    <dd>Does the argument hold together? Do the conclusions follow from the reasons given? Logic is domain-independent, and you are fully qualified to assess it.</dd>
+    <dd>Does the argument hold together, and do the conclusions follow from the reasons given? Logic doesn't depend on the field, so you're fully qualified to assess it.</dd>
     <dt>Specificity.</dt>
-    <dd>Vague claims are cheap. Specific ones commit to something. An answer that hedges everywhere may be honest, and it may be avoiding anything checkable.</dd>
+    <dd>Vague claims cost nothing; specific ones commit to something. An answer that hedges everywhere may be honest, or it may be avoiding anything that can be checked.</dd>
     <dt>Attributability.</dt>
-    <dd>Can each significant claim be traced to a source that exists and says what it is reported to say? Checkable regardless of expertise, and where fabrication is most often exposed.</dd>
+    <dd>Can each significant claim be traced to a source that exists and says what it's reported to say? You can check this without expertise, and it's where fabrication most often shows up.</dd>
     <dt>Load-bearing claims.</dt>
-    <dd>Most answers rest on one or two claims that everything else depends on. Find those and check only those. Verifying the whole document is usually neither possible nor necessary.</dd>
+    <dd>Most answers rest on one or two claims that everything else depends on. Find those and check only those. Verifying a whole document is usually neither possible nor necessary.</dd>
   </dl>
 
   <div class="lab" data-lab="q24b">
@@ -929,7 +929,7 @@ details.opt summary:hover { color: var(--lab); }
   </div>
 
   <div class="prose">
-    <p>That last one is worth carrying. Splitting a verification job into the part that matters and the part that follows from it is the move you will use throughout this course.</p>
+    <p>Splitting a verification job into the claims that matter and the claims that follow from them is a technique you'll use throughout this course.</p>
   </div>
 </section>
 
@@ -965,23 +965,23 @@ details.opt summary:hover { color: var(--lab); }
 
   <h3>What is happening</h3>
   <div class="prose">
-    <p>Seeking out the opposing case rarely changes your mind, and a course that promised otherwise would be overselling. The value is in what survives. Run a position against its strongest opposition and you find out which parts are load-bearing and which you were carrying out of habit. Untested positions contain both, and their holders can't tell which is which.</p>
-    <p>None of this is new. Steelmanning, building the strongest version of the other side before you answer it, is standard in philosophy and debate. The word is recent, a play on "strawman", but the practice is old: Aquinas opened every question in the <em>Summa</em> by stating the objections first. Law schools make students argue assigned sides. None of those disciplines do it for fairness. They do it because you don't understand your own argument until you have seen what it has to survive.</p>
-    <p>AI makes this cheap. A serious opposing case used to need a person who held it and had time to argue. Now it takes a sentence.</p>
+    <p>Seeking out the opposing case rarely changes your mind, and a course that promised otherwise would be overselling. The value is in what survives. Test a position against its strongest opposition and you find out which parts hold up and which you were holding out of habit. An untested position contains both, and the person holding it can't tell which is which.</p>
+    <p>None of this is new. Steelmanning, building the strongest version of the other side before you answer it, is standard practice in philosophy and debate. The word is recent, a play on "strawman", but the practice is old: Aquinas opened every question in the <em>Summa</em> by stating the objections first, and law schools have students argue assigned sides. Neither does it for fairness. They do it because you don't fully understand your own argument until you've seen what it has to withstand.</p>
+    <p>AI makes this cheap. A serious opposing case used to need a person who held it and had time to argue it. Now it takes a sentence.</p>
   </div>
 
   <h3>Where most people stop</h3>
   <div class="prose">
-    <p>The common version is to ask for counterarguments and read them defensively. That gives you the feeling of having tested a position without the substance. The rebuttals you compose while reading are the sound of the test failing.</p>
-    <p>Three things that make it real:</p>
+    <p>The common version is to ask for counterarguments and read them defensively. That gives you the feeling of having tested a position without actually testing it. If you're composing rebuttals while you read, the test isn't working.</p>
+    <p>Three things make it real:</p>
   </div>
   <dl class="practice">
     <dt>Ask before you declare.</dt>
-    <dd>Put the question as an open one before you say which side you're on. Once your position is in the thread, everything after it comes from a model that knows where you stand. See 2.3.</dd>
+    <dd>Pose the question as an open one before you say which side you're on. Once your position is in the thread, everything after it comes from a model that knows where you stand (see 2.3).</dd>
     <dt>Name the disconfirming evidence.</dt>
-    <dd>What specific finding would change your mind? Then: does it exist? If nothing could change your mind, you are not holding a position, and that is more useful to know than any counterargument.</dd>
+    <dd>What specific finding would change your mind, and does it exist? If nothing could change your mind, you aren't holding a position, and that's more useful to know than any counterargument.</dd>
     <dt>Argue the other side yourself.</dt>
-    <dd>Take the opposing position and defend it for one turn, in your own words, against an AI told to attack it. Harder than reading a counterargument, and the version that works, for the same reason writing teaches more than reading.</dd>
+    <dd>Take the opposing position and defend it for one turn, in your own words, against an AI told to attack it. It's harder than reading a counterargument, and it works better, for the same reason writing teaches you more than reading.</dd>
   </dl>
 
   <div class="lab" data-lab="q25b">
@@ -1006,8 +1006,8 @@ details.opt summary:hover { color: var(--lab); }
   <div class="callout">
     <p class="kicker">Call-out · other humans</p>
     <p>Where you can, run an important answer past another person, ideally someone who knows the subject.</p>
-    <p>They bring accuracy, and that matters. What they bring that no prompt can replicate is a frame that isn't yours. They don't share the assumptions you didn't know you were making, because they didn't make them. The question that never occurs to you is the one they ask first.</p>
-    <p style="color:var(--ink-2)">How to choose which humans, and how to weigh what they tell you, is covered in Module 5.</p>
+    <p>They bring accuracy, which matters. But what they bring that no prompt can replicate is a frame that isn't yours. They don't share the assumptions you didn't know you were making, so they often ask the question that never occurred to you.</p>
+    <p style="color:var(--ink-2)">Module 5 covers how to choose which people to ask, and how to weigh what they tell you.</p>
   </div>
 </section>
 
@@ -1020,9 +1020,9 @@ details.opt summary:hover { color: var(--lab); }
     <h2>Carrying this out of the module</h2>
   </div>
   <ol class="carry">
-    <li>Your question usually contains your answer. Write the version a person who disagreed with you would ask, and notice the difference.</li>
+    <li>Your question often contains your answer. Write the version someone who disagreed with you would ask, and notice the difference.</li>
     <li>Check the parts you accepted easily. The parts that annoyed you have already had your attention.</li>
-    <li>The model will not supply disagreement. Ask for it, and ask for it outside the thread where you built your case.</li>
+    <li>The model won't supply disagreement. Ask for it, and ask outside the thread where you built your case.</li>
     <li>In your own field, slow down. Outside it, check structure, specificity and attribution instead of content.</li>
     <li>Test a position before you announce it.</li>
   </ol>
@@ -1067,7 +1067,7 @@ details.opt summary:hover { color: var(--lab); }
   </ul>
 
   <footer class="foot">
-    <p>Thinking is Critical is a short course on the human half of working with AI. This is Module 2, version one: the exercises run on the page and nothing you type leaves your device. The next version puts a model on the other side of each exercise, so the disagreement can be asked for in the moment rather than copied out.</p>
+    <p>Thinking is Critical is a short course on the human side of working with AI. This is Module 2, version one: the exercises run on the page and nothing you type leaves your device. The next version will put a model on the other side of each exercise, so you can ask for disagreement in the moment rather than copying prompts out.</p>
     <a class="mk" href="/">
       <svg viewBox="0 0 32 32" width="14" height="14" aria-hidden="true"><circle cx="11" cy="12" r="2.6"/><circle cx="21" cy="12" r="2.6"/><circle cx="16" cy="21" r="2.6"/></svg>
       Praxilogue
@@ -1083,7 +1083,7 @@ details.opt summary:hover { color: var(--lab); }
   'use strict';
 
   /* ------------------------------------------------------------
-     State — one object, persisted. Every read/write is guarded so
+     State: one object, persisted. Every read/write is guarded so
      the page works with storage blocked.
   ------------------------------------------------------------ */
   var KEY = 'tic-m2-v1';
@@ -1108,7 +1108,7 @@ details.opt summary:hover { color: var(--lab); }
     el.textContent = on ? 'done' : 'not started';
     el.classList.toggle('on', !!on);
   }
-  var LABS = ['q21', 'q22', 'q22b', 'q23', 'q23b', 'q24', 'q24b', 'q25'];
+  var LABS = ['q21', 'q22', 'q22b', 'q23', 'q23b', 'q24', 'q24b', 'q25', 'q25b'];
   function updateLabCount() {
     var n = 0;
     LABS.forEach(function (l) { if (S.done && S.done[l]) n++; });
@@ -1208,7 +1208,7 @@ details.opt summary:hover { color: var(--lab); }
   }
 
   /* ------------------------------------------------------------
-     2.1 — pick three questions from a worked scenario
+     2.1: pick three questions from a worked scenario
   ------------------------------------------------------------ */
   var Q21 = [
     { t: "What's the best format for a written weekly update that people will actually read?", loaded: true, why: '"Best format" has already decided there will be an update.' },
@@ -1339,7 +1339,7 @@ details.opt summary:hover { color: var(--lab); }
   });
 
   /* ------------------------------------------------------------
-     2.2 — mark your reading; then the bars
+     2.2: mark your reading; then the bars
   ------------------------------------------------------------ */
   var paras22 = Array.prototype.slice.call(document.querySelectorAll('#paras22 .para'));
   S.marks22 = Array.isArray(S.marks22) && S.marks22.length === 6 ? S.marks22 : [null, null, null, null, null, null];
@@ -1397,7 +1397,7 @@ details.opt summary:hover { color: var(--lab); }
       var withMeN = prior === 'yes' ? nFor : nAgainst;
       var againstMe = prior === 'yes' ? pushAgainst : pushFor;
       var againstMeN = prior === 'yes' ? nAgainst : nFor;
-      if (againstMe > withMe) html += '<p>You said <em>' + prior + '</em> before reading. You pushed back on ' + againstMe + ' of the ' + againstMeN + ' paragraphs that cut against that, and ' + withMe + ' of the ' + withMeN + ' that supported it. That difference is selective adherence, observed in your own reading a minute ago. It felt like judgment. Some of it was.</p>';
+      if (againstMe > withMe) html += '<p>You said <em>' + prior + '</em> before reading. You pushed back on ' + againstMe + ' of the ' + againstMeN + ' paragraphs that cut against that, and ' + withMe + ' of the ' + withMeN + ' that supported it. That difference is selective adherence, observed in your own reading a minute ago. It felt like judgement. Some of it was.</p>';
       else if (againstMe === withMe) html += '<p>You said <em>' + prior + '</em> before reading, and you pushed on both sides evenly (' + withMe + ' of ' + withMeN + ' with you, ' + againstMe + ' of ' + againstMeN + ' against). Either the pattern this section describes is not operating today, or it is operating in what you accepted. Look at the flagged ones.</p>';
       else html += '<p>You said <em>' + prior + '</em> before reading, and you pushed harder on the paragraphs that agreed with you (' + withMe + ' of ' + withMeN + ') than on those that did not (' + againstMe + ' of ' + againstMeN + '). That is the reverse of the usual pattern. It happens when people know they are being watched for it, which is fine: the aim is to be able to do it on purpose.</p>';
     } else {
@@ -1436,7 +1436,7 @@ details.opt summary:hover { color: var(--lab); }
   drawBars();
 
   /* ------------------------------------------------------------
-     2.3 — order experiment, then the four prompts
+     2.3: order experiment, then the four prompts
   ------------------------------------------------------------ */
   var WEAK = [
     'Every internal document should be drafted by AI first and edited by a person second.',
@@ -1501,7 +1501,7 @@ details.opt summary:hover { color: var(--lab); }
   render23b();
 
   /* ------------------------------------------------------------
-     2.4 — spot the errors in a field you don't know; then the
+     2.4: spot the errors in a field you don't know; then the
      load-bearing claim
   ------------------------------------------------------------ */
   var PASS = {
@@ -1634,7 +1634,7 @@ details.opt summary:hover { color: var(--lab); }
   });
 
   /* ------------------------------------------------------------
-     2.5 — read without rebutting; then what would change your mind
+     2.5: read without rebutting; then what would change your mind
   ------------------------------------------------------------ */
   var paras25 = Array.prototype.slice.call(document.querySelectorAll('#paras25 .para'));
   var shown = 1, firstRebut = null;
@@ -1675,7 +1675,7 @@ details.opt summary:hover { color: var(--lab); }
     b.addEventListener('click', function () {
       S.ev25choice = b.getAttribute('data-ev');
       document.querySelectorAll('[data-ev]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      save(); showEv();
+      save(); showEv(); markDone('q25b');
     });
   });
   function showEv() {
